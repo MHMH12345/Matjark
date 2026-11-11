@@ -717,7 +717,7 @@ export const CashierScreen: React.FC = () => {
                 icon={<Check width={19} height={19} style={{ transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms', transform: 'scale(1.1)' }} />}
                 ariaLabel="اكتملت جميع الفواتير المعلقة"
                 variant="filled"
-                size="medium"
+                size="small"
                 className="matjark-hold-button matjark-hold-button--complete"
                 disabled
               />
@@ -738,7 +738,7 @@ export const CashierScreen: React.FC = () => {
                   icon={<Play width={18} height={18} className="matjark-hold-icon" />}
                   ariaLabel={heldListOpen ? "إغلاق قائمة الفواتير المعلقة" : "عرض الفواتير المعلقة"}
                   variant="filled"
-                  size="medium"
+                  size="small"
                   className="matjark-hold-button matjark-hold-button--play"
                   onClick={handleHoldMainClick}
                 />
@@ -754,7 +754,7 @@ export const CashierScreen: React.FC = () => {
                 icon={<Pause width={18} height={18} className="matjark-hold-icon" />}
                 ariaLabel="تعليق الفاتورة الحالية"
                 variant="filled"
-                size="medium"
+                size="small"
                 className="matjark-hold-button matjark-hold-button--pause"
                 disabled={cart.length === 0}
                 onClick={handleHoldMainClick}
@@ -765,7 +765,7 @@ export const CashierScreen: React.FC = () => {
                 icon={<Plus width={18} height={18} className="matjark-hold-icon" />}
                 ariaLabel={heldListOpen ? "إغلاق المعلقات وبدء فاتورة جديدة" : "تعليق الفاتورة الحالية وإضافتها للمعلقات"}
                 variant="filled"
-                size="medium"
+                size="small"
                 className="matjark-hold-button matjark-hold-button--add"
                 onClick={handleHoldPlusClick}
               />
