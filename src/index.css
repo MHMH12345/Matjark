@@ -1264,7 +1264,7 @@ html:not(.dark) #root {
 .matjark-pos-hold-badge {
   position: absolute !important;
   top: -1px !important;
-  inset-inline-end: -2px !important;
+  right: -2px !important;
   z-index: 3 !important;
   display: grid !important;
   place-items: center !important;
