@@ -1297,13 +1297,20 @@ html:not(.dark) #root {
 }
 
 .matjark-hold-button--pause {
-  --mtrl-sys-color-primary: #f59e0b;
-  --mtrl-sys-color-on-primary: #2a1b05;
+  --mtrl-sys-color-primary: #3b3f4a;
+  --mtrl-sys-color-on-primary: #f59e0b;
+}
+
+.matjark-hold-button--pause:disabled {
+  --mtrl-sys-color-primary: #2a2d35;
+  --mtrl-sys-color-on-primary: #6b7280;
+  opacity: 1 !important;
+  filter: none !important;
 }
 
 .matjark-hold-button--play {
-  --mtrl-sys-color-primary: #38bdf8;
-  --mtrl-sys-color-on-primary: #082f49;
+  --mtrl-sys-color-primary: #1e293b;
+  --mtrl-sys-color-on-primary: #38bdf8;
 }
 
 .matjark-hold-button--add {
