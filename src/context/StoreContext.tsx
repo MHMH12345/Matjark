@@ -78,6 +78,7 @@ interface StoreContextType {
   updateCartDiscount: (productId: string, discount: number) => void;
   removeFromCart: (productId: string) => void;
   clearCart: () => void;
+  replaceCart: (items: CartItem[]) => void;
   checkoutInvoice: (params: {
     paymentMethod: PaymentMethod;
     amountPaid: number;
@@ -306,6 +307,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const clearCart = useCallback(() => {
     setCart([]);
+  }, []);
+
+  const replaceCart = useCallback((items: CartItem[]) => {
+    setCart(items);
   }, []);
 
   const checkoutInvoice = useCallback(
@@ -643,7 +648,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       products: db.products, categories, barcodeIndex, invoices: db.invoices, customers: db.customers,
       suppliers: db.suppliers, expenses: db.expenses, settings: db.settings, isCartTaxEnabled,
       setIsCartTaxEnabled, cart, cartTotals, addToCart, addByBarcode, updateCartQuantity,
-      updateCartDiscount, removeFromCart, clearCart, checkoutInvoice, addProduct, updateProduct,
+      updateCartDiscount, removeFromCart, clearCart, replaceCart, checkoutInvoice, addProduct, updateProduct,
       deleteProduct, bulkAddProducts, refundInvoice, addExpense, deleteExpense, addCustomer,
       updateCustomer, addSupplier, updateSupplier, updateSettings, loadBenchmarkStressTest,
       resetToSampleData, restoreFromDatabase, backupToGoogleDrive, restoreFromGoogleDrive,
@@ -651,7 +656,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     [
       activeTab, theme, toggleTheme, snackbars, showToast, dismissToast, formatCurrency, db,
       categories, barcodeIndex, isCartTaxEnabled, cart, cartTotals, addToCart, addByBarcode,
-      updateCartQuantity, updateCartDiscount, removeFromCart, clearCart, checkoutInvoice,
+      updateCartQuantity, updateCartDiscount, removeFromCart, clearCart, replaceCart, checkoutInvoice,
       addProduct, updateProduct, deleteProduct, bulkAddProducts, refundInvoice, addExpense,
       deleteExpense, addCustomer, updateCustomer, addSupplier, updateSupplier, updateSettings,
       loadBenchmarkStressTest, resetToSampleData, restoreFromDatabase, backupToGoogleDrive,
