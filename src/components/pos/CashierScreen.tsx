@@ -891,28 +891,28 @@ export const CashierScreen: React.FC = () => {
         maxWidth="sm"
         className="matjark-quick-hold-dialog"
         onClose={() => setQuickHoldOpen(false)}
-        actions={(
-          <MuiButton variant="contained" color="primary" size="small" onClick={handleQuickHoldSave}>
-            حفظ سريع · Enter
-          </MuiButton>
-        )}
       >
         <div className="matjark-quick-hold-content">
-          <MuiTextField
-            ref={quickHoldInputRef}
-            type="text"
-            value={quickHoldName}
-            onChange={(event) => setQuickHoldName(event.target.value)}
-            onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                handleQuickHoldSave();
-              }
-            }}
-            placeholder="اسم الزبون أو ملاحظة (اختياري)"
-            fullWidth
-            className="matjark-quick-hold-input"
-          />
+          <div className="matjark-quick-hold-row">
+            <MuiTextField
+              ref={quickHoldInputRef}
+              type="text"
+              value={quickHoldName}
+              onChange={(event) => setQuickHoldName(event.target.value)}
+              onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  handleQuickHoldSave();
+                }
+              }}
+              placeholder="اسم الزبون أو ملاحظة (اختياري)"
+              fullWidth
+              className="matjark-quick-hold-input"
+            />
+            <MuiButton variant="contained" color="primary" size="small" onClick={handleQuickHoldSave}>
+              حفظ سريع · Enter
+            </MuiButton>
+          </div>
           <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-2">
             اضغط Enter للحفظ السريع، أو اترك الاسم فارغًا ليُنشئ النظام اسمًا تلقائيًا.
           </p>
