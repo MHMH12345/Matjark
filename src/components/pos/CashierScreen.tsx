@@ -906,7 +906,6 @@ export const CashierScreen: React.FC = () => {
                 }
               }}
               placeholder="اسم الزبون أو ملاحظة (اختياري)"
-              fullWidth
               className="matjark-quick-hold-input"
             />
             <MuiButton variant="contained" color="primary" size="small" onClick={handleQuickHoldSave}>
