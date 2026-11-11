@@ -778,7 +778,7 @@ export const CashierScreen: React.FC = () => {
                 startIcon={<Trash2 className="w-4 h-4" />}
                 onClick={handleClearAction}
               >
-                {heldListOpen ? 'تفريغ المعلقات' : 'تفريغ'}
+                {'تفريغ'}
               </MuiButton>
             )}
           </div>
@@ -828,14 +828,6 @@ export const CashierScreen: React.FC = () => {
                           >
                             {isActiveSale ? 'مفتوحة' : 'استرجاع'}
                           </MuiButton>
-                          <MuiIconButton
-                            icon={<Trash2 width={16} height={16} />}
-                            ariaLabel={'حذف ' + sale.name}
-                            variant="tonal"
-                            size="small"
-                            className="matjark-held-sale-delete"
-                            onClick={() => handleDeleteHeldSale(sale.id)}
-                          />
                         </div>
                       </div>
                     );
