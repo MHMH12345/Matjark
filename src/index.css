@@ -1298,6 +1298,12 @@ html:not(.dark) #root {
   --mtrl-button-shape-pressed: 999px;
 }
 
+.matjark-hold-button--pause,
+.matjark-hold-button--play,
+.matjark-hold-button--add {
+  animation: matjark-hold-morph 200ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
 .matjark-hold-button--pause {
   --mtrl-sys-color-primary: #3b3f4a;
   --mtrl-sys-color-on-primary: #f59e0b;
@@ -1396,6 +1402,11 @@ html:not(.dark) #root {
 .matjark-quick-hold-row > .matjark-button {
   flex: 0 0 auto;
   white-space: nowrap;
+}
+
+@keyframes matjark-hold-morph {
+  from { transform: scale(0.72); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 @keyframes matjark-hold-complete {
