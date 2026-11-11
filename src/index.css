@@ -1317,6 +1317,11 @@ html:not(.dark) #root {
   filter: none !important;
 }
 
+.matjark-hold-button--pause[disabled]::part(icon-button) {
+  background-color: #2a2d35 !important;
+  color: #6b7280 !important;
+}
+
 .matjark-hold-button--play {
   --mtrl-sys-color-primary: #1e293b;
   --mtrl-sys-color-on-primary: #38bdf8;
@@ -1336,6 +1341,11 @@ html:not(.dark) #root {
 .matjark-hold-button--complete:disabled {
   opacity: 1 !important;
   filter: none !important;
+}
+
+.matjark-hold-button--complete[disabled]::part(icon-button) {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
 }
 
 .matjark-hold-button:disabled {
