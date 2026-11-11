@@ -1262,6 +1262,8 @@ html:not(.dark) #root {
 }
 
 .matjark-pos-hold-badge {
+  --mtrl-sys-color-error: #ef4444;
+  --mtrl-sys-color-on-error: #ffffff;
   position: absolute !important;
   top: -1px !important;
   right: -2px !important;
