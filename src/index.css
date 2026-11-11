@@ -1373,9 +1373,24 @@ html:not(.dark) #root {
   padding-top: 6px;
 }
 
+.matjark-quick-hold-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
 .matjark-quick-hold-input {
   display: block !important;
-  width: 100% !important;
+  flex: 1 1 0 !important;
+  width: 0 !important;
+  min-width: 0 !important;
+}
+
+.matjark-quick-hold-row > .matjark-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 @keyframes matjark-hold-complete {
