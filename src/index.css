@@ -1301,7 +1301,8 @@ html:not(.dark) #root {
   --mtrl-sys-color-on-primary: #f59e0b;
 }
 
-.matjark-hold-button--pause:disabled {
+.matjark-hold-button--pause:disabled,
+.matjark-hold-button--pause[disabled] {
   --mtrl-sys-color-primary: #2a2d35;
   --mtrl-sys-color-on-primary: #6b7280;
   opacity: 1 !important;
