@@ -7,6 +7,7 @@ import {
   ButtonGroupItem as MaterialButtonGroupItem,
   Card as MaterialCard,
   Snackbar as MaterialSnackbar,
+  Progress as MaterialProgress,
 } from 'material/react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import {
@@ -19,9 +20,13 @@ import {
   CreditCard,
   Banknote,
   Smartphone,
+  Pause,
+  Play,
+  Check,
+  Clock3,
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
-import { PaymentMethod } from '../../types';
+import { CartItem, PaymentMethod } from '../../types';
 import { getProductPlaceholderSvg } from '../../utils/imageCompressor';
 import { normalizeArabicText } from '../../utils/performance';
 import { ThermalReceipt } from './ThermalReceipt';
@@ -31,6 +36,7 @@ import { MuiSwitch } from '../ui/MuiSwitch';
 import { MuiSelect } from '../ui/MuiSelect';
 import { MuiDialog } from '../ui/MuiDialog';
 import { MuiButton } from '../ui/MuiButton';
+import { MuiIconButton } from '../ui/MuiIconButton';
 
 const toSvg = (Icon: React.ElementType, size = 'w-4 h-4') =>
   renderToStaticMarkup(<Icon className={size} />);
@@ -44,6 +50,50 @@ const MBottomSheet = MaterialBottomSheet as React.ComponentType<any>;
 const MButtonGroup = MaterialButtonGroup as React.ComponentType<any>;
 const MButtonGroupItem = MaterialButtonGroupItem as React.ComponentType<any>;
 const MSnackbar = MaterialSnackbar as React.ComponentType<any>;
+const MProgress = MaterialProgress as React.ComponentType<any>;
+
+type HeldSale = {
+  id: string;
+  name: string;
+  createdAt: number;
+  items: CartItem[];
+  isTaxEnabled: boolean;
+};
+
+type HeldSaleStorage = {
+  sales: HeldSale[];
+  progressTotal: number;
+  nextSerial: number;
+  activeId: string | null;
+};
+
+const HELD_SALES_STORAGE_KEY = 'matjark_pos_held_sales_v1';
+
+const loadHeldSaleStorage = (): HeldSaleStorage => {
+  const empty: HeldSaleStorage = { sales: [], progressTotal: 0, nextSerial: 1, activeId: null };
+  if (typeof window === 'undefined') return empty;
+  try {
+    const raw = window.localStorage.getItem(HELD_SALES_STORAGE_KEY);
+    if (!raw) return empty;
+    const parsed = JSON.parse(raw) as Partial<HeldSaleStorage>;
+    const sales = Array.isArray(parsed.sales)
+      ? parsed.sales.filter((sale): sale is HeldSale => Boolean(
+          sale && typeof sale.id === 'string' && typeof sale.name === 'string' &&
+          typeof sale.createdAt === 'number' && Array.isArray(sale.items)
+        ))
+      : [];
+    return {
+      sales,
+      progressTotal: Math.max(sales.length, Number(parsed.progressTotal) || 0),
+      nextSerial: Math.max(1, Number(parsed.nextSerial) || sales.length + 1),
+      activeId: typeof parsed.activeId === 'string' && sales.some((sale) => sale.id === parsed.activeId)
+        ? parsed.activeId
+        : null,
+    };
+  } catch {
+    return empty;
+  }
+};
 
 const ProductCard = React.memo(({ product, availableStock, onAdd, onOutOfStockClick }: any) => {
   const isOutOfStock = availableStock <= 0;
@@ -108,6 +158,7 @@ export const CashierScreen: React.FC = () => {
     isCartTaxEnabled,
     setIsCartTaxEnabled,
     formatCurrency,
+    replaceCart,
   } = useStore();
 
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -119,14 +170,259 @@ export const CashierScreen: React.FC = () => {
   const [paidAmount, setPaidAmount] = useState<number>(0);
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [snackbar, setSnackbar] = useState<{ id: number; message: string } | null>(null);
+  const [holdStorage, setHoldStorage] = useState<HeldSaleStorage>(() => loadHeldSaleStorage());
+  const [heldListOpen, setHeldListOpen] = useState(false);
+  const [quickHoldOpen, setQuickHoldOpen] = useState(false);
+  const [quickHoldName, setQuickHoldName] = useState('');
+  const [quickHoldMode, setQuickHoldMode] = useState<'pause' | 'plus' | 'switch' | 'new'>('pause');
+  const [quickHoldTargetId, setQuickHoldTargetId] = useState<string | null>(null);
+  const [heldSaleCompleted, setHeldSaleCompleted] = useState(false);
+  const [holdStateReady, setHoldStateReady] = useState(false);
 
   const snackbarIdRef = useRef(0);
   const cartListHostRef = useRef<HTMLDivElement>(null);
+  const quickHoldInputRef = useRef<any>(null);
+  const holdCompletionTimerRef = useRef<number | null>(null);
+  const holdStorageRef = useRef(holdStorage);
 
   const showSnackbar = useCallback((message: string) => {
     const id = ++snackbarIdRef.current;
     setSnackbar({ id, message });
   }, []);
+
+  const commitHoldStorage = useCallback((next: HeldSaleStorage) => {
+    holdStorageRef.current = next;
+    setHoldStorage(next);
+    try {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(HELD_SALES_STORAGE_KEY, JSON.stringify(next));
+      }
+    } catch {
+      showSnackbar('تعذر حفظ الفواتير المعلقة في مساحة التخزين.');
+    }
+  }, [showSnackbar]);
+
+  useEffect(() => {
+    const saved = holdStorageRef.current;
+    if (saved.activeId) {
+      const activeSale = saved.sales.find((sale) => sale.id === saved.activeId);
+      if (activeSale) {
+        replaceCart(activeSale.items);
+        setIsCartTaxEnabled(activeSale.isTaxEnabled);
+      } else {
+        commitHoldStorage({ ...saved, activeId: null });
+      }
+    }
+    setHoldStateReady(true);
+  }, [replaceCart, setIsCartTaxEnabled, commitHoldStorage]);
+
+  useEffect(() => {
+    if (!holdStateReady || !holdStorage.activeId) return;
+    const activeSale = holdStorage.sales.find((sale) => sale.id === holdStorage.activeId);
+    if (!activeSale) return;
+    if (
+      JSON.stringify(activeSale.items) === JSON.stringify(cart) &&
+      activeSale.isTaxEnabled === isCartTaxEnabled
+    ) return;
+    commitHoldStorage({
+      ...holdStorage,
+      sales: holdStorage.sales.map((sale) => sale.id === holdStorage.activeId
+        ? { ...sale, items: cart, isTaxEnabled: isCartTaxEnabled }
+        : sale),
+    });
+  }, [cart, isCartTaxEnabled, holdStateReady, holdStorage, commitHoldStorage]);
+
+  useEffect(() => {
+    if (!quickHoldOpen) return;
+    const timer = window.setTimeout(() => {
+      const host = quickHoldInputRef.current as (HTMLElement & { shadowRoot?: ShadowRoot }) | null;
+      const input = host?.shadowRoot?.querySelector<HTMLInputElement>('input');
+      if (input) {
+        input.focus();
+        input.select();
+      } else {
+        host?.focus?.();
+      }
+    }, 40);
+    return () => window.clearTimeout(timer);
+  }, [quickHoldOpen]);
+
+  useEffect(() => () => {
+    if (holdCompletionTimerRef.current !== null) {
+      window.clearTimeout(holdCompletionTimerRef.current);
+    }
+  }, []);
+
+  const openQuickHold = useCallback((mode: 'pause' | 'plus' | 'switch' | 'new', targetId: string | null = null) => {
+    setQuickHoldName('');
+    setQuickHoldMode(mode);
+    setQuickHoldTargetId(targetId);
+    setQuickHoldOpen(true);
+  }, []);
+
+  const holdCurrentSale = useCallback((typedName: string): string | null => {
+    if (cart.length === 0) return null;
+    const current = holdStorageRef.current;
+    const existing = current.activeId
+      ? current.sales.find((sale) => sale.id === current.activeId)
+      : undefined;
+    const now = Date.now();
+    const cleanName = typedName.trim();
+    let heldSale: HeldSale;
+    let nextSales: HeldSale[];
+    let nextSerial = current.nextSerial;
+    let progressTotal = current.progressTotal;
+
+    if (existing) {
+      heldSale = {
+        ...existing,
+        name: cleanName || existing.name,
+        items: cart,
+        isTaxEnabled: isCartTaxEnabled,
+      };
+      nextSales = current.sales.map((sale) => sale.id === existing.id ? heldSale : sale);
+    } else {
+      const time = new Date(now).toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      heldSale = {
+        id: 'hold-' + now + '-' + Math.random().toString(36).slice(2, 7),
+        name: cleanName || ('زبون #' + current.nextSerial + ' - الساعة ' + time),
+        createdAt: now,
+        items: cart,
+        isTaxEnabled: isCartTaxEnabled,
+      };
+      nextSales = [...current.sales, heldSale];
+      nextSerial = current.nextSerial + 1;
+      progressTotal = current.sales.length === 0 ? 1 : Math.max(current.progressTotal, current.sales.length) + 1;
+    }
+
+    if (holdCompletionTimerRef.current !== null) {
+      window.clearTimeout(holdCompletionTimerRef.current);
+      holdCompletionTimerRef.current = null;
+    }
+    setHeldSaleCompleted(false);
+    commitHoldStorage({
+      ...current,
+      sales: nextSales,
+      progressTotal,
+      nextSerial,
+      activeId: null,
+    });
+    clearCart();
+    return heldSale.id;
+  }, [cart, isCartTaxEnabled, clearCart, commitHoldStorage]);
+
+  const restoreHeldSale = useCallback((saleId: string) => {
+    const current = holdStorageRef.current;
+    const sale = current.sales.find((item) => item.id === saleId);
+    if (!sale) return;
+    if (holdCompletionTimerRef.current !== null) {
+      window.clearTimeout(holdCompletionTimerRef.current);
+      holdCompletionTimerRef.current = null;
+    }
+    setHeldSaleCompleted(false);
+    setIsCartTaxEnabled(sale.isTaxEnabled);
+    replaceCart(sale.items);
+    commitHoldStorage({ ...current, activeId: sale.id });
+    setHeldListOpen(false);
+  }, [replaceCart, setIsCartTaxEnabled, commitHoldStorage]);
+
+  const handleQuickHoldSave = useCallback(() => {
+    const targetId = quickHoldTargetId;
+    const savedId = holdCurrentSale(quickHoldName);
+    if (!savedId) {
+      showSnackbar('أضف أصنافًا إلى الفاتورة قبل تعليقها.');
+      setQuickHoldOpen(false);
+      return;
+    }
+    setQuickHoldOpen(false);
+    setQuickHoldName('');
+    setQuickHoldTargetId(null);
+    if (quickHoldMode === 'plus') {
+      setHeldListOpen(true);
+    } else if (quickHoldMode === 'switch' && targetId) {
+      restoreHeldSale(targetId);
+    } else {
+      setHeldListOpen(false);
+    }
+  }, [quickHoldTargetId, holdCurrentSale, quickHoldName, quickHoldMode, restoreHeldSale, showSnackbar]);
+
+  const handleSelectHeldSale = useCallback((saleId: string) => {
+    if (holdStorageRef.current.activeId === saleId) {
+      showSnackbar('هذه الفاتورة مفتوحة بالفعل في سلة البيع.');
+      setHeldListOpen(false);
+      return;
+    }
+    if (cart.length > 0) {
+      openQuickHold('switch', saleId);
+      return;
+    }
+    restoreHeldSale(saleId);
+  }, [cart.length, openQuickHold, restoreHeldSale, showSnackbar]);
+
+  const handleDeleteHeldSale = useCallback((saleId: string) => {
+    const current = holdStorageRef.current;
+    const nextSales = current.sales.filter((sale) => sale.id !== saleId);
+    if (nextSales.length === current.sales.length) return;
+    const wasActive = current.activeId === saleId;
+    commitHoldStorage({
+      ...current,
+      sales: nextSales,
+      progressTotal: nextSales.length === 0 ? 0 : Math.max(nextSales.length, current.progressTotal - 1),
+      activeId: wasActive ? null : current.activeId,
+    });
+    if (wasActive) clearCart();
+    if (nextSales.length === 0) setHeldListOpen(false);
+    showSnackbar('تم حذف الفاتورة المعلقة.');
+  }, [commitHoldStorage, clearCart, showSnackbar]);
+
+  const handleClearHeldSales = useCallback(() => {
+    const current = holdStorageRef.current;
+    if (current.sales.length === 0) return;
+    if (!window.confirm('هل تريد حذف جميع الفواتير المعلقة؟ لا يمكن التراجع عن هذه الخطوة.')) return;
+    commitHoldStorage({ ...current, sales: [], progressTotal: 0, activeId: null });
+    if (current.activeId) clearCart();
+    setHeldListOpen(false);
+    setHeldSaleCompleted(false);
+    showSnackbar('تم تفريغ الفواتير المعلقة.');
+  }, [commitHoldStorage, clearCart, showSnackbar]);
+
+  const handleHoldPlusClick = useCallback(() => {
+    if (heldListOpen) {
+      if (cart.length > 0) openQuickHold('new');
+      else setHeldListOpen(false);
+      return;
+    }
+    if (cart.length > 0) openQuickHold('plus');
+    else setHeldListOpen(false);
+  }, [heldListOpen, cart.length, openQuickHold]);
+
+  const handleClearAction = useCallback(() => {
+    if (heldListOpen) {
+      handleClearHeldSales();
+      return;
+    }
+    const activeId = holdStorageRef.current.activeId;
+    if (activeId) {
+      if (!window.confirm('هل تريد حذف الفاتورة المعلقة المفتوحة وتفريغ السلة؟')) return;
+      handleDeleteHeldSale(activeId);
+      return;
+    }
+    clearCart();
+    showSnackbar('تم تفريغ سلة البيع.');
+  }, [heldListOpen, handleClearHeldSales, handleDeleteHeldSale, clearCart, showSnackbar]);
+
+  const handleHoldMainClick = useCallback(() => {
+    if (heldSaleCompleted) return;
+    if (holdStorageRef.current.sales.length > 0) {
+      setHeldListOpen((open) => !open);
+      return;
+    }
+    if (cart.length > 0) openQuickHold('pause');
+  }, [heldSaleCompleted, cart.length, openQuickHold]);
 
   const handleSafeAdd = useCallback(
     (product: any) => {
@@ -264,6 +560,7 @@ export const CashierScreen: React.FC = () => {
 
   const handleConfirmPayment = () => {
     const cust = customers.find((c) => c.id === selectedCustomerId);
+    const activeHeldId = holdStorageRef.current.activeId;
     const invoice = checkoutInvoice({
       paymentMethod: selectedPayment,
       amountPaid: Number(paidAmount) || cartTotals.grandTotal,
@@ -272,6 +569,24 @@ export const CashierScreen: React.FC = () => {
       customerTaxNumber: cust?.taxNumber,
     });
     if (invoice) {
+      if (activeHeldId) {
+        const current = holdStorageRef.current;
+        const remainingSales = current.sales.filter((sale) => sale.id !== activeHeldId);
+        commitHoldStorage({ ...current, sales: remainingSales, activeId: null });
+        if (remainingSales.length === 0) {
+          setHeldSaleCompleted(true);
+          if (holdCompletionTimerRef.current !== null) window.clearTimeout(holdCompletionTimerRef.current);
+          holdCompletionTimerRef.current = window.setTimeout(() => {
+            setHeldSaleCompleted(false);
+            const latest = holdStorageRef.current;
+            if (latest.sales.length === 0) {
+              commitHoldStorage({ ...latest, progressTotal: 0, activeId: null });
+            }
+            holdCompletionTimerRef.current = null;
+          }, 1000);
+        }
+      }
+      setHeldListOpen(false);
       setCheckoutModalOpen(false);
       setLastInvoice(invoice);
       showSnackbar(`تم إصدار الفاتورة رقم (${invoice.invoiceNumber || ''}) بنجاح.`);
@@ -396,23 +711,139 @@ export const CashierScreen: React.FC = () => {
             <span className="text-[13px] font-bold text-[var(--md-sys-color-on-surface)]">سلة البيع</span>
             <MBadge label={String(cartTotals.unitsCount)} variant="large" color="primary" className="matjark-pos-cart-count-badge" />
           </div>
-          {cart.length > 0 && (
-            <MuiButton
-              variant="text"
-              color="secondary"
-              size="small"
-              startIcon={<Trash2 className="w-4 h-4" />}
-              onClick={() => {
-                clearCart();
-                showSnackbar('تم تفريغ سلة البيع.');
-              }}
-            >
-              تفريغ
-            </MuiButton>
-          )}
+          <div className="matjark-pos-cart-header-actions flex items-center gap-1.5">
+            {heldSaleCompleted ? (
+              <MuiIconButton
+                icon={<Check width={19} height={19} style={{ transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms', transform: 'scale(1.1)' }} />}
+                ariaLabel="اكتملت جميع الفواتير المعلقة"
+                variant="filled"
+                size="medium"
+                className="matjark-hold-button matjark-hold-button--complete"
+                disabled
+              />
+            ) : holdStorage.sales.length > 0 ? (
+              <div className="matjark-pos-hold-indicator">
+                <MProgress
+                  variant="circular"
+                  shape="wavy"
+                  thickness={2.5}
+                  size={48}
+                  value={holdStorage.progressTotal > 0
+                    ? Math.round((holdStorage.sales.length / holdStorage.progressTotal) * 100)
+                    : 100}
+                  ariaLabel="نسبة الفواتير المعلقة المتبقية"
+                  className="matjark-pos-hold-progress"
+                />
+                <MuiIconButton
+                  icon={<Play width={18} height={18} className="matjark-hold-icon" />}
+                  ariaLabel={heldListOpen ? "إغلاق قائمة الفواتير المعلقة" : "عرض الفواتير المعلقة"}
+                  variant="filled"
+                  size="medium"
+                  className="matjark-hold-button matjark-hold-button--play"
+                  onClick={handleHoldMainClick}
+                />
+                <MBadge
+                  label={String(holdStorage.sales.length)}
+                  variant="large"
+                  color="error"
+                  className="matjark-pos-hold-badge"
+                />
+              </div>
+            ) : (
+              <MuiIconButton
+                icon={<Pause width={18} height={18} className="matjark-hold-icon" />}
+                ariaLabel="تعليق الفاتورة الحالية"
+                variant="filled"
+                size="medium"
+                className="matjark-hold-button matjark-hold-button--pause"
+                disabled={cart.length === 0}
+                onClick={handleHoldMainClick}
+              />
+            )}
+            {holdStorage.sales.length > 0 && (
+              <MuiIconButton
+                icon={<Plus width={18} height={18} className="matjark-hold-icon" />}
+                ariaLabel={heldListOpen ? "إغلاق المعلقات وبدء فاتورة جديدة" : "تعليق الفاتورة الحالية وإضافتها للمعلقات"}
+                variant="filled"
+                size="medium"
+                className="matjark-hold-button matjark-hold-button--add"
+                onClick={handleHoldPlusClick}
+              />
+            )}
+            {((heldListOpen && holdStorage.sales.length > 0) || (!heldListOpen && cart.length > 0)) && (
+              <MuiButton
+                variant="text"
+                color="secondary"
+                size="small"
+                startIcon={<Trash2 className="w-4 h-4" />}
+                onClick={handleClearAction}
+              >
+                {heldListOpen ? 'تفريغ المعلقات' : 'تفريغ'}
+              </MuiButton>
+            )}
+          </div>
         </div>
 
-        {cart.length === 0 ? (
+        {heldListOpen ? (
+          <div className="matjark-pos-held-list flex-1 min-h-0 p-2.5 overflow-y-auto" dir="rtl">
+            {holdStorage.sales.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-[var(--md-sys-color-outline)]">
+                <Clock3 className="w-9 h-9 mb-2 opacity-50" />
+                <p className="text-xs font-medium">لا توجد فواتير معلقة</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {holdStorage.sales
+                  .slice()
+                  .sort((a, b) => a.createdAt - b.createdAt)
+                  .map((sale) => {
+                    const isActiveSale = holdStorage.activeId === sale.id;
+                    const unitsCount = sale.items.reduce((sum, item) => sum + item.quantity, 0);
+                    const amount = sale.items.reduce((sum, item) => {
+                      const netLine = Math.max(0, item.unitPrice * item.quantity - item.discount * item.quantity);
+                      const taxRate = sale.isTaxEnabled ? (item.taxRate || settings.defaultTaxRate || 0.14) : 0;
+                      return sum + netLine + netLine * taxRate;
+                    }, 0);
+                    return (
+                      <div key={sale.id} className="matjark-held-sale-card">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-sm font-bold text-[var(--md-sys-color-on-surface)] truncate">{sale.name}</span>
+                            {isActiveSale && <span className="matjark-held-sale-active">قيد العمل</span>}
+                          </div>
+                          <p className="text-[11px] text-[var(--md-sys-color-on-surface-variant)] mt-1">
+                            {new Date(sale.createdAt).toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' })}
+                          </p>
+                          <p className="text-[11px] text-[var(--md-sys-color-on-surface-variant)] mt-1">
+                            {sale.items.length} صنف · {unitsCount} قطعة · {formatCurrency(amount)}
+                          </p>
+                        </div>
+                        <div className="matjark-held-sale-actions">
+                          <MuiButton
+                            variant="outlined"
+                            color="primary"
+                            size="small"
+                            disabled={isActiveSale}
+                            onClick={() => handleSelectHeldSale(sale.id)}
+                          >
+                            {isActiveSale ? 'مفتوحة' : 'استرجاع'}
+                          </MuiButton>
+                          <MuiIconButton
+                            icon={<Trash2 width={16} height={16} />}
+                            ariaLabel={'حذف ' + sale.name}
+                            variant="tonal"
+                            size="small"
+                            className="matjark-held-sale-delete"
+                            onClick={() => handleDeleteHeldSale(sale.id)}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
+        ) : cart.length === 0 ? (
           <div className="flex flex-col items-center justify-center flex-1 min-h-0 text-[var(--md-sys-color-outline)]">
             <ShoppingCart className="w-9 h-9 mb-1.5 opacity-40" />
             <p className="text-xs font-medium">السلة فارغة، اضغط على أي صنف للإضافة</p>
@@ -425,7 +856,7 @@ export const CashierScreen: React.FC = () => {
           />
         )}
 
-        <div className="p-3 bg-[var(--md-sys-color-surface-container-low)] border-t border-[var(--md-sys-color-outline-variant)] space-y-2 shrink-0">
+        {!heldListOpen && <div className="p-3 bg-[var(--md-sys-color-surface-container-low)] border-t border-[var(--md-sys-color-outline-variant)] space-y-2 shrink-0">
           <div className="matjark-pos-tax-row flex items-center justify-between gap-2">
             <MuiSwitch
               checked={isCartTaxEnabled}
@@ -459,8 +890,42 @@ export const CashierScreen: React.FC = () => {
               إتمام الدفع
             </MuiButton>
           </div>
-        </div>
+        </div>}
       </div>
+
+      <MuiDialog
+        open={quickHoldOpen}
+        title="تعليق الفاتورة"
+        maxWidth="sm"
+        className="matjark-quick-hold-dialog"
+        onClose={() => setQuickHoldOpen(false)}
+        actions={(
+          <MuiButton variant="contained" color="primary" size="small" onClick={handleQuickHoldSave}>
+            حفظ سريع · Enter
+          </MuiButton>
+        )}
+      >
+        <div className="matjark-quick-hold-content">
+          <MuiTextField
+            ref={quickHoldInputRef}
+            type="text"
+            value={quickHoldName}
+            onChange={(event) => setQuickHoldName(event.target.value)}
+            onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                handleQuickHoldSave();
+              }
+            }}
+            placeholder="اسم الزبون أو ملاحظة (اختياري)"
+            fullWidth
+            className="matjark-quick-hold-input"
+          />
+          <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-2">
+            اضغط Enter للحفظ السريع، أو اترك الاسم فارغًا ليُنشئ النظام اسمًا تلقائيًا.
+          </p>
+        </div>
+      </MuiDialog>
 
       <MBottomSheet
         open={checkoutModalOpen}
