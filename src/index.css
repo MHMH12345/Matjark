@@ -1327,6 +1327,11 @@ html:not(.dark) #root {
   animation: matjark-hold-complete 1000ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
+.matjark-hold-button--complete:disabled {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
 .matjark-hold-button:disabled {
   opacity: 0.42 !important;
   filter: saturate(0.35);
