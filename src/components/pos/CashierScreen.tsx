@@ -341,7 +341,7 @@ export const CashierScreen: React.FC = () => {
     setQuickHoldOpen(false);
     setQuickHoldName('');
     setQuickHoldTargetId(null);
-    if (quickHoldMode === 'plus') {
+    if (quickHoldMode === 'plus' || quickHoldMode === 'new') {
       setHeldListOpen(true);
     } else if (quickHoldMode === 'switch' && targetId) {
       restoreHeldSale(targetId);
