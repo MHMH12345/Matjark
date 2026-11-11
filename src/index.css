@@ -1225,3 +1225,178 @@ html:not(.dark) #root {
   min-width: 0;
 }
 
+
+
+/* Smart Hold POS controls: native Material 3 badge, wavy progress and icon buttons. */
+.matjark-pos-cart-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.matjark-pos-hold-indicator {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+}
+
+.matjark-pos-hold-progress {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 48px !important;
+  height: 48px !important;
+  pointer-events: none !important;
+  --mtrl-sys-color-primary: #38bdf8;
+  --mtrl-sys-color-secondary-container: #1e293b;
+}
+
+.matjark-pos-hold-indicator .matjark-hold-button {
+  position: relative !important;
+  z-index: 1;
+}
+
+.matjark-pos-hold-badge {
+  position: absolute !important;
+  top: -1px !important;
+  inset-inline-end: -2px !important;
+  z-index: 3 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 16px !important;
+  min-width: 16px !important;
+  height: 16px !important;
+  min-height: 16px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+}
+
+.matjark-hold-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  --mtrl-button-shape: 999px;
+  --mtrl-button-shape-pressed: 999px;
+}
+
+.matjark-hold-button--pause {
+  --mtrl-sys-color-primary: #f59e0b;
+  --mtrl-sys-color-on-primary: #2a1b05;
+}
+
+.matjark-hold-button--play {
+  --mtrl-sys-color-primary: #38bdf8;
+  --mtrl-sys-color-on-primary: #082f49;
+}
+
+.matjark-hold-button--add {
+  --mtrl-sys-color-primary: #3b3f4a;
+  --mtrl-sys-color-on-primary: #f59e0b;
+}
+
+.matjark-hold-button--complete {
+  --mtrl-sys-color-primary: #10b981;
+  --mtrl-sys-color-on-primary: #ffffff;
+  animation: matjark-hold-complete 1000ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.matjark-hold-button:disabled {
+  opacity: 0.42 !important;
+  filter: saturate(0.35);
+}
+
+.matjark-hold-icon {
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms;
+}
+
+.matjark-held-sale-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  background: var(--md-sys-color-surface-container-low);
+  box-sizing: border-box;
+}
+
+.matjark-held-sale-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.matjark-held-sale-active {
+  flex: 0 0 auto;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #10b981 16%, transparent);
+  color: #10b981;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.matjark-held-sale-delete {
+  color: var(--md-sys-color-error) !important;
+}
+
+.matjark-quick-hold-content {
+  width: 100%;
+  min-width: 0;
+  padding-top: 6px;
+}
+
+.matjark-quick-hold-input {
+  display: block !important;
+  width: 100% !important;
+}
+
+@keyframes matjark-hold-complete {
+  0% { transform: scale(0.88); opacity: 0.55; }
+  45% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1.1); opacity: 1; }
+}
+
+@media (max-width: 420px) {
+  .matjark-pos-cart-header-actions {
+    gap: 3px;
+  }
+
+  .matjark-hold-button {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+  }
+
+  .matjark-held-sale-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .matjark-held-sale-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
