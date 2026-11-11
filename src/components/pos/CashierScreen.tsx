@@ -770,7 +770,7 @@ export const CashierScreen: React.FC = () => {
                 onClick={handleHoldPlusClick}
               />
             )}
-            {((heldListOpen && holdStorage.sales.length > 0) || (!heldListOpen && cart.length > 0)) && (
+            {((heldListOpen && holdStorage.sales.length > 0) || (!heldListOpen && (cart.length > 0 || Boolean(holdStorage.activeId)))) && (
               <MuiButton
                 variant="text"
                 color="secondary"
