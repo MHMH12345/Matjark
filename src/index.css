@@ -1,0 +1,1228 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --md-sys-color-background: #fef7ff;
+    --md-sys-color-surface: #f7f2fa;
+    --md-sys-color-surface-container: #f3edf7;
+    --md-sys-color-surface-container-low: #f7f2fa;
+    --md-sys-color-surface-container-high: #ece6f0;
+    --md-sys-color-on-surface: #1d1b20;
+    --md-sys-color-on-surface-variant: #49454f;
+    --md-sys-color-outline: #79747e;
+    --md-sys-color-outline-variant: #cac4d0;
+    --md-sys-color-primary: #6750a4;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #eaddff;
+    --md-sys-color-on-primary-container: #21005d;
+    --md-sys-color-secondary-container: #e8def8;
+    --md-sys-color-on-secondary-container: #1d192b;
+    --mtrl-sys-color-background: var(--md-sys-color-background);
+    --mtrl-sys-color-surface-container-low: var(--md-sys-color-surface-container-low);
+    --mtrl-sys-color-surface-container-high: var(--md-sys-color-surface-container-high);
+    --mtrl-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+    --mtrl-sys-color-secondary-container: var(--md-sys-color-secondary-container);
+    --mtrl-sys-color-on-secondary-container: var(--md-sys-color-on-secondary-container);
+    --mtrl-sys-color-error: #b3261e;
+    --mtrl-sys-color-on-error: #ffffff;
+    --mtrl-sys-color-error-container: #f9dedc;
+    --mtrl-sys-color-on-error-container: #410e0b;
+    --mtrl-sys-color-success: #1e8e3e;
+    --mtrl-sys-color-on-success: #ffffff;
+    --mtrl-sys-color-warning: #f9ab00;
+    --mtrl-sys-color-on-warning: #3f2e00;
+    --mtrl-sys-color-primary: var(--md-sys-color-primary);
+    --mtrl-sys-color-on-primary: var(--md-sys-color-on-primary);
+    --mtrl-sys-color-primary-container: var(--md-sys-color-primary-container);
+    --mtrl-sys-color-on-primary-container: var(--md-sys-color-on-primary-container);
+    --mtrl-sys-color-secondary: #625b71;
+    --mtrl-sys-color-on-secondary: #ffffff;
+    --mtrl-sys-color-surface: var(--md-sys-color-surface);
+    --mtrl-sys-color-on-surface: var(--md-sys-color-on-surface);
+    --mtrl-sys-color-surface-container: var(--md-sys-color-surface-container);
+    --mtrl-sys-color-outline: var(--md-sys-color-outline);
+    --mtrl-sys-color-outline-variant: var(--md-sys-color-outline-variant);
+    --mtrl-sys-shape-corner-full: 999px;
+  }
+
+  .dark {
+    --md-sys-color-background: #141218;
+    --md-sys-color-surface: #1d1b20;
+    --md-sys-color-surface-container: #211f26;
+    --md-sys-color-surface-container-low: #1d1b20;
+    --md-sys-color-surface-container-high: #2b2930;
+    --md-sys-color-on-surface: #e6e0e9;
+    --md-sys-color-on-surface-variant: #cac4d0;
+    --md-sys-color-outline: #938f99;
+    --md-sys-color-outline-variant: #36343b;
+    --md-sys-color-primary: #d0bcff;
+    --md-sys-color-on-primary: #381e72;
+    --md-sys-color-primary-container: #4f378b;
+    --md-sys-color-on-primary-container: #eaddff;
+    --md-sys-color-secondary-container: #4a4458;
+    --md-sys-color-on-secondary-container: #e8def8;
+    --mtrl-sys-color-background: var(--md-sys-color-background);
+    --mtrl-sys-color-surface-container-low: var(--md-sys-color-surface-container-low);
+    --mtrl-sys-color-surface-container-high: var(--md-sys-color-surface-container-high);
+    --mtrl-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+    --mtrl-sys-color-secondary-container: var(--md-sys-color-secondary-container);
+    --mtrl-sys-color-on-secondary-container: var(--md-sys-color-on-secondary-container);
+    --mtrl-sys-color-error: #f2b8b5;
+    --mtrl-sys-color-on-error: #601410;
+    --mtrl-sys-color-error-container: #8c1d18;
+    --mtrl-sys-color-on-error-container: #f9dedc;
+    --mtrl-sys-color-success: #81c995;
+    --mtrl-sys-color-on-success: #003917;
+    --mtrl-sys-color-warning: #fdd663;
+    --mtrl-sys-color-on-warning: #3f2e00;
+    --mtrl-sys-color-primary: var(--md-sys-color-primary);
+    --mtrl-sys-color-on-primary: var(--md-sys-color-on-primary);
+    --mtrl-sys-color-primary-container: var(--md-sys-color-primary-container);
+    --mtrl-sys-color-on-primary-container: var(--md-sys-color-on-primary-container);
+    --mtrl-sys-color-secondary: #ccc2dc;
+    --mtrl-sys-color-on-secondary: #332d41;
+    --mtrl-sys-color-surface: var(--md-sys-color-surface);
+    --mtrl-sys-color-on-surface: var(--md-sys-color-on-surface);
+    --mtrl-sys-color-surface-container: var(--md-sys-color-surface-container);
+    --mtrl-sys-color-outline: var(--md-sys-color-outline);
+    --mtrl-sys-color-outline-variant: var(--md-sys-color-outline-variant);
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-surface);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+[class*="mtrl-"],
+[class*="mtrl-"] * {
+  font-family: 'Cairo', sans-serif !important;
+}
+
+.mtrl-navigation-rail {
+  background-color: var(--md-sys-color-surface) !important;
+}
+
+.mtrl-navigation-rail[class*="expanded"] > div,
+.mtrl-navigation-rail--expanded > div {
+  gap: 14px !important;
+  transition: gap 0.25s ease !important;
+}
+
+.mtrl-navigation-rail svg.lucide {
+  fill: none !important;
+  stroke: currentColor !important;
+}
+
+.mtrl-textfield {
+  width: 100% !important;
+}
+
+.mtrl-textfield input {
+  color: var(--md-sys-color-on-surface) !important;
+  background: transparent !important;
+}
+
+.mtrl-textfield label,
+.mtrl-textfield [class*="label"] {
+  color: var(--md-sys-color-on-surface-variant) !important;
+  background-color: var(--md-sys-color-surface-container-low) !important;
+}
+
+.pos-category-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 14px !important;
+  border-radius: 9999px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  cursor: pointer !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  background-color: var(--md-sys-color-surface-container) !important;
+  color: var(--md-sys-color-on-surface-variant) !important;
+}
+
+.pos-category-chip.active {
+  background-color: var(--md-sys-color-secondary-container) !important;
+  color: var(--md-sys-color-on-secondary-container) !important;
+  border-color: var(--md-sys-color-primary) !important;
+}
+
+/* رفع نافذة Dialog الرسمية من mtrl فوق أي طبقة تغبيش والسماح بالنقر داخلها */
+dialog.mtrl-dialog,
+.mtrl-dialog {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  max-width: 440px !important;
+  width: calc(100% - 32px) !important;
+  border-radius: 28px !important;
+  background-color: var(--md-sys-color-surface-container) !important;
+  color: var(--md-sys-color-on-surface) !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85) !important;
+  padding: 20px !important;
+}
+
+dialog.mtrl-dialog::backdrop,
+.mtrl-dialog-backdrop,
+[class*="mtrl-dialog__backdrop"],
+[class*="mtrl-backdrop"] {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+.mtrl-dialog > div,
+.mtrl-dialog__container,
+.mtrl-dialog__content,
+.mtrl-dialog__body {
+  position: static !important;
+  transform: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  width: 100% !important;
+  padding: 0 !important;
+  pointer-events: auto !important;
+}
+
+.payment-methods-group {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+.payment-method-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  height: 40px !important;
+  border-radius: 9999px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  background-color: var(--md-sys-color-surface) !important;
+  color: var(--md-sys-color-on-surface-variant) !important;
+  cursor: pointer !important;
+}
+
+.payment-method-btn.active {
+  background-color: var(--md-sys-color-secondary-container) !important;
+  color: var(--md-sys-color-on-secondary-container) !important;
+  border-color: var(--md-sys-color-primary) !important;
+}
+
+.mtrl-list-item {
+  min-height: auto !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+.mtrl-list-item h4 {
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  font-weight: 700 !important;
+}
+
+/* زر حذف الصنف في السلة بنفس ستايل البرنامج */
+.cart-delete-btn {
+  background-color: var(--md-sys-color-surface-container-high) !important;
+  color: var(--md-sys-color-on-surface-variant) !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  border-radius: 9999px !important;
+  transition: all 0.15s ease !important;
+}
+
+.cart-delete-btn:hover {
+  background-color: var(--md-sys-color-secondary-container) !important;
+  color: var(--md-sys-color-on-secondary-container) !important;
+  border-color: var(--md-sys-color-primary) !important;
+}
+
+[class*="mtrl-button"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  border-radius: 9999px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+}
+
+[class*="mtrl-button"][class*="tonal"] {
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  background-color: var(--md-sys-color-secondary-container) !important;
+  color: var(--md-sys-color-on-secondary-container) !important;
+}
+
+[class*="mtrl-button"][class*="filled"]:not([class*="tonal"]) {
+  padding: 10px 18px !important;
+  font-size: 14px !important;
+  background-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+}
+
+[class*="mtrl-button"]:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+}
+
+/* شكل Snackbar الأصلي (Inverse Surface) مثل Material 3 تماماً */
+.pos-snackbar-box {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  min-width: 300px !important;
+  max-width: 92vw !important;
+  padding: 10px 14px 10px 18px !important;
+  border-radius: 8px !important;
+  background-color: #e6e0e9 !important;
+  color: #1d1b20 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45) !important;
+  animation: snackFadeIn 0.2s ease-out !important;
+}
+
+html:not(.dark) .pos-snackbar-box {
+  background-color: #322f35 !important;
+  color: #f5eff7 !important;
+}
+
+@keyframes snackFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+html:not(.dark) #root {
+  color: #1d1b20 !important;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--md-sys-color-outline-variant); border-radius: 9999px; }
+
+
+/* Matjark wrappers around the Material 3 React components. */
+.matjark-button {
+  --mtrl-button-shape: 999px;
+}
+.matjark-button--full {
+  display: flex !important;
+  width: 100% !important;
+}
+.matjark-icon-button {
+  --mtrl-button-shape: 999px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+.matjark-icon-button--primary {
+  color: var(--md-sys-color-primary);
+}
+.matjark-icon-button--danger {
+  color: #b3261e;
+}
+.dark .matjark-icon-button--danger {
+  color: #ffb4ab;
+}
+.matjark-sidebar-theme {
+  position: absolute !important;
+  bottom: 16px !important;
+  width: 44px !important;
+  height: 44px !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  background: var(--md-sys-color-surface-container) !important;
+  color: var(--md-sys-color-primary) !important;
+}
+.matjark-table-icon-button {
+  --mtrl-button-shape: 8px;
+}
+.matjark-chip-group {
+  --mtrl-chip-label-color: var(--md-sys-color-on-surface-variant);
+  --mtrl-chip-leading-color: var(--md-sys-color-on-surface-variant);
+  --mtrl-chip-checkmark-color: var(--md-sys-color-primary);
+  min-width: 0;
+}
+.matjark-filter-chips {
+  max-width: 100%;
+}
+.matjark-filter-chips--scrollable {
+  width: 100%;
+}
+.matjark-payment-chips {
+  width: 100%;
+}
+.matjark-customer-tabs {
+  min-width: 0;
+}
+.matjark-data-grid-search {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+.matjark-data-grid-search .mtrl-text-field {
+  width: 100%;
+}
+
+
+
+/* Sidebar layout: distribute destinations evenly through the available rail height. */
+.mtrl-navigation-rail__items {
+  flex: 1 0 auto !important;
+  min-height: 0 !important;
+  justify-content: space-evenly !important;
+  gap: 0 !important;
+}
+
+.mtrl-navigation-rail__header {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  align-items: flex-start !important;
+}
+
+.mtrl-navigation-rail:not(.mtrl-navigation-rail--expanded) .mtrl-navigation-rail__header {
+  padding-inline-start: 24px !important;
+  padding-inline-end: 24px !important;
+}
+
+.mtrl-navigation-rail--expanded .mtrl-navigation-rail__header {
+  padding-inline-start: 56px !important;
+  padding-inline-end: 0 !important;
+}
+
+.mtrl-navigation-rail__toggle {
+  flex: 0 0 48px !important;
+  inline-size: 48px !important;
+  block-size: 48px !important;
+  margin: 0 !important;
+  border-radius: 50% !important;
+}
+
+/* Correct Material TextField class names: keep outlined search fields visible. */
+.mtrl-text-field {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  --mtrl-text-field-outline-color: var(--md-sys-color-outline-variant);
+  --mtrl-text-field-outline-width: 1px;
+}
+
+.mtrl-text-field--outlined .mtrl-text-field__outline-leading,
+.mtrl-text-field--outlined .mtrl-text-field__outline-notch,
+.mtrl-text-field--outlined .mtrl-text-field__outline-trailing {
+  border-color: var(--md-sys-color-outline-variant) !important;
+}
+
+.mtrl-text-field--outlined.mtrl-text-field--focused {
+  --mtrl-text-field-outline-color: var(--md-sys-color-primary);
+  --mtrl-text-field-outline-width: 2px;
+}
+
+.mtrl-text-field__input {
+  color: var(--md-sys-color-on-surface) !important;
+  background: transparent !important;
+}
+
+.mtrl-text-field__label {
+  color: var(--md-sys-color-on-surface-variant) !important;
+  background-color: var(--md-sys-color-surface-container-low) !important;
+}
+
+/* Keep the theme control circular at the host and Material button levels. */
+.matjark-sidebar-theme {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+}
+
+/* Compact Material actions placed over existing Matjark surfaces. */
+.matjark-data-grid-clear {
+  position: absolute !important;
+  inset-inline-end: 6px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: var(--md-sys-color-on-surface-variant) !important;
+  z-index: 2;
+}
+.matjark-data-grid-clear:hover {
+  color: var(--md-sys-color-primary) !important;
+}
+.matjark-simple-close {
+  min-width: 32px;
+  min-height: 32px;
+}
+.matjark-cashier-payment-field {
+  display: block;
+  width: 100%;
+  --mtrl-sys-color-primary: var(--md-sys-color-primary);
+  --mtrl-sys-color-on-surface: var(--md-sys-color-on-surface);
+  --mtrl-sys-color-outline: var(--md-sys-color-outline-variant);
+}
+.matjark-inventory-category-field {
+  display: block;
+  width: 100%;
+}
+.matjark-filter-chips {
+  --mtrl-sys-color-primary: var(--md-sys-color-primary);
+  --mtrl-sys-color-on-surface: var(--md-sys-color-on-surface);
+  --mtrl-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --mtrl-sys-color-outline: var(--md-sys-color-outline-variant);
+  --mtrl-sys-color-secondary-container: var(--md-sys-color-secondary-container);
+  --mtrl-sys-color-on-secondary-container: var(--md-sys-color-on-secondary-container);
+}
+.matjark-filter-chips--scrollable {
+  display: block;
+  max-width: 100%;
+}
+
+
+/* Matjark POS: Material 3 field, switch, product card, cart list and action-group layout. */
+.matjark-pos-field-grid {
+  direction: rtl;
+  align-items: stretch;
+}
+
+.matjark-pos-search-field,
+.matjark-pos-barcode-field,
+.matjark-cashier-customer-select {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  --mtrl-sys-color-primary: var(--md-sys-color-primary);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-primary);
+  --mtrl-sys-color-outline: var(--md-sys-color-outline-variant);
+  --mtrl-sys-color-on-surface: var(--md-sys-color-on-surface);
+  --mtrl-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --mtrl-sys-color-surface: var(--md-sys-color-surface-container-low);
+}
+
+.matjark-pos-tax-row {
+  min-height: 48px;
+  align-items: center !important;
+}
+
+.matjark-pos-tax-switch {
+  display: inline-flex !important;
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  align-self: center !important;
+  vertical-align: middle !important;
+  --mtrl-sys-color-primary: var(--md-sys-color-primary);
+  --mtrl-sys-color-on-surface: var(--md-sys-color-on-surface);
+  --mtrl-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+}
+
+.matjark-pos-product-tile {
+  position: relative;
+  width: 100%;
+  padding-bottom: 44px;
+  min-width: 0;
+}
+
+.matjark-pos-product-card {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  --mtrl-sys-color-surface: var(--md-sys-color-surface);
+  --mtrl-sys-color-on-surface: var(--md-sys-color-on-surface);
+  --mtrl-sys-color-outline-variant: var(--md-sys-color-outline-variant);
+}
+
+.matjark-pos-product-media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 128px;
+  padding: 0;
+  box-sizing: border-box;
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.matjark-pos-product-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.matjark-pos-product-stock-badge {
+  position: absolute !important;
+  top: 7px !important;
+  inset-inline-start: 7px !important;
+  z-index: 2;
+}
+
+.matjark-pos-product-name {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  width: auto;
+  margin: 0;
+  box-sizing: border-box;
+  min-height: 2.25rem;
+  max-height: 2.25rem;
+  color: var(--md-sys-color-on-surface);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  direction: rtl;
+  text-align: center !important;
+  display: grid;
+  place-items: start center;
+  overflow: hidden;
+}
+
+.matjark-pos-product-name-text {
+  display: block;
+  width: 100%;
+  text-align: center !important;
+}
+
+.matjark-pos-cart-count-badge {
+  flex: 0 0 auto;
+}
+
+.matjark-pos-cart-list-host,
+.matjark-pos-cart-list {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.matjark-pos-cart-list .mtrl-list__item {
+  min-width: 0;
+  min-height: 64px;
+  gap: 10px;
+}
+
+.matjark-pos-cart-list .mtrl-list__supporting {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.matjark-pos-cart-list .mtrl-list__trailing--custom {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  max-width: none;
+}
+
+.matjark-pos-payment-methods {
+  width: 100%;
+  min-width: 0;
+}
+
+.matjark-cashier-payment-group {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  --mtrl-sys-color-primary: var(--md-sys-color-primary);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-primary);
+  --mtrl-sys-color-outline: var(--md-sys-color-outline-variant);
+}
+
+.matjark-pos-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.matjark-pos-snackbar {
+  --mtrl-sys-color-inverse-surface: var(--md-sys-color-inverse-surface, #322f35);
+  --mtrl-sys-color-inverse-on-surface: var(--md-sys-color-inverse-on-surface, #f5eff7);
+}
+
+
+/* Matjark POS layout refinements: keep panels stable while browser zoom changes. */
+.matjark-pos-root,
+.matjark-pos-products-panel,
+.matjark-pos-cart-panel {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  box-sizing: border-box;
+}
+
+.matjark-pos-root {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+}
+
+.matjark-pos-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 164px), 1fr));
+  align-items: stretch;
+  min-width: 0;
+}
+
+.matjark-pos-products-panel {
+  flex: 1 1 0%;
+}
+
+.matjark-pos-cart-panel {
+  flex: 0 1 390px;
+  min-width: 280px;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .matjark-pos-cart-panel {
+    flex-basis: 300px;
+    width: 300px !important;
+    min-width: 280px;
+  }
+
+  .matjark-pos-product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 132px), 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .matjark-pos-root {
+    flex-direction: column;
+  }
+
+  .matjark-pos-products-panel {
+    flex: 1 1 56%;
+    min-height: 230px !important;
+  }
+
+  .matjark-pos-cart-panel {
+    flex: 0 0 42%;
+    width: 100% !important;
+    min-width: 0;
+    min-height: 230px !important;
+  }
+
+  .matjark-pos-product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 136px), 1fr));
+  }
+}
+
+/* Category chips: hide the horizontal scrollbar but keep mouse-wheel and touch scrolling. */
+.matjark-filter-chips-viewport {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.matjark-filter-chips--scrollable,
+.matjark-filter-chips--scrollable * {
+  scrollbar-width: none !important;
+}
+
+.matjark-filter-chips--scrollable::-webkit-scrollbar,
+.matjark-filter-chips--scrollable *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Full-width Material modal Bottom Sheet used only for payment. */
+.matjark-pos-payment-sheet {
+  --mtrl-sys-color-surface-container-low: var(--md-sys-color-surface-container);
+}
+
+.matjark-pos-payment-sheet .mtrl-bottom-sheet__container {
+  inset-inline: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  max-height: min(90dvh, 760px) !important;
+  margin: 0 !important;
+  border-radius: 28px 28px 0 0 !important;
+  box-sizing: border-box !important;
+}
+
+.matjark-pos-payment-sheet .mtrl-bottom-sheet__title {
+  width: 100%;
+  text-align: center !important;
+  justify-content: center !important;
+}
+
+.matjark-pos-payment-sheet .mtrl-bottom-sheet__content {
+  max-height: calc(90dvh - 92px) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  padding-inline: clamp(16px, 3vw, 36px) !important;
+}
+
+.matjark-pos-payment-actions {
+  justify-content: center !important;
+  padding: 14px 4px 6px;
+}
+
+.matjark-cashier-payment-group {
+  gap: 0 !important;
+  overflow: hidden;
+  border-radius: 999px !important;
+}
+
+.matjark-cashier-payment-group > * {
+  min-width: 0;
+}
+
+/* Invoice preview keeps its Dialog; only the Card content scrolls when the receipt is long. */
+.matjark-pos-invoice-card {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  border-radius: 18px !important;
+  background: var(--md-sys-color-surface-container-low) !important;
+  box-sizing: border-box !important;
+}
+
+.matjark-pos-invoice-scroll {
+  width: 100%;
+  max-height: calc(100dvh - 250px);
+  min-height: 0;
+  padding: 12px;
+  overflow-x: auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+}
+
+.matjark-pos-invoice-scroll > * {
+  width: max-content;
+  min-width: 100%;
+  align-items: center;
+}
+
+.matjark-pos-invoice-scroll #thermal-receipt-print-area {
+  flex: 0 0 auto;
+  width: 320px;
+  max-width: none;
+}
+
+/* Sidebar controls share the same center line as the rail items and stay in normal flow. */
+.matjark-sidebar {
+  width: 88px;
+  min-width: 88px;
+}
+
+.matjark-sidebar-rail-host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+}
+
+.matjark-sidebar-rail-host > .mtrl-navigation-rail {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.matjark-sidebar-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 0 14px;
+  box-sizing: border-box;
+}
+
+.matjark-sidebar-action {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: var(--md-sys-color-on-surface-variant) !important;
+}
+
+.matjark-sidebar-action:hover {
+  background: var(--md-sys-color-secondary-container) !important;
+  color: var(--md-sys-color-on-secondary-container) !important;
+}
+
+.matjark-sidebar-profile-menu {
+  z-index: 100000 !important;
+}
+
+/* Receipt-only print output: all application controls and dialog actions stay on screen only. */
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+
+  html,
+  body,
+  #root {
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  #thermal-receipt-print-area,
+  #thermal-receipt-print-area * {
+    visibility: visible !important;
+  }
+
+  #thermal-receipt-print-area {
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    display: block !important;
+    width: 72mm !important;
+    max-width: 72mm !important;
+    margin: 0 !important;
+    padding: 3mm !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    overflow: visible !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+
+/* Final Material 3 alignment and responsive fixes requested for Matjark POS. */
+
+/* Keep all Navigation Rail destinations, including profile and theme, evenly distributed. */
+.mtrl-navigation-rail__items {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  justify-content: space-evenly !important;
+}
+
+/* Preserve the native Material segmented List surface and only adapt it to the POS layout. */
+.matjark-pos-cart-list {
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 4px !important;
+  background: var(--md-sys-color-surface-container-low) !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  --mtrl-sys-color-surface: var(--md-sys-color-surface-container-low);
+  --mtrl-sys-color-surface-container: var(--md-sys-color-surface-container);
+  --mtrl-sys-color-on-surface: var(--md-sys-color-on-surface);
+  --mtrl-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --mtrl-list-segmented-gap: 4px;
+}
+
+.matjark-pos-cart-list .mtrl-list__item {
+  min-width: 0 !important;
+  min-height: 64px !important;
+  margin: 0 !important;
+  padding: 10px 12px !important;
+  gap: 12px !important;
+  box-sizing: border-box !important;
+}
+
+.matjark-pos-cart-list .mtrl-list__text {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  text-align: right !important;
+}
+
+.matjark-pos-cart-list .mtrl-list__trailing--custom {
+  flex: 0 0 auto !important;
+  max-width: none !important;
+  margin-inline-start: 0 !important;
+}
+
+.matjark-pos-cart-controls {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.matjark-pos-quantity-controls {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.matjark-pos-cart-action {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 999px !important;
+  --mtrl-button-shape: 999px;
+  --mtrl-button-shape-pressed: 999px;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+}
+
+.matjark-pos-cart-minus {
+  background: var(--md-sys-color-surface-container-high) !important;
+  border-color: var(--md-sys-color-outline-variant) !important;
+  color: var(--md-sys-color-on-surface-variant) !important;
+}
+
+.matjark-pos-cart-plus {
+  background: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
+  border-color: transparent !important;
+}
+
+.matjark-pos-cart-delete {
+  background: color-mix(in srgb, var(--mtrl-sys-color-error) 14%, var(--md-sys-color-surface-container)) !important;
+  color: var(--mtrl-sys-color-error) !important;
+}
+
+/* The Bottom Sheet lives in the Material shadow tree: style its exposed parts. */
+.matjark-pos-payment-sheet::part(container) {
+  inset-inline: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  max-height: min(90dvh, 760px) !important;
+  margin: 0 !important;
+  border-radius: 28px 28px 0 0 !important;
+  box-sizing: border-box !important;
+}
+
+.matjark-pos-payment-sheet::part(title) {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+}
+
+.matjark-pos-payment-sheet::part(content) {
+  max-height: calc(90dvh - 92px) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  padding-inline: clamp(16px, 3vw, 36px) !important;
+}
+
+/* Connected payment buttons: square inner edges, rounded outside ends. */
+.matjark-cashier-payment-group::part(button-group) {
+  --mtrl-button-group-inner-corner: 0px !important;
+}
+
+.matjark-cashier-payment-group::part(button) {
+  direction: rtl !important;
+}
+
+/* Hide the chips' real internal scrollbar while leaving the inner scroller active. */
+.matjark-filter-chips--scrollable::part(container) {
+  max-width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.matjark-filter-chips--scrollable::part(container)::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Invoice stays in Dialog + Card. Scroll only the receipt viewport, never sideways. */
+.matjark-pos-invoice-scroll {
+  width: 100% !important;
+  max-width: 100% !important;
+  max-height: min(70dvh, 720px) !important;
+  min-height: 0 !important;
+  padding: 12px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  box-sizing: border-box !important;
+}
+
+.matjark-pos-invoice-scroll > * {
+  width: 100% !important;
+  min-width: 0 !important;
+  align-items: center;
+}
+
+.matjark-pos-invoice-scroll #thermal-receipt-print-area {
+  flex: 0 0 auto !important;
+  width: 320px !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Style the internal Material Card surface used by the invoice preview. */
+.matjark-pos-invoice-card::part(card) {
+  width: 100% !important;
+  max-width: 100% !important;
+  border-radius: 18px !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  background: var(--md-sys-color-surface-container-low) !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+.matjark-pos-invoice-card::part(content) {
+  min-width: 0 !important;
+  padding: 0 !important;
+}
+
+/* Keep the payment sheet headline centered in its own Material header part. */
+.matjark-pos-payment-sheet::part(header) {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/*/* Keep the POS panels inside the available viewport at browser zoom levels. */
+.matjark-pos-root {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.matjark-pos-products-panel,
+.matjark-pos-cart-panel {
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+@media (max-width: 767px) {
+  .matjark-pos-root {
+    height: 100% !important;
+    min-height: 0 !important;
+    flex-direction: column !important;
+  }
+
+  .matjark-pos-products-panel {
+    flex: 1 1 56% !important;
+    min-height: 0 !important;
+  }
+
+  .matjark-pos-cart-panel {
+    flex: 1 1 44% !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .matjark-pos-cart-list-host {
+    min-height: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+
+@media (max-height: 560px) and (max-width: 767px) {
+  .matjark-pos-cart-panel {
+    flex-basis: 48% !important;
+  }
+
+  .matjark-pos-products-panel {
+    flex-basis: 52% !important;
+  }
+}
+
+/* Print only the receipt: hide the Material Dialog frame and its controls too. */
+@media print {
+  .matjark-invoice-dialog::part(header),
+  .matjark-invoice-dialog::part(footer),
+  .matjark-invoice-dialog::part(divider) {
+    display: none !important;
+  }
+
+  .matjark-invoice-dialog::part(dialog) {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  .matjark-invoice-dialog::part(content) {
+    max-height: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .matjark-pos-invoice-card,
+  .matjark-pos-invoice-scroll {
+    max-height: none !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+}
+
+
+/* Center the checkout button horizontally inside the cart footer. */
+.matjark-pos-checkout-action {
+  display: grid !important;
+  justify-items: center !important;
+  width: 100% !important;
+  min-width: 0;
+}
+

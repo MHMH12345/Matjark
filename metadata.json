@@ -1,0 +1,6 @@
+{
+  "name": "متجرك Matjark - نظام إدارة المبيعات والمخزون الفائق السرعة",
+  "description": "منظومة كاشير، مبيعات، مخزون، فواتير ضريبية ومحاسبة مصممة بأعلى معايير السرعة والأداء مع React 19 ودعم كامل لـ RTL والوضع الليلي.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
