@@ -544,9 +544,10 @@ html:not(.dark) #root {
 }
 
 .matjark-pos-product-tile {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   width: 100%;
-  padding-bottom: 44px;
   min-width: 0;
 }
 
@@ -566,7 +567,7 @@ html:not(.dark) #root {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 128px;
+  height: 140px;
   padding: 0;
   box-sizing: border-box;
   background: var(--md-sys-color-surface-container-low);
@@ -589,10 +590,8 @@ html:not(.dark) #root {
 }
 
 .matjark-pos-product-name {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  width: auto;
+  position: static;
+  width: 100%;
   margin: 0;
   box-sizing: border-box;
   min-height: 2.25rem;
@@ -604,7 +603,7 @@ html:not(.dark) #root {
   direction: rtl;
   text-align: center !important;
   display: grid;
-  place-items: start center;
+  place-items: center;
   overflow: hidden;
 }
 
@@ -690,7 +689,7 @@ html:not(.dark) #root {
 
 .matjark-pos-product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 164px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 176px), 1fr));
   align-items: stretch;
   min-width: 0;
 }
@@ -712,7 +711,7 @@ html:not(.dark) #root {
   }
 
   .matjark-pos-product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 132px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 144px), 1fr));
   }
 }
 
@@ -734,7 +733,7 @@ html:not(.dark) #root {
   }
 
   .matjark-pos-product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 136px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 148px), 1fr));
   }
 }
 
