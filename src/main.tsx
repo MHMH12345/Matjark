@@ -12,8 +12,6 @@ import 'material/styles/divider';
 import 'material/styles/dialog';
 import 'material/styles/bottom-sheet';
 import 'material/styles/navigation-rail';
-import 'material/styles/badge';
-import 'material/styles/progress';
 import App from './App.tsx';
 import './index.css';
 
