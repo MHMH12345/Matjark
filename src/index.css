@@ -1365,10 +1365,6 @@ html:not(.dark) #root {
   font-weight: 800;
 }
 
-.matjark-held-sale-delete {
-  color: var(--md-sys-color-error) !important;
-}
-
 .matjark-quick-hold-content {
   width: 100%;
   min-width: 0;
