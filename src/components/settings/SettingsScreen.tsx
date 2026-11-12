@@ -198,22 +198,12 @@ export const SettingsScreen: React.FC = () => {
                   }
                   helperText="القيمة الافتراضية 0.14 تعادل 14% ضريبة القيمة المضافة المصرية"
                 />
-                <div>
-                  <label className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] block mb-1">
-                    طريقة احتساب الضريبة في سعر البيع
-                  </label>
-                  <MuiSelect
-                    value={formState.pricesIncludeTax ? 'inclusive' : 'exclusive'}
-                    onChange={(e) =>
-                      setFormState({ ...formState, pricesIncludeTax: e.target.value === 'inclusive' })
-                    }
-                    className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg p-2.5 text-xs text-[var(--md-sys-color-on-surface)] dark:text-[var(--md-sys-color-on-surface)] outline-none"
-                  >
-                    <option value="exclusive">السعر قبل الضريبة — تُضاف الضريبة فوق السعر</option>
-                    <option value="inclusive">السعر شامل الضريبة — تُستخرج الضريبة من السعر</option>
-                  </MuiSelect>
+                <div className="rounded-lg bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)] p-3">
+                  <p className="text-xs font-semibold text-[var(--md-sys-color-on-surface)]">
+                    سعر البيع المسجل شامل ضريبة القيمة المضافة دائمًا.
+                  </p>
                   <p className="text-[11px] text-[var(--md-sys-color-on-surface-variant)] mt-1">
-                    الوضع الافتراضي: سعر الرف شامل الضريبة؛ يستخرج البرنامج قيمة الضريبة محاسبيًا دون إضافتها على إجمالي الكاشير، ولا يغيّر سعر الصنف المسجل.
+                    يستخرج البرنامج قيمة الضريبة محاسبيًا من السعر المعلن، ولا يضيف أي مبلغ فوقه عند الكاشير.
                   </p>
                 </div>
               </div>
