@@ -1227,16 +1227,17 @@ html:not(.dark) #root {
 
 
 
-/* Smart Hold POS controls: native Material 3 badge, wavy progress and FAB menu. */
+/* Smart Hold POS controls: Material IconButtons with an anchored wheel-style add action. */
 
 .matjark-pos-cart-header-actions {
   display: flex;
   align-items: center;
   gap: 6px;
   min-width: 0;
+  direction: rtl;
 }
 
-/* A 52px progress ring surrounds the unchanged 40px Material IconButton. */
+/* Fixed main-button position; the add action travels out from behind it to the left. */
 .matjark-pos-hold-indicator {
   position: relative;
   display: inline-flex;
@@ -1245,6 +1246,7 @@ html:not(.dark) #root {
   width: 52px;
   height: 52px;
   flex: 0 0 52px;
+  overflow: visible;
 }
 
 .matjark-pos-hold-progress {
@@ -1263,9 +1265,9 @@ html:not(.dark) #root {
   --mtrl-sys-color-secondary-container: color-mix(in srgb, #10b981 20%, transparent);
 }
 
-.matjark-pos-hold-indicator .matjark-hold-button {
+.matjark-pos-hold-indicator > .matjark-hold-button {
   position: relative !important;
-  z-index: 1;
+  z-index: 2 !important;
 }
 
 .matjark-pos-hold-badge {
@@ -1291,7 +1293,7 @@ html:not(.dark) #root {
   box-sizing: border-box !important;
 }
 
-/* Keep the native Material IconButton geometry and change only its colours. */
+/* Keep the main control's native Material IconButton design and geometry. */
 .matjark-hold-button {
   display: inline-flex !important;
   align-items: center !important;
@@ -1352,46 +1354,86 @@ html:not(.dark) #root {
   color: #ffffff !important;
 }
 
-.matjark-hold-button:disabled {
-  opacity: 0.42 !important;
-  filter: saturate(0.35);
-}
-
-.matjark-hold-button--complete:disabled {
-  opacity: 1 !important;
-  filter: none !important;
-}
-
 .matjark-hold-icon {
   transition: opacity 200ms;
 }
 
-/* The Material FAB menu stays beside the main hold button; its FAB trigger is
-   reduced to 36px and coloured green without replacing the library behaviour. */
-.matjark-pos-hold-add-menu {
-  display: inline-block !important;
-  flex: 0 0 36px !important;
-  width: 36px !important;
-  height: 36px !important;
-  min-width: 36px !important;
-  min-height: 36px !important;
-  vertical-align: middle !important;
+/* The plus is the same Material IconButton, only one size smaller and green. */
+.matjark-pos-hold-add {
+  position: absolute;
+  left: -42px;
+  top: 50%;
+  z-index: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(52px, -50%) rotate(0deg);
+  transform-origin: center;
 }
 
-.matjark-pos-hold-add-menu::part(fab-menu) {
-  width: 36px !important;
-  height: 36px !important;
+.matjark-pos-hold-add--visible {
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  animation: matjark-hold-add-enter 650ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
 }
 
-.matjark-pos-hold-add-menu::part(fab) {
-  width: 36px !important;
-  height: 36px !important;
-  min-width: 36px !important;
-  min-height: 36px !important;
-  border-radius: 50% !important;
+.matjark-pos-hold-add--returning {
+  z-index: 0;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: none;
+  animation: matjark-hold-add-return 650ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
+}
+
+.matjark-hold-add-button {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  --mtrl-sys-color-primary: #10b981;
+  --mtrl-sys-color-on-primary: #ffffff;
+}
+
+.matjark-hold-add-button::part(icon-button) {
   background-color: #10b981 !important;
   color: #ffffff !important;
-  box-shadow: none !important;
+}
+
+@keyframes matjark-hold-add-enter {
+  0% {
+    opacity: 0;
+    transform: translate(52px, -50%) rotate(0deg);
+  }
+  72% {
+    opacity: 1;
+    transform: translate(-2px, -50%) rotate(330deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, -50%) rotate(360deg);
+  }
+}
+
+@keyframes matjark-hold-add-return {
+  0% {
+    opacity: 1;
+    transform: translate(0, -50%) rotate(360deg);
+  }
+  72% {
+    opacity: 0.85;
+    transform: translate(54px, -50%) rotate(30deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(52px, -50%) rotate(0deg);
+  }
 }
 
 .matjark-held-sale-card {
@@ -1474,29 +1516,42 @@ html:not(.dark) #root {
     height: 48px !important;
   }
 
-  .matjark-pos-hold-add-menu {
-    flex-basis: 32px !important;
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
+  .matjark-pos-hold-add {
+    left: -38px;
+    transform: translate(46px, -50%) rotate(0deg);
   }
 
-  .matjark-pos-hold-add-menu::part(fab-menu),
-  .matjark-pos-hold-add-menu::part(fab) {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
+  .matjark-pos-hold-add--visible {
+    animation-name: matjark-hold-add-enter-small;
   }
 
-  .matjark-held-sale-card {
-    align-items: flex-start;
-    flex-direction: column;
+  .matjark-pos-hold-add--returning {
+    animation-name: matjark-hold-add-return-small;
   }
 
-  .matjark-held-sale-actions {
-    width: 100%;
-    justify-content: flex-end;
+  .matjark-hold-add-button {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+  }
+}
+
+@keyframes matjark-hold-add-enter-small {
+  0% { opacity: 0; transform: translate(46px, -50%) rotate(0deg); }
+  72% { opacity: 1; transform: translate(-2px, -50%) rotate(330deg); }
+  100% { opacity: 1; transform: translate(0, -50%) rotate(360deg); }
+}
+
+@keyframes matjark-hold-add-return-small {
+  0% { opacity: 1; transform: translate(0, -50%) rotate(360deg); }
+  72% { opacity: 0.85; transform: translate(48px, -50%) rotate(30deg); }
+  100% { opacity: 0; transform: translate(46px, -50%) rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .matjark-pos-hold-add--visible,
+  .matjark-pos-hold-add--returning {
+    animation-duration: 1ms !important;
   }
 }
