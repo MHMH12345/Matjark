@@ -214,7 +214,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         discountPerItem: item.discount,
         taxRate: item.taxRate ?? db.settings.defaultTaxRate ?? 0.14,
         isTaxEnabled: isCartTaxEnabled,
-        pricesIncludeTax: db.settings.pricesIncludeTax ?? false,
+        pricesIncludeTax: db.settings.pricesIncludeTax ?? true,
       });
       subtotal += line.subtotal;
       discountTotal += line.discountTotal;
@@ -231,7 +231,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       itemsCount: cart.length,
       unitsCount,
     };
-  }, [cart, isCartTaxEnabled, db.settings.defaultTaxRate]);
+  }, [cart, isCartTaxEnabled, db.settings.defaultTaxRate, db.settings.pricesIncludeTax]);
 
   const addToCart = useCallback(
     (product: Product, quantity = 1) => {
@@ -405,7 +405,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           discountPerItem: cartItem.discount,
           taxRate: effectiveRate,
           isTaxEnabled: isCartTaxEnabled,
-          pricesIncludeTax: db.settings.pricesIncludeTax ?? false,
+          pricesIncludeTax: db.settings.pricesIncludeTax ?? true,
         });
 
         return {
@@ -449,7 +449,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         cashierName: 'الكاشير الرئيسي',
         status: 'completed',
         isTaxEnabled: isCartTaxEnabled,
-        pricesIncludeTax: db.settings.pricesIncludeTax ?? false,
+        pricesIncludeTax: db.settings.pricesIncludeTax ?? true,
         zatcaQrString: zatcaBase64,
         notes: params.notes,
       };
