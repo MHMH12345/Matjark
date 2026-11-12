@@ -121,6 +121,21 @@ const getNextDocumentSequence = (
   return Math.max(stored, highestExisting + 1);
 };
 const GOOGLE_DRIVE_STORAGE_KEY = 'matjark_google_drive_cloud_snapshot';
+
+const normalizeRestoredDatabase = (source: AppDatabase): AppDatabase => {
+  const hasSavedPriceMode = typeof source.settings?.pricesIncludeTax === 'boolean';
+  return {
+    ...source,
+    settings: {
+      ...INITIAL_SETTINGS,
+      ...(source.settings || {}),
+      enableTax: hasSavedPriceMode
+        ? (source.settings.enableTax ?? INITIAL_SETTINGS.enableTax)
+        : true,
+      pricesIncludeTax: true,
+    },
+  };
+};
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [db, setDb] = useState<AppDatabase>(() => loadDatabase());
   const [activeTab, setActiveTab] = useState<ActiveTab>('pos');
@@ -644,7 +659,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const updateSettings = useCallback(
     (updates: Partial<StoreSettings>) => {
       setDb((prev) => {
-        const next = { ...prev, settings: { ...prev.settings, ...updates } };
+        const next = { ...prev, settings: { ...prev.settings, ...updates, pricesIncludeTax: true } };
         saveDatabaseImmediate(next);
         if (updates.enableTax !== undefined) setIsCartTaxEnabled(updates.enableTax);
         return next;
@@ -686,10 +701,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const restoreFromDatabase = useCallback(
     (importedDb: AppDatabase) => {
-      setDb(importedDb);
-      saveDatabaseImmediate(importedDb);
+      const restoredDb = normalizeRestoredDatabase(importedDb);
+      setDb(restoredDb);
+      saveDatabaseImmediate(restoredDb);
       setCart([]);
-      setIsCartTaxEnabled(importedDb.settings?.enableTax ?? false);
+      setIsCartTaxEnabled(restoredDb.settings.enableTax);
       showToast('تم استعادة النسخة الاحتياطية بنجاح!', 'success');
     },
     [showToast]
@@ -731,9 +747,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         showToast('بيانات Google Drive غير صالحة', 'error');
         return false;
       }
-      setDb(parsed);
-      saveDatabaseImmediate(parsed);
+      const restoredDb = normalizeRestoredDatabase(parsed as AppDatabase);
+      setDb(restoredDb);
+      saveDatabaseImmediate(restoredDb);
       setCart([]);
+      setIsCartTaxEnabled(restoredDb.settings.enableTax);
       showToast('تمت الاستعادة من Google Drive بنجاح!', 'success');
       return true;
     } catch (e) {
