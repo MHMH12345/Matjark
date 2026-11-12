@@ -8,8 +8,6 @@ import {
   Card as MaterialCard,
   Snackbar as MaterialSnackbar,
   Progress as MaterialProgress,
-  FabMenu as MaterialFabMenu,
-  FabMenuItem as MaterialFabMenuItem,
 } from 'material/react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import {
@@ -53,8 +51,6 @@ const MButtonGroup = MaterialButtonGroup as React.ComponentType<any>;
 const MButtonGroupItem = MaterialButtonGroupItem as React.ComponentType<any>;
 const MSnackbar = MaterialSnackbar as React.ComponentType<any>;
 const MProgress = MaterialProgress as React.ComponentType<any>;
-const MFabMenu = MaterialFabMenu as React.ComponentType<any>;
-const MFabMenuItem = MaterialFabMenuItem as React.ComponentType<any>;
 
 type HeldSale = {
   id: string;
@@ -181,6 +177,7 @@ export const CashierScreen: React.FC = () => {
   const [quickHoldMode, setQuickHoldMode] = useState<'pause' | 'plus' | 'switch' | 'new'>('pause');
   const [quickHoldTargetId, setQuickHoldTargetId] = useState<string | null>(null);
   const [heldSaleCompleted, setHeldSaleCompleted] = useState(false);
+  const [holdAddReturning, setHoldAddReturning] = useState(false);
   const [holdStateReady, setHoldStateReady] = useState(false);
 
   const snackbarIdRef = useRef(0);
@@ -308,6 +305,7 @@ export const CashierScreen: React.FC = () => {
       holdCompletionTimerRef.current = null;
     }
     setHeldSaleCompleted(false);
+    setHoldAddReturning(false);
     commitHoldStorage({
       ...current,
       sales: nextSales,
@@ -328,6 +326,7 @@ export const CashierScreen: React.FC = () => {
       holdCompletionTimerRef.current = null;
     }
     setHeldSaleCompleted(false);
+    setHoldAddReturning(false);
     setIsCartTaxEnabled(sale.isTaxEnabled);
     replaceCart(sale.items);
     commitHoldStorage({ ...current, activeId: sale.id });
@@ -379,7 +378,11 @@ export const CashierScreen: React.FC = () => {
       activeId: wasActive ? null : current.activeId,
     });
     if (wasActive) clearCart();
-    if (nextSales.length === 0) setHeldListOpen(false);
+    if (nextSales.length === 0) {
+      setHeldListOpen(false);
+      setHoldAddReturning(false);
+      setHeldSaleCompleted(false);
+    }
     showSnackbar('تم حذف الفاتورة المعلقة.');
   }, [commitHoldStorage, clearCart, showSnackbar]);
 
@@ -391,6 +394,11 @@ export const CashierScreen: React.FC = () => {
     if (current.activeId) clearCart();
     setHeldListOpen(false);
     setHeldSaleCompleted(false);
+    setHoldAddReturning(false);
+    if (holdCompletionTimerRef.current !== null) {
+      window.clearTimeout(holdCompletionTimerRef.current);
+      holdCompletionTimerRef.current = null;
+    }
     showSnackbar('تم تفريغ الفواتير المعلقة.');
   }, [commitHoldStorage, clearCart, showSnackbar]);
 
@@ -420,13 +428,30 @@ export const CashierScreen: React.FC = () => {
   }, [heldListOpen, handleClearHeldSales, handleDeleteHeldSale, clearCart, showSnackbar]);
 
   const handleHoldMainClick = useCallback(() => {
-    if (heldSaleCompleted) return;
+    if (heldSaleCompleted || holdAddReturning) return;
     if (holdStorageRef.current.sales.length > 0) {
       setHeldListOpen((open) => !open);
       return;
     }
     if (cart.length > 0) openQuickHold('pause');
-  }, [heldSaleCompleted, cart.length, openQuickHold]);
+  }, [heldSaleCompleted, holdAddReturning, cart.length, openQuickHold]);
+
+  const handleHoldAddAnimationEnd = useCallback((event: React.AnimationEvent<HTMLDivElement>) => {
+    if (event.animationName !== 'matjark-hold-add-return' || !holdAddReturning) return;
+    setHoldAddReturning(false);
+    setHeldSaleCompleted(true);
+    if (holdCompletionTimerRef.current !== null) {
+      window.clearTimeout(holdCompletionTimerRef.current);
+    }
+    holdCompletionTimerRef.current = window.setTimeout(() => {
+      setHeldSaleCompleted(false);
+      const latest = holdStorageRef.current;
+      if (latest.sales.length === 0) {
+        commitHoldStorage({ ...latest, progressTotal: 0, activeId: null });
+      }
+      holdCompletionTimerRef.current = null;
+    }, 1000);
+  }, [holdAddReturning, commitHoldStorage]);
 
   const handleSafeAdd = useCallback(
     (product: any) => {
@@ -578,16 +603,12 @@ export const CashierScreen: React.FC = () => {
         const remainingSales = current.sales.filter((sale) => sale.id !== activeHeldId);
         commitHoldStorage({ ...current, sales: remainingSales, activeId: null });
         if (remainingSales.length === 0) {
-          setHeldSaleCompleted(true);
-          if (holdCompletionTimerRef.current !== null) window.clearTimeout(holdCompletionTimerRef.current);
-          holdCompletionTimerRef.current = window.setTimeout(() => {
-            setHeldSaleCompleted(false);
-            const latest = holdStorageRef.current;
-            if (latest.sales.length === 0) {
-              commitHoldStorage({ ...latest, progressTotal: 0, activeId: null });
-            }
+          setHeldSaleCompleted(false);
+          setHoldAddReturning(true);
+          if (holdCompletionTimerRef.current !== null) {
+            window.clearTimeout(holdCompletionTimerRef.current);
             holdCompletionTimerRef.current = null;
-          }, 1000);
+          }
         }
       }
       setHeldListOpen(false);
@@ -715,87 +736,7 @@ export const CashierScreen: React.FC = () => {
             <span className="text-[13px] font-bold text-[var(--md-sys-color-on-surface)]">سلة البيع</span>
             <MBadge label={String(cartTotals.unitsCount)} variant="large" color="primary" className="matjark-pos-cart-count-badge" />
           </div>
-          <div className="matjark-pos-cart-header-actions flex items-center gap-1.5">
-            {holdStorage.sales.length > 0 && (
-              <MFabMenu
-                icon={toIconSvg(Plus, 18)}
-                ariaLabel="خيارات الفواتير المعلقة"
-                color="tertiary"
-                size="default"
-                presentation="list"
-                className="matjark-pos-hold-add-menu"
-                onSelect={(event: any) => {
-                  if (event.detail?.value === 'hold-current') handleHoldPlusClick();
-                  else if (event.detail?.value === 'show-held') setHeldListOpen(true);
-                }}
-              >
-                <MFabMenuItem value="hold-current" icon={toIconSvg(Pause, 20)}>
-                  تعليق الفاتورة الحالية
-                </MFabMenuItem>
-                <MFabMenuItem value="show-held" icon={toIconSvg(Play, 20)}>
-                  عرض الفواتير المعلقة
-                </MFabMenuItem>
-              </MFabMenu>
-            )}
-            {heldSaleCompleted ? (
-              <div className="matjark-pos-hold-indicator matjark-pos-hold-indicator--complete">
-                <MProgress
-                  variant="circular"
-                  shape="wavy"
-                  thickness={2.5}
-                  size={52}
-                  value={100}
-                  ariaLabel="اكتملت جميع الفواتير المعلقة"
-                  className="matjark-pos-hold-progress matjark-pos-hold-progress--complete"
-                />
-                <MuiIconButton
-                  icon={<Check width={19} height={19} className="matjark-hold-icon" />}
-                  ariaLabel="اكتملت جميع الفواتير المعلقة"
-                  variant="filled"
-                  size="small"
-                  className="matjark-hold-button matjark-hold-button--complete"
-                  disabled
-                />
-              </div>
-            ) : holdStorage.sales.length > 0 ? (
-              <div className="matjark-pos-hold-indicator">
-                <MProgress
-                  variant="circular"
-                  shape="wavy"
-                  thickness={2.5}
-                  size={52}
-                  value={holdStorage.progressTotal > 0
-                    ? Math.round((holdStorage.sales.length / holdStorage.progressTotal) * 100)
-                    : 100}
-                  ariaLabel="نسبة الفواتير المعلقة المتبقية"
-                  className="matjark-pos-hold-progress"
-                />
-                <MuiIconButton
-                  icon={<Play width={18} height={18} className="matjark-hold-icon" />}
-                  ariaLabel={heldListOpen ? "إغلاق قائمة الفواتير المعلقة" : "عرض الفواتير المعلقة"}
-                  variant="filled"
-                  size="small"
-                  className="matjark-hold-button matjark-hold-button--play"
-                  onClick={handleHoldMainClick}
-                />
-                <MBadge
-                  label={String(holdStorage.sales.length)}
-                  variant="large"
-                  color="error"
-                  className="matjark-pos-hold-badge"
-                />
-              </div>
-            ) : (
-              <MuiIconButton
-                icon={<Pause width={18} height={18} className="matjark-hold-icon" />}
-                ariaLabel="تعليق الفاتورة الحالية"
-                variant="filled"
-                size="small"
-                className="matjark-hold-button matjark-hold-button--pause"
-                disabled={cart.length === 0}
-                onClick={handleHoldMainClick}
-              />
-            )}
+          <div className="matjark-pos-cart-header-actions flex items-center gap-1.5" dir="rtl">
             {((heldListOpen && holdStorage.sales.length > 0) || (!heldListOpen && (cart.length > 0 || Boolean(holdStorage.activeId)))) && (
               <MuiButton
                 variant="text"
@@ -807,6 +748,79 @@ export const CashierScreen: React.FC = () => {
                 {'تفريغ'}
               </MuiButton>
             )}
+            <div className="matjark-pos-hold-indicator">
+              {(holdStorage.sales.length > 0 || holdAddReturning || heldSaleCompleted) && (
+                <MProgress
+                  variant="circular"
+                  shape="wavy"
+                  thickness={2.5}
+                  size={52}
+                  value={heldSaleCompleted
+                    ? 100
+                    : holdAddReturning
+                      ? 0
+                      : holdStorage.progressTotal > 0
+                        ? Math.round((holdStorage.sales.length / holdStorage.progressTotal) * 100)
+                        : 100}
+                  ariaLabel="نسبة الفواتير المعلقة المتبقية"
+                  className={`matjark-pos-hold-progress${heldSaleCompleted ? ' matjark-pos-hold-progress--complete' : ''}`}
+                />
+              )}
+              {heldSaleCompleted ? (
+                <MuiIconButton
+                  icon={<Check width={19} height={19} className="matjark-hold-icon" />}
+                  ariaLabel="اكتملت جميع الفواتير المعلقة"
+                  variant="filled"
+                  size="small"
+                  className="matjark-hold-button matjark-hold-button--complete"
+                  disabled
+                />
+              ) : holdStorage.sales.length > 0 || holdAddReturning ? (
+                <>
+                  <MuiIconButton
+                    icon={<Play width={18} height={18} className="matjark-hold-icon" />}
+                    ariaLabel={heldListOpen ? "إغلاق قائمة الفواتير المعلقة" : "عرض الفواتير المعلقة"}
+                    variant="filled"
+                    size="small"
+                    className="matjark-hold-button matjark-hold-button--play"
+                    onClick={handleHoldMainClick}
+                  />
+                  {holdStorage.sales.length > 0 && (
+                    <MBadge
+                      label={String(holdStorage.sales.length)}
+                      variant="large"
+                      color="error"
+                      className="matjark-pos-hold-badge"
+                    />
+                  )}
+                </>
+              ) : (
+                <MuiIconButton
+                  icon={<Pause width={18} height={18} className="matjark-hold-icon" />}
+                  ariaLabel="تعليق الفاتورة الحالية"
+                  variant="filled"
+                  size="small"
+                  className="matjark-hold-button matjark-hold-button--pause"
+                  disabled={cart.length === 0}
+                  onClick={handleHoldMainClick}
+                />
+              )}
+              <div
+                className={`matjark-pos-hold-add${holdAddReturning ? ' matjark-pos-hold-add--returning' : holdStorage.sales.length > 0 ? ' matjark-pos-hold-add--visible' : ''}`}
+                aria-hidden={holdStorage.sales.length === 0}
+                onAnimationEnd={handleHoldAddAnimationEnd}
+              >
+                <MuiIconButton
+                  icon={<Plus width={17} height={17} className="matjark-hold-icon" />}
+                  ariaLabel="تعليق الفاتورة الحالية وإضافتها للمعلقات"
+                  variant="filled"
+                  size="extraSmall"
+                  className="matjark-hold-add-button"
+                  disabled={holdStorage.sales.length === 0 || holdAddReturning || heldSaleCompleted}
+                  onClick={handleHoldPlusClick}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
