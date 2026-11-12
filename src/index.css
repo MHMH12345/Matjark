@@ -1339,6 +1339,25 @@ html:not(.dark) #root {
   color: #ffffff !important;
 }
 
+
+/* The clear action keeps the same fixed Material IconButton footprint as Play. */
+.matjark-hold-button--clear {
+  --mtrl-sys-color-primary: #f59e0b;
+  --mtrl-sys-color-on-primary: #ffffff;
+}
+
+.matjark-hold-button--clear::part(icon-button) {
+  background-color: #f59e0b !important;
+  color: #ffffff !important;
+}
+
+.matjark-hold-button--clear:disabled,
+.matjark-hold-button--clear[disabled] {
+  opacity: 0.42 !important;
+  filter: saturate(0.35);
+  cursor: not-allowed !important;
+}
+
 .matjark-hold-button--complete {
   --mtrl-sys-color-primary: #10b981;
   --mtrl-sys-color-on-primary: #ffffff;
