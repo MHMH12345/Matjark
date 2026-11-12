@@ -51,6 +51,14 @@ export const ThermalReceipt: React.FC<ThermalReceiptProps> = memo(({ invoice, se
   }, [invoice.paymentMethod]);
 
   const hasTax = invoice.isTaxEnabled && invoice.taxTotal > 0;
+  const includedTaxRates = Array.from(new Set(
+    invoice.items
+      .filter((item) => item.taxAmount > 0)
+      .map((item) => item.taxRate)
+  ));
+  const includedTaxRateLabel = includedTaxRates.length === 1
+    ? `${Math.round(includedTaxRates[0] * 100)}%`
+    : null;
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -149,7 +157,7 @@ export const ThermalReceipt: React.FC<ThermalReceiptProps> = memo(({ invoice, se
         {/* Totals Summary */}
         <div className="py-2 border-b border-dashed border-gray-400 space-y-1 text-xs">
           <div className="flex justify-between">
-            <span>المجموع الأساسي:</span>
+            <span>{invoice.pricesIncludeTax ? 'إجمالي أسعار الرف (شامل الضريبة):' : 'المجموع الأساسي:'}</span>
             <span>{formatEgp(invoice.subtotal, { customSymbol: settings.currency })}</span>
           </div>
           {invoice.discountTotal > 0 && (
@@ -159,9 +167,18 @@ export const ThermalReceipt: React.FC<ThermalReceiptProps> = memo(({ invoice, se
             </div>
           )}
           {hasTax && (
-            <div className="flex justify-between">
-              <span>ضريبة القيمة المضافة (14%):</span>
-              <span>{formatEgp(invoice.taxTotal, { customSymbol: settings.currency })}</span>
+            <div className="flex flex-col gap-0.5">
+              <div className="flex justify-between">
+                <span>
+                  {invoice.pricesIncludeTax
+                    ? `شامل ضريبة القيمة المضافة${includedTaxRateLabel ? ` (${includedTaxRateLabel})` : ''}:`
+                    : `ضريبة القيمة المضافة${includedTaxRateLabel ? ` (${includedTaxRateLabel})` : ''}:`}
+                </span>
+                <span>{formatEgp(invoice.taxTotal, { customSymbol: settings.currency })}</span>
+              </div>
+              {invoice.pricesIncludeTax && (
+                <p className="text-[9px] text-gray-600">الضريبة محسوبة ضمن السعر ولا تُضاف مرة أخرى.</p>
+              )}
             </div>
           )}
           <div className="flex justify-between font-extrabold text-sm pt-1 border-t border-gray-300">
