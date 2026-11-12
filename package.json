@@ -22,7 +22,11 @@
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
     "vite": "^8.3.0",
-    "@bug-on/m3-tailwind": "^1.2.6"
+    "@bug-on/m3-tailwind": "^1.2.6",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^9.5.0",
+    "@mui/x-charts": "^9.17.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
