@@ -1,6 +1,5 @@
 /**
- * High-Performance Reports & Analytics Screen.
- * Uses zero-bundle SVG charts to eliminate 350KB+ chart.js/recharts overhead and canvas memory leaks.
+ * Reports screen: Material 3 surfaces and MUI X Charts for visualizations.
  */
 
 import React, { useMemo } from 'react';
@@ -208,6 +207,7 @@ export const ReportsScreen: React.FC = () => {
               },
             }}
           />
+        </MuiCard>
 
         {/* Top 5 Products Leaderboard */}
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--spacious">
