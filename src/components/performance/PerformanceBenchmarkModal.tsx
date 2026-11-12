@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { MuiCard } from '../ui/MuiCard';
 import {
   Activity,
   Zap,
@@ -88,7 +89,7 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
             مؤشرات الأداء اللحظية المباشرة (Live Telemetry)
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="bg-slate-50 dark:bg-[#181818] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+            <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
               <div className="flex items-center justify-between text-slate-500 mb-1">
                 <span className="text-xs font-semibold">معدل الإطارات (FPS)</span>
                 <Activity className="w-4 h-4 text-emerald-500" />
@@ -102,9 +103,9 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
               <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block mt-0.5">
                 سلاسة تامة 60fps+ مستقرة
               </span>
-            </div>
+            </MuiCard>
 
-            <div className="bg-slate-50 dark:bg-[#181818] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+            <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
               <div className="flex items-center justify-between text-slate-500 mb-1">
                 <span className="text-xs font-semibold">عناصر الـ DOM النشطة</span>
                 <Layers className="w-4 h-4 text-blue-500" />
@@ -118,9 +119,9 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
               <span className="text-[10px] text-blue-600 dark:text-blue-400 block mt-0.5">
                 تحت السيطرة بفضل الـ Virtualization
               </span>
-            </div>
+            </MuiCard>
 
-            <div className="bg-slate-50 dark:bg-[#181818] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+            <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
               <div className="flex items-center justify-between text-slate-500 mb-1">
                 <span className="text-xs font-semibold">استهلاك الذاكرة (JS Heap)</span>
                 <Cpu className="w-4 h-4 text-purple-500" />
@@ -134,9 +135,9 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
               <span className="text-[10px] text-purple-600 dark:text-purple-400 block mt-0.5">
                 بدون تسريب للذاكرة (No Leaks)
               </span>
-            </div>
+            </MuiCard>
 
-            <div className="bg-slate-50 dark:bg-[#181818] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+            <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
               <div className="flex items-center justify-between text-slate-500 mb-1">
                 <span className="text-xs font-semibold">إجمالي المنتجات في المتجر</span>
                 <Database className="w-4 h-4 text-amber-500" />
@@ -150,12 +151,12 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
               <span className="text-[10px] text-slate-400 block mt-0.5">
                 مفهرسة O(1) بالباركود
               </span>
-            </div>
+            </MuiCard>
           </div>
         </div>
 
         {/* Live Comparative Benchmark Section */}
-        <div className="p-4 bg-blue-50/50 dark:bg-[#161d28] rounded-xl border border-blue-200 dark:border-blue-900/50">
+        <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--spacious">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div>
               <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
@@ -184,7 +185,7 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
           {/* Benchmark Results Cards */}
           {benchmarkResult ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="bg-white dark:bg-[#1e1e1e] p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+              <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
                 <span className="text-xs text-slate-500 block">قبل التحسين (Legacy Mode)</span>
                 <span className="text-xl font-bold font-mono text-rose-500">
                   {benchmarkResult.unoptimizedDurationMs} ms
@@ -192,9 +193,9 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
                 <span className="text-[11px] text-slate-400 block mt-1">
                   بحث تكراري Regex بدون فهرسة
                 </span>
-              </div>
+              </MuiCard>
 
-              <div className="bg-white dark:bg-[#1e1e1e] p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+              <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
                 <span className="text-xs text-slate-500 block">بعد التحسين (Matjark Ultra V2)</span>
                 <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
                   {benchmarkResult.optimizedDurationMs} ms
@@ -202,9 +203,9 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
                 <span className="text-[11px] text-emerald-600 dark:text-emerald-400 block mt-1">
                   فهرسة O(1) وتطبيع نصوص عربي فوري
                 </span>
-              </div>
+              </MuiCard>
 
-              <div className="bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-lg border border-emerald-300 dark:border-emerald-800 flex flex-col justify-center">
+              <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--compact">
                 <span className="text-xs text-emerald-700 dark:text-emerald-300 font-semibold block">
                   معدل التسريع المباشر (Speedup Factor)
                 </span>
@@ -214,17 +215,17 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
                 <span className="text-[10px] text-emerald-700/80 dark:text-emerald-400/80">
                   استجابة فورية بدون أي تأخير على واجهة المستخدم
                 </span>
-              </div>
+              </MuiCard>
             </div>
           ) : (
-            <div className="bg-white dark:bg-[#1e1e1e] p-4 rounded-lg text-center text-slate-400 text-xs">
+            <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
               انقر على زر "تشغيل اختبار المقارنة الآن" لقياس زمن المعالجة الفعلي بالمللي ثانية
-            </div>
+            </MuiCard>
           )}
-        </div>
+        </MuiCard>
 
         {/* Stress Testing Action */}
-        <div className="p-4 bg-slate-50 dark:bg-[#181818] rounded-xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--horizontal">
           <div>
             <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-600" />
@@ -253,14 +254,14 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
               استعادة البيانات الأساسية
             </MuiButton>
           </div>
-        </div>
+        </MuiCard>
 
         {/* Detailed Engineering Audit Table */}
         <div>
           <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
             جدول التدقيق الهندسي للتحسينات (Performance Engineering Audit)
           </h4>
-          <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800 text-xs">
+          <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
             <table className="w-full text-start">
               <thead className="bg-slate-100 dark:bg-[#151515] text-slate-700 dark:text-slate-300">
                 <tr>
@@ -313,7 +314,7 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
                 </tr>
               </tbody>
             </table>
-          </div>
+          </MuiCard>
         </div>
       </div>
     </MuiDialog>
