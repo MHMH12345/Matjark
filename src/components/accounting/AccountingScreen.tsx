@@ -291,7 +291,7 @@ export const AccountingScreen: React.FC = () => {
 
       {/* VAT Settlement Banner */}
       {settings.enableTax ? (
-        <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--horizontal">
+        <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--horizontal matjark-vat-settlement">
           <div>
             <h4 className="text-sm font-bold flex items-center gap-2">
               <FileCheck className="w-4 h-4 text-[var(--md-sys-color-primary)]" />
@@ -303,7 +303,7 @@ export const AccountingScreen: React.FC = () => {
           </div>
           <div className="bg-[var(--md-sys-color-primary)]/10 px-4 py-2 rounded-lg text-end">
             <span className="text-[11px] text-[var(--md-sys-color-on-primary-container)] block">صافي الضريبة المستحقة للسداد:</span>
-            <span className="text-xl font-bold font-mono text-white">
+            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-on-primary-container)]">
               {formatCurrency(financialSummary.netVatPayable)}
             </span>
           </div>
