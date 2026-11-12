@@ -159,7 +159,6 @@ export const Sidebar: React.FC = () => {
         onClose={() => setProfileMenuOpen(false)}
         anchor={profileAnchorRef.current as HTMLElement}
         position="left-start"
-        layer="top"
         className="matjark-sidebar-profile-menu"
         onSelect={(event: CustomEvent<{ itemId?: string; value?: string }>) => {
           const selected = event.detail?.itemId || event.detail?.value;
