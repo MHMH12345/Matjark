@@ -107,45 +107,45 @@ export const ReportsScreen: React.FC = () => {
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
-          <div className="flex items-center gap-2 text-slate-500 mb-2">
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
+          <div className="flex items-center gap-2 text-[var(--md-sys-color-on-surface-variant)] mb-2">
+            <TrendingUp className="w-4 h-4 text-[var(--md-sys-color-success)]" />
             <h3 className="text-xs font-bold">معدل مبيعات آخر 7 أيام</h3>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+            <span className="text-2xl font-bold font-mono text-[var(--md-sys-color-on-surface)]">
               {(
                 dailyTrends.days.reduce((acc, d) => acc + d.total, 0) / (dailyTrends.days.length || 1)
               ).toFixed(0)}
             </span>
-            <span className="text-xs text-slate-400">{settings.currency} / اليوم</span>
+            <span className="text-xs text-[var(--md-sys-color-outline)]">{settings.currency} / اليوم</span>
           </div>
         </MuiCard>
 
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
-          <div className="flex items-center gap-2 text-slate-500 mb-2">
-            <CreditCard className="w-4 h-4 text-blue-600" />
+          <div className="flex items-center gap-2 text-[var(--md-sys-color-on-surface-variant)] mb-2">
+            <CreditCard className="w-4 h-4 text-[var(--md-sys-color-primary)]" />
             <h3 className="text-xs font-bold">نسبة المدفوعات الإلكترونية (فيزا / ميزة)</h3>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold font-mono text-blue-600 dark:text-blue-400">
+            <span className="text-2xl font-bold font-mono text-[var(--md-sys-color-primary)]">
               {paymentBreakdown.card.pct}%
             </span>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-[var(--md-sys-color-outline)]">
               ({formatCurrency(paymentBreakdown.card.total)})
             </span>
           </div>
         </MuiCard>
 
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
-          <div className="flex items-center gap-2 text-slate-500 mb-2">
-            <Award className="w-4 h-4 text-amber-500" />
+          <div className="flex items-center gap-2 text-[var(--md-sys-color-on-surface-variant)] mb-2">
+            <Award className="w-4 h-4 text-[var(--md-sys-color-warning)]" />
             <h3 className="text-xs font-bold">المنتج الأكثر طلبًا</h3>
           </div>
           <div className="truncate">
-            <span className="text-base font-bold text-slate-900 dark:text-slate-100 truncate block">
+            <span className="text-base font-bold text-[var(--md-sys-color-on-surface)] truncate block">
               {topSellingProducts[0]?.name || 'لا توجد بيانات كافية'}
             </span>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-[var(--md-sys-color-outline)]">
               {topSellingProducts[0] ? `${topSellingProducts[0].quantity} قطعة مباعة` : ''}
             </span>
           </div>
@@ -157,8 +157,8 @@ export const ReportsScreen: React.FC = () => {
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--spacious">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+              <BarChart3 className="w-5 h-5 text-[var(--md-sys-color-primary)]" />
+              <h3 className="text-sm font-bold text-[var(--md-sys-color-on-surface)]">
                 المبيعات اليومية — آخر 7 أيام
               </h3>
             </div>
@@ -212,34 +212,34 @@ export const ReportsScreen: React.FC = () => {
         {/* Top 5 Products Leaderboard */}
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--spacious">
           <div className="flex items-center gap-2 mb-4">
-            <Award className="w-5 h-5 text-amber-500" />
-            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            <Award className="w-5 h-5 text-[var(--md-sys-color-warning)]" />
+            <h3 className="text-sm font-bold text-[var(--md-sys-color-on-surface)]">
               قائمة المنتجات الأكثر مبيعًا
             </h3>
           </div>
 
           <div className="flex-1 space-y-3">
             {topSellingProducts.length === 0 ? (
-              <p className="text-xs text-slate-400 py-8 text-center">لا توجد مبيعات مسجلة حتى الآن</p>
+              <p className="text-xs text-[var(--md-sys-color-outline)] py-8 text-center">لا توجد مبيعات مسجلة حتى الآن</p>
             ) : (
               topSellingProducts.map((p, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-[#161616] border border-slate-100 dark:border-slate-800"
+                  className="flex items-center justify-between p-2.5 rounded-lg bg-[var(--md-sys-color-surface-container-low)] border border-[var(--md-sys-color-outline-variant)]"
                 >
                   <div className="flex items-center gap-3 truncate">
-                    <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-300 flex items-center justify-center font-bold text-xs shrink-0">
+                    <span className="w-6 h-6 rounded-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] flex items-center justify-center font-bold text-xs shrink-0">
                       {idx + 1}
                     </span>
                     <div className="truncate">
-                      <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                      <h4 className="text-xs font-bold text-[var(--md-sys-color-on-surface)] truncate">
                         {p.name}
                       </h4>
-                      <span className="text-[11px] text-slate-500">{p.quantity} قطعة مباعة</span>
+                      <span className="text-[11px] text-[var(--md-sys-color-on-surface-variant)]">{p.quantity} قطعة مباعة</span>
                     </div>
                   </div>
 
-                  <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400 shrink-0">
+                  <span className="font-mono text-xs font-bold text-[var(--md-sys-color-primary)] shrink-0">
                     {formatCurrency(p.revenue)}
                   </span>
                 </div>
