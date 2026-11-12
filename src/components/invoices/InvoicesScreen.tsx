@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { MuiCard } from '../ui/MuiCard';
 import {
   FileText,
   Printer,
@@ -207,53 +208,13 @@ export const InvoicesScreen: React.FC = () => {
     <div className="space-y-4">
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white dark:bg-[#1e1e1e] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-slate-500 block">إجمالي المبيعات النشطة</span>
-            <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-              {formatCurrency(invoiceMetrics.completedSum)}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
-        </div>
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal"></MuiCard>
 
-        <div className="bg-white dark:bg-[#1e1e1e] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-slate-500 block">عدد الفواتير المصدرة</span>
-            <span className="text-xl font-bold font-mono text-slate-900 dark:text-slate-100">
-              {invoiceMetrics.completedCount} فاتورة
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600">
-            <FileText className="w-5 h-5" />
-          </div>
-        </div>
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal"></MuiCard>
 
-        <div className="bg-white dark:bg-[#1e1e1e] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-slate-500 block">ضريبة القيمة المضافة المحصلة</span>
-            <span className="text-xl font-bold font-mono text-purple-600 dark:text-purple-400">
-              {formatCurrency(invoiceMetrics.taxTotal)}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600">
-            <span className="font-bold text-xs font-mono">VAT</span>
-          </div>
-        </div>
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal"></MuiCard>
 
-        <div className="bg-white dark:bg-[#1e1e1e] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-slate-500 block">المبالغ المسترجعة</span>
-            <span className="text-xl font-bold font-mono text-rose-500">
-              {formatCurrency(invoiceMetrics.refundedSum)}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600">
-            <RotateCcw className="w-5 h-5" />
-          </div>
-        </div>
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal"></MuiCard>
       </div>
 
       {/* Virtualized Invoices Grid */}
