@@ -94,8 +94,8 @@ export const CustomersScreen: React.FC = () => {
         minWidth: 160,
         renderCell: (row) => (
           <div className="flex flex-col truncate">
-            <span className="font-bold text-slate-800 dark:text-slate-200 truncate">{row.name}</span>
-            {row.address && <span className="text-[10px] text-slate-400 truncate">{row.address}</span>}
+            <span className="font-bold text-[var(--md-sys-color-on-surface)] truncate">{row.name}</span>
+            {row.address && <span className="text-[10px] text-[var(--md-sys-color-outline)] truncate">{row.address}</span>}
           </div>
         ),
       },
@@ -106,9 +106,9 @@ export const CustomersScreen: React.FC = () => {
         renderCell: (row) => (
           <a
             href={`tel:${row.phone}`}
-            className="font-mono text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+            className="font-mono text-xs text-[var(--md-sys-color-primary)] hover:underline flex items-center gap-1"
           >
-            <Phone className="w-3 h-3 text-slate-400" />
+            <Phone className="w-3 h-3 text-[var(--md-sys-color-outline)]" />
             <span>{row.phone}</span>
           </a>
         ),
@@ -118,7 +118,7 @@ export const CustomersScreen: React.FC = () => {
         headerName: 'الرقم الضريبي',
         width: 150,
         renderCell: (row) => (
-          <span className="font-mono text-xs text-slate-500">
+          <span className="font-mono text-xs text-[var(--md-sys-color-on-surface-variant)]">
             {row.taxNumber || 'غير مسجل'}
           </span>
         ),
@@ -131,7 +131,7 @@ export const CustomersScreen: React.FC = () => {
         renderCell: (row) => (
           <span
             className={`font-mono font-bold ${
-              row.balance > 0 ? 'text-amber-600' : 'text-emerald-600 dark:text-emerald-400'
+              row.balance > 0 ? 'text-[var(--md-sys-color-warning)]' : 'text-[var(--md-sys-color-success)]'
             }`}
           >
             {row.balance > 0 ? `+${formatCurrency(row.balance)}` : formatCurrency(0)}
@@ -151,10 +151,10 @@ export const CustomersScreen: React.FC = () => {
         minWidth: 180,
         renderCell: (row) => (
           <div className="flex flex-col truncate">
-            <span className="font-bold text-slate-800 dark:text-slate-200 truncate">
+            <span className="font-bold text-[var(--md-sys-color-on-surface)] truncate">
               {row.companyName}
             </span>
-            <span className="text-[10px] text-slate-400 truncate">المندوب: {row.name}</span>
+            <span className="text-[10px] text-[var(--md-sys-color-outline)] truncate">المندوب: {row.name}</span>
           </div>
         ),
       },
@@ -165,9 +165,9 @@ export const CustomersScreen: React.FC = () => {
         renderCell: (row) => (
           <a
             href={`tel:${row.phone}`}
-            className="font-mono text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+            className="font-mono text-xs text-[var(--md-sys-color-primary)] hover:underline flex items-center gap-1"
           >
-            <Phone className="w-3 h-3 text-slate-400" />
+            <Phone className="w-3 h-3 text-[var(--md-sys-color-outline)]" />
             <span>{row.phone}</span>
           </a>
         ),
@@ -177,7 +177,7 @@ export const CustomersScreen: React.FC = () => {
         headerName: 'الرقم الضريبي',
         width: 150,
         renderCell: (row) => (
-          <span className="font-mono text-xs text-slate-500">{row.taxNumber || 'غير مسجل'}</span>
+          <span className="font-mono text-xs text-[var(--md-sys-color-on-surface-variant)]">{row.taxNumber || 'غير مسجل'}</span>
         ),
       },
       {
@@ -188,7 +188,7 @@ export const CustomersScreen: React.FC = () => {
         renderCell: (row) => (
           <span
             className={`font-mono font-bold ${
-              row.balance > 0 ? 'text-rose-600' : 'text-slate-600 dark:text-slate-400'
+              row.balance > 0 ? 'text-[var(--md-sys-color-error)]' : 'text-[var(--md-sys-color-on-surface-variant)]'
             }`}
           >
             {formatCurrency(row.balance)}
