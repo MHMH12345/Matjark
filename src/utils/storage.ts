@@ -466,7 +466,7 @@ export function loadDatabase(): AppDatabase {
         enableTax: parsed.settings?.pricesIncludeTax === undefined
           ? true
           : (parsed.settings.enableTax ?? INITIAL_SETTINGS.enableTax),
-        pricesIncludeTax: parsed.settings?.pricesIncludeTax ?? true,
+        pricesIncludeTax: true,
         currency: 'ج.م',
         currencyEn: 'EGP',
       },
