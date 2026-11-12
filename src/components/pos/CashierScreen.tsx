@@ -32,7 +32,6 @@ import { normalizeArabicText } from '../../utils/performance';
 import { ThermalReceipt } from './ThermalReceipt';
 import { MuiChipGroup } from '../ui/MuiChipGroup';
 import { MuiTextField } from '../ui/MuiTextField';
-import { MuiSwitch } from '../ui/MuiSwitch';
 import { MuiSelect } from '../ui/MuiSelect';
 import { MuiDialog } from '../ui/MuiDialog';
 import { MuiButton } from '../ui/MuiButton';
@@ -209,13 +208,12 @@ export const CashierScreen: React.FC = () => {
       const activeSale = saved.sales.find((sale) => sale.id === saved.activeId);
       if (activeSale) {
         replaceCart(activeSale.items);
-        setIsCartTaxEnabled(activeSale.isTaxEnabled);
       } else {
         commitHoldStorage({ ...saved, activeId: null });
       }
     }
     setHoldStateReady(true);
-  }, [replaceCart, setIsCartTaxEnabled, commitHoldStorage]);
+  }, [replaceCart, commitHoldStorage]);
 
   useEffect(() => {
     if (!holdStateReady || !holdStorage.activeId) return;
@@ -327,11 +325,10 @@ export const CashierScreen: React.FC = () => {
     }
     setHeldSaleCompleted(false);
     setHoldAddReturning(false);
-    setIsCartTaxEnabled(sale.isTaxEnabled);
     replaceCart(sale.items);
     commitHoldStorage({ ...current, activeId: sale.id });
     setHeldListOpen(false);
-  }, [replaceCart, setIsCartTaxEnabled, commitHoldStorage]);
+  }, [replaceCart, commitHoldStorage]);
 
   const handleQuickHoldSave = useCallback(() => {
     const targetId = quickHoldTargetId;
@@ -891,15 +888,18 @@ export const CashierScreen: React.FC = () => {
 
         {!heldListOpen && <div className="p-3 bg-[var(--md-sys-color-surface-container-low)] border-t border-[var(--md-sys-color-outline-variant)] space-y-2 shrink-0">
           <div className="matjark-pos-tax-row flex items-center justify-between gap-2">
-            <MuiSwitch
-              checked={isCartTaxEnabled}
-              onChange={(event) => setIsCartTaxEnabled(event.target.checked)}
-              label="ضريبة القيمة المضافة المشمولة في سعر الرف"
-              className="matjark-pos-tax-switch"
-            />
-            <span className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] whitespace-nowrap">
-              {formatCurrency(cartTotals.taxTotal)}
+            <span className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)]">
+              {settings.enableTax
+                ? (settings.pricesIncludeTax
+                  ? 'سعر الرف شامل ضريبة القيمة المضافة'
+                  : 'تُضاف الضريبة إلى السعر المسجل')
+                : 'الضريبة غير مفعّلة في إعدادات المتجر'}
             </span>
+            {settings.enableTax && settings.pricesIncludeTax && (
+              <span className="text-[11px] text-[var(--md-sys-color-outline)] whitespace-nowrap">
+                لا تُضاف أي زيادة عند الدفع
+              </span>
+            )}
           </div>
 
           <div className="matjark-pos-divider" role="separator" />
