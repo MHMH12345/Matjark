@@ -8,6 +8,9 @@ import { ArrowUpDown, ArrowUp, ArrowDown, Search, X } from 'lucide-react';
 import { normalizeArabicText } from '../../utils/performance';
 import { MuiTextField } from './MuiTextField';
 import { MuiIconButton } from './MuiIconButton';
+import { Card as MaterialCard } from 'material/react';
+
+const MCard = MaterialCard as React.ComponentType<any>;
 
 export interface GridColumn<T> {
   field: keyof T | string;
@@ -138,7 +141,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
   }, []);
 
   return (
-    <div className="flex flex-col w-full bg-white dark:bg-[#1e1e1e] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+    <MCard variant="outlined" fullWidth className="matjark-data-grid-shell flex flex-col w-full overflow-hidden">
       {/* Table Toolbar */}
       <div className="p-3 bg-slate-50 dark:bg-[#181818] border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
         <div className="relative flex-1 min-w-[240px] max-w-md">
@@ -236,13 +239,17 @@ function MuiDataGridInner<T extends Record<string, any>>({
                 const rowKey = getRowId ? getRowId(row) : (row.id as string) || actualIndex;
 
                 return (
-                  <div
+                  <MCard
                     key={rowKey}
+                    variant="filled"
+                    fullWidth
+                    clickable={Boolean(onRowClick)}
+                    promoteChildActions
                     onClick={() => onRowClick && onRowClick(row)}
                     style={{ height: rowHeight }}
-                    className={`flex items-center border-b border-slate-100 dark:border-slate-800/60 text-xs text-slate-800 dark:text-slate-200 transition-colors ${
-                      onRowClick ? 'cursor-pointer hover:bg-blue-50/70 dark:hover:bg-blue-950/20' : 'hover:bg-slate-50 dark:hover:bg-[#232323]'
-                    } ${actualIndex % 2 === 1 ? 'bg-slate-50/40 dark:bg-[#1a1a1a]/40' : ''}`}
+                    className={`matjark-data-grid-row flex items-center text-xs text-slate-800 dark:text-slate-200 transition-colors ${
+                      actualIndex % 2 === 1 ? 'matjark-data-grid-row--alternate' : ''
+                    }`}
                   >
                     {columns.map((col, cIdx) => (
                       <div
@@ -263,7 +270,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
                         {col.renderCell ? col.renderCell(row, actualIndex) : String(row[col.field as string] ?? '-')}
                       </div>
                     ))}
-                  </div>
+                  </MCard>
                 );
               })}
             </div>
@@ -280,7 +287,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
           Virtualization Active (DOM Nodes: ~{visibleRows.length * columns.length + columns.length})
         </span>
       </div>
-    </div>
+    </MCard>
   );
 }
 
