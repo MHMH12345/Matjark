@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useMemo, useCallback, useRef } from 'react';
+import { MuiCard } from '../ui/MuiCard';
 import {
   Package,
   Plus,
@@ -319,7 +320,7 @@ export const InventoryScreen: React.FC = () => {
     <div className="space-y-4">
       {/* Top Inventory Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white dark:bg-[#1e1e1e] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
             <span className="text-xs text-slate-500 block">إجمالي المنتجات</span>
             <span className="text-xl font-bold font-mono text-slate-900 dark:text-slate-100">
@@ -329,9 +330,9 @@ export const InventoryScreen: React.FC = () => {
           <div className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600">
             <Package className="w-5 h-5" />
           </div>
-        </div>
+        </MuiCard>
 
-        <div className="bg-white dark:bg-[#1e1e1e] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
             <span className="text-xs text-slate-500 block">قيمة المخزون (سعر البيع)</span>
             <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
@@ -341,9 +342,9 @@ export const InventoryScreen: React.FC = () => {
           <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600">
             <TrendingUp className="w-5 h-5" />
           </div>
-        </div>
+        </MuiCard>
 
-        <div className="bg-white dark:bg-[#1e1e1e] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
             <span className="text-xs text-slate-500 block">تكلفة رأس المال</span>
             <span className="text-xl font-bold font-mono text-slate-700 dark:text-slate-300">
@@ -353,9 +354,9 @@ export const InventoryScreen: React.FC = () => {
           <div className="p-2.5 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600">
             <DollarSign className="w-5 h-5" />
           </div>
-        </div>
+        </MuiCard>
 
-        <div className="bg-white dark:bg-[#1e1e1e] p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
             <span className="text-xs text-slate-500 block">نواقص تحتاج إعادة طلب</span>
             <span className="text-xl font-bold font-mono text-amber-600">
@@ -365,7 +366,7 @@ export const InventoryScreen: React.FC = () => {
           <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600">
             <AlertTriangle className="w-5 h-5" />
           </div>
-        </div>
+        </MuiCard>
       </div>
 
       {/* Main Virtualized Grid */}
@@ -420,7 +421,7 @@ export const InventoryScreen: React.FC = () => {
       >
         <form onSubmit={handleSaveProduct} className="space-y-4">
           {/* Image Upload with Client-Side Compression */}
-          <div className="flex items-center gap-4 p-3 bg-slate-50 dark:bg-[#161616] rounded-xl border border-slate-200 dark:border-slate-800">
+          <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
             <div className="w-20 h-20 rounded-lg overflow-hidden bg-white dark:bg-[#202020] border border-slate-300 dark:border-slate-700 shrink-0 flex items-center justify-center relative">
               {imageUrl ? (
                 <img src={imageUrl} alt="preview" className="w-full h-full object-cover" />
@@ -462,7 +463,7 @@ export const InventoryScreen: React.FC = () => {
                 تطبيق ضغط متقدم على المتصفح يمنع استهلاك الذاكرة وتخمة التخزين
               </p>
             </div>
-          </div>
+          </MuiCard>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <MuiTextField
