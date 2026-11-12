@@ -1227,7 +1227,8 @@ html:not(.dark) #root {
 
 
 
-/* Smart Hold POS controls: native Material 3 badge, wavy progress and icon buttons. */
+/* Smart Hold POS controls: native Material 3 badge, wavy progress and FAB menu. */
+
 .matjark-pos-cart-header-actions {
   display: flex;
   align-items: center;
@@ -1235,25 +1236,31 @@ html:not(.dark) #root {
   min-width: 0;
 }
 
+/* A 52px progress ring surrounds the unchanged 40px Material IconButton. */
 .matjark-pos-hold-indicator {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  flex: 0 0 48px;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
 }
 
 .matjark-pos-hold-progress {
   position: absolute !important;
   inset: 0 !important;
   display: block !important;
-  width: 48px !important;
-  height: 48px !important;
+  width: 52px !important;
+  height: 52px !important;
   pointer-events: none !important;
-  --mtrl-sys-color-primary: #38bdf8;
-  --mtrl-sys-color-secondary-container: #1e293b;
+  --mtrl-sys-color-primary: #f59e0b;
+  --mtrl-sys-color-secondary-container: color-mix(in srgb, #f59e0b 20%, transparent);
+}
+
+.matjark-pos-hold-progress--complete {
+  --mtrl-sys-color-primary: #10b981;
+  --mtrl-sys-color-secondary-container: color-mix(in srgb, #10b981 20%, transparent);
 }
 
 .matjark-pos-hold-indicator .matjark-hold-button {
@@ -1284,6 +1291,7 @@ html:not(.dark) #root {
   box-sizing: border-box !important;
 }
 
+/* Keep the native Material IconButton geometry and change only its colours. */
 .matjark-hold-button {
   display: inline-flex !important;
   align-items: center !important;
@@ -1298,44 +1306,40 @@ html:not(.dark) #root {
   --mtrl-button-shape-pressed: 999px;
 }
 
-.matjark-hold-button--pause,
-.matjark-hold-button--play,
-.matjark-hold-button--add {
-  animation: matjark-hold-morph 200ms cubic-bezier(0.4, 0, 0.2, 1) both;
+.matjark-hold-button--pause {
+  --mtrl-sys-color-primary: #ef4444;
+  --mtrl-sys-color-on-primary: #ffffff;
 }
 
-.matjark-hold-button--pause {
-  --mtrl-sys-color-primary: #3b3f4a;
-  --mtrl-sys-color-on-primary: #f59e0b;
+.matjark-hold-button--pause::part(icon-button) {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
 }
 
 .matjark-hold-button--pause:disabled,
 .matjark-hold-button--pause[disabled] {
-  --mtrl-sys-color-primary: #2a2d35;
-  --mtrl-sys-color-on-primary: #6b7280;
-  opacity: 1 !important;
-  filter: none !important;
+  opacity: 0.42 !important;
+  filter: saturate(0.5);
 }
 
 .matjark-hold-button--pause[disabled]::part(icon-button) {
-  background-color: #2a2d35 !important;
-  color: #6b7280 !important;
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
 }
 
 .matjark-hold-button--play {
-  --mtrl-sys-color-primary: #1e293b;
-  --mtrl-sys-color-on-primary: #38bdf8;
+  --mtrl-sys-color-primary: #f59e0b;
+  --mtrl-sys-color-on-primary: #ffffff;
 }
 
-.matjark-hold-button--add {
-  --mtrl-sys-color-primary: #3b3f4a;
-  --mtrl-sys-color-on-primary: #f59e0b;
+.matjark-hold-button--play::part(icon-button) {
+  background-color: #f59e0b !important;
+  color: #ffffff !important;
 }
 
 .matjark-hold-button--complete {
   --mtrl-sys-color-primary: #10b981;
   --mtrl-sys-color-on-primary: #ffffff;
-  animation: matjark-hold-complete 1000ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 .matjark-hold-button--complete:disabled {
@@ -1353,14 +1357,41 @@ html:not(.dark) #root {
   filter: saturate(0.35);
 }
 
-.matjark-hold-button.matjark-hold-button--pause[disabled],
-.matjark-hold-button.matjark-hold-button--complete[disabled] {
+.matjark-hold-button--complete:disabled {
   opacity: 1 !important;
   filter: none !important;
 }
 
 .matjark-hold-icon {
-  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms;
+  transition: opacity 200ms;
+}
+
+/* The Material FAB menu stays beside the main hold button; its FAB trigger is
+   reduced to 36px and coloured green without replacing the library behaviour. */
+.matjark-pos-hold-add-menu {
+  display: inline-block !important;
+  flex: 0 0 36px !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  vertical-align: middle !important;
+}
+
+.matjark-pos-hold-add-menu::part(fab-menu) {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.matjark-pos-hold-add-menu::part(fab) {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 50% !important;
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
 }
 
 .matjark-held-sale-card {
@@ -1420,17 +1451,6 @@ html:not(.dark) #root {
   white-space: nowrap;
 }
 
-@keyframes matjark-hold-morph {
-  from { transform: scale(0.72); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-@keyframes matjark-hold-complete {
-  0% { transform: scale(0.88); opacity: 0.55; }
-  45% { transform: scale(1.12); opacity: 1; }
-  100% { transform: scale(1.1); opacity: 1; }
-}
-
 @media (max-width: 420px) {
   .matjark-pos-cart-header-actions {
     gap: 3px;
@@ -1441,6 +1461,33 @@ html:not(.dark) #root {
     height: 36px !important;
     min-width: 36px !important;
     min-height: 36px !important;
+  }
+
+  .matjark-pos-hold-indicator {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+  }
+
+  .matjark-pos-hold-progress {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .matjark-pos-hold-add-menu {
+    flex-basis: 32px !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+
+  .matjark-pos-hold-add-menu::part(fab-menu),
+  .matjark-pos-hold-add-menu::part(fab) {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
   }
 
   .matjark-held-sale-card {
