@@ -53,7 +53,7 @@ export const AccountingScreen: React.FC = () => {
 
   const handleCreateExpense = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || amount <= 0) {
+    if (!title.trim() || !Number.isFinite(amount) || amount <= 0 || !Number.isFinite(taxAmount) || taxAmount < 0) {
       showToast('يرجى كتابة بيان المصروف والمبلغ', 'error');
       return;
     }
