@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { MuiCard } from '../ui/MuiCard';
 import {
   Users,
   Building2,
@@ -201,28 +202,7 @@ export const CustomersScreen: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Switcher Tab */}
-      <div className="flex items-center justify-between bg-white dark:bg-[#1e1e1e] p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <MuiChipGroup
-          value={activeSubTab}
-          onChange={(value) => setActiveSubTab(value as typeof activeSubTab)}
-          ariaLabel="التبديل بين دليل العملاء والموردين"
-          className="matjark-filter-chips"
-          options={[
-            { value: 'customers', label: `دليل العملاء (${customers.length})`, icon: <Users className="w-4 h-4" /> },
-            { value: 'suppliers', label: `دليل الموردين (${suppliers.length})`, icon: <Building2 className="w-4 h-4" /> },
-          ]}
-        />
-
-        <MuiButton
-          variant="contained"
-          color="primary"
-          size="small"
-          startIcon={<Plus className="w-4 h-4" />}
-          onClick={handleOpenAdd}
-        >
-          {activeSubTab === 'customers' ? 'إضافة عميل جديد' : 'إضافة مورد جديد'}
-        </MuiButton>
-      </div>
+      <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal"></MuiCard>
 
       {/* Virtualized Grid */}
       {activeSubTab === 'customers' ? (
