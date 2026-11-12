@@ -116,6 +116,7 @@ export function calculateLineAccounting(params: {
   discountPerItem?: number;
   taxRate: number;
   isTaxEnabled: boolean;
+  pricesIncludeTax?: boolean;
 }): {
   subtotal: number;
   discountTotal: number;
@@ -136,10 +137,28 @@ export function calculateLineAccounting(params: {
 
   const taxRate = Number.isFinite(params.taxRate) ? Math.max(0, params.taxRate) : 0;
   const effectiveTaxRate = params.isTaxEnabled ? taxRate : 0;
-  const taxAmount = roundToTwoDecimals(netLineTotal * effectiveTaxRate);
-  const totalWithTax = roundToTwoDecimals(netLineTotal + taxAmount);
+  const discountedSubtotal = netLineTotal;
 
-  return { subtotal, discountTotal, netLineTotal, taxAmount, totalWithTax };
+  if (params.pricesIncludeTax && effectiveTaxRate > 0) {
+    // The entered/displayed price is the final gross price; extract VAT from it.
+    const taxAmount = roundToTwoDecimals(
+      discountedSubtotal - discountedSubtotal / (1 + effectiveTaxRate)
+    );
+    const netAmount = Math.max(0, roundToTwoDecimals(discountedSubtotal - taxAmount));
+
+    return {
+      subtotal,
+      discountTotal,
+      netLineTotal: netAmount,
+      taxAmount,
+      totalWithTax: discountedSubtotal,
+    };
+  }
+
+  const taxAmount = roundToTwoDecimals(discountedSubtotal * effectiveTaxRate);
+  const totalWithTax = roundToTwoDecimals(discountedSubtotal + taxAmount);
+
+  return { subtotal, discountTotal, netLineTotal: discountedSubtotal, taxAmount, totalWithTax };
 }
 
 /**
@@ -166,6 +185,7 @@ export function computeAccountingMetrics(params: {
     subtotal: number;
     discountTotal?: number;
     taxTotal: number;
+    pricesIncludeTax?: boolean;
     grandTotal: number;
     items: Array<{ costPrice: number; quantity: number }>;
   }>;
@@ -188,7 +208,8 @@ export function computeAccountingMetrics(params: {
     if (invoice.status !== 'completed') return;
 
     // Invoice.subtotal is pre-discount; recognize revenue after discounts.
-    grossRevenue += Math.max(0, invoice.subtotal - (invoice.discountTotal || 0));
+    const revenueAfterDiscount = invoice.subtotal - (invoice.discountTotal || 0);
+    grossRevenue += Math.max(0, revenueAfterDiscount - (invoice.pricesIncludeTax ? invoice.taxTotal || 0 : 0));
     salesVatCollected += invoice.taxTotal || 0;
 
     invoice.items.forEach((item) => {
