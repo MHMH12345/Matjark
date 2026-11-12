@@ -1611,3 +1611,166 @@ html:not(.dark) #root {
     animation-duration: 1ms !important;
   }
 }
+
+
+/* Shared native Material 3 card surfaces used across the application. */
+.matjark-surface-card {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.matjark-surface-card::part(card) {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  border-radius: 20px !important;
+  background: var(--md-sys-color-surface-container) !important;
+  color: var(--md-sys-color-on-surface) !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.matjark-surface-card[variant="filled"]::part(card) {
+  background: var(--md-sys-color-surface-container-low) !important;
+}
+
+.matjark-surface-card::part(content) {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 16px;
+  color: var(--md-sys-color-on-surface);
+  box-sizing: border-box;
+}
+
+.matjark-surface-card--compact::part(content) {
+  padding: 14px;
+}
+
+.matjark-surface-card--spacious::part(content) {
+  padding: 24px;
+}
+
+.matjark-surface-card--horizontal::part(content) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.matjark-data-grid-shell::part(card) {
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  border-radius: 20px !important;
+  background: var(--md-sys-color-surface-container) !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+.matjark-data-grid-shell::part(content) {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0 !important;
+}
+
+.matjark-data-grid-row {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  border-radius: 0 !important;
+}
+
+.matjark-data-grid-row::part(card) {
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.matjark-data-grid-row::part(content) {
+  display: flex !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+}
+
+.matjark-data-grid-row--alternate::part(card) {
+  background: color-mix(in srgb, var(--md-sys-color-surface-container-high) 48%, transparent) !important;
+}
+
+/* Native Material chip wrapper used by status and category labels. */
+.matjark-chip-host {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  --mtrl-sys-color-primary: var(--md-sys-color-primary);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-primary);
+  --mtrl-sys-color-secondary-container: var(--md-sys-color-secondary-container);
+  --mtrl-sys-color-on-secondary-container: var(--md-sys-color-on-secondary-container);
+}
+
+.matjark-chip-host .matjark-native-chip-set {
+  display: inline-flex !important;
+  width: auto !important;
+  min-width: 0 !important;
+  --mtrl-chip-label-color: var(--md-sys-color-on-surface-variant);
+  --mtrl-chip-leading-color: var(--md-sys-color-on-surface-variant);
+  --mtrl-chip-checkmark-color: var(--md-sys-color-primary);
+}
+
+.matjark-chip-host.matjark-chip--primary {
+  --mtrl-sys-color-primary: var(--md-sys-color-primary);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-primary);
+}
+
+.matjark-chip-host.matjark-chip--success {
+  --mtrl-sys-color-primary: var(--md-sys-color-success);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-success);
+}
+
+.matjark-chip-host.matjark-chip--error {
+  --mtrl-sys-color-primary: var(--md-sys-color-error);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-error);
+}
+
+.matjark-chip-host.matjark-chip--warning {
+  --mtrl-sys-color-primary: var(--md-sys-color-warning);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-warning);
+}
+
+.matjark-chip-delete {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-inline-start: 2px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+}
+
+.matjark-chip-delete:hover {
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-error);
+}
+
+/* Ensure MUI X Charts inherit the same application palette and typography. */
+.MuiChartsRoot,
+.MuiChartsRoot text,
+.MuiChartsAxis-tickLabel,
+.MuiChartsLegend-label {
+  font-family: 'Cairo', sans-serif !important;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
