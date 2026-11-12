@@ -24,7 +24,7 @@ import {
   saveDatabaseImmediate,
 } from '../utils/storage';
 import { generateZatcaTlvBase64 } from '../utils/zatcaQr';
-import { formatEgp, CurrencyFormatOptions } from '../utils/currency';
+import { calculateLineAccounting, formatEgp, CurrencyFormatOptions, roundToTwoDecimals } from '../utils/currency';
 
 export type ActiveTab =
   | 'pos'
@@ -107,6 +107,129 @@ interface StoreContextType {
 }
 
 const StoreContext = createContext<StoreContextType | null>(null);
+
+const getNextDocumentSequence = (
+  storedSequence: number | undefined,
+  existingNumbers: Array<string | undefined>,
+  prefix: 'INV' | 'EXP'
+): number => {
+  const highestExisting = existingNumbers.reduce((max, value) => {
+    const match = value?.match(new RegExp(`^${prefix}-(?:\\\\d{4}-)?(\\\\d+)import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
+import {
+  CartItem,
+  Customer,
+  Expense,
+  Invoice,
+  PaymentMethod,
+  Product,
+  StoreSettings,
+  Supplier,
+} from '../types';
+import { soundService } from '../utils/audio';
+import { generateBenchmarkProducts } from '../utils/performance';
+import {
+  AppDatabase,
+  INITIAL_CUSTOMERS,
+  INITIAL_EXPENSES,
+  INITIAL_INVOICES,
+  INITIAL_PRODUCTS,
+  INITIAL_SETTINGS,
+  INITIAL_SUPPLIERS,
+  loadDatabase,
+  saveDatabaseDebounced,
+  saveDatabaseImmediate,
+} from '../utils/storage';
+import { generateZatcaTlvBase64 } from '../utils/zatcaQr';
+import { calculateLineAccounting, formatEgp, CurrencyFormatOptions, roundToTwoDecimals } from '../utils/currency';
+
+export type ActiveTab =
+  | 'pos'
+  | 'inventory'
+  | 'invoices'
+  | 'accounting'
+  | 'reports'
+  | 'customers'
+  | 'performance'
+  | 'settings';
+
+export interface SnackbarMessage {
+  id: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+  text: string;
+}
+
+interface CartTotals {
+  subtotal: number;
+  discountTotal: number;
+  taxTotal: number;
+  grandTotal: number;
+  itemsCount: number;
+  unitsCount: number;
+}
+
+interface StoreContextType {
+  activeTab: ActiveTab;
+  setActiveTab: (tab: ActiveTab) => void;
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
+  snackbars: SnackbarMessage[];
+  showToast: (text: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
+  dismissToast: (id: string) => void;
+  formatCurrency: (amount: number, options?: CurrencyFormatOptions) => string;
+  products: Product[];
+  categories: string[];
+  barcodeIndex: Map<string, Product>;
+  invoices: Invoice[];
+  customers: Customer[];
+  suppliers: Supplier[];
+  expenses: Expense[];
+  settings: StoreSettings;
+  isCartTaxEnabled: boolean;
+  setIsCartTaxEnabled: (enabled: boolean) => void;
+  cart: CartItem[];
+  cartTotals: CartTotals;
+  addToCart: (product: Product, quantity?: number) => void;
+  addByBarcode: (barcode: string) => boolean;
+  updateCartQuantity: (productId: string, quantity: number) => void;
+  updateCartDiscount: (productId: string, discount: number) => void;
+  removeFromCart: (productId: string) => void;
+  clearCart: () => void;
+  replaceCart: (items: CartItem[]) => void;
+  checkoutInvoice: (params: {
+    paymentMethod: PaymentMethod;
+    amountPaid: number;
+    customerId?: string;
+    customerName?: string;
+    customerTaxNumber?: string;
+    notes?: string;
+  }) => Invoice | null;
+  addProduct: (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => Product;
+  updateProduct: (id: string, updates: Partial<Product>) => void;
+  deleteProduct: (id: string) => void;
+  bulkAddProducts: (newProducts: Product[]) => void;
+  refundInvoice: (invoiceId: string) => boolean;
+  addExpense: (expense: Omit<Expense, 'id'>) => void;
+  deleteExpense: (id: string) => void;
+  addCustomer: (customer: Omit<Customer, 'id' | 'createdAt'>) => Customer;
+  updateCustomer: (id: string, updates: Partial<Customer>) => void;
+  addSupplier: (supplier: Omit<Supplier, 'id' | 'createdAt'>) => Supplier;
+  updateSupplier: (id: string, updates: Partial<Supplier>) => void;
+  updateSettings: (updates: Partial<StoreSettings>) => void;
+  loadBenchmarkStressTest: (count?: number) => void;
+  resetToSampleData: () => void;
+  restoreFromDatabase: (db: AppDatabase) => void;
+  backupToGoogleDrive: () => Promise<boolean>;
+  restoreFromGoogleDrive: () => Promise<boolean>;
+}
+
+));
+    return match ? Math.max(max, Number(match[1]) || 0) : max;
+  }, 0);
+  const stored = Number.isSafeInteger(storedSequence) && (storedSequence ?? 0) > 0
+    ? storedSequence!
+    : 1;
+  return Math.max(stored, highestExisting + 1);
+};
 const GOOGLE_DRIVE_STORAGE_KEY = 'matjark_google_drive_cloud_snapshot';
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [db, setDb] = useState<AppDatabase>(() => loadDatabase());
@@ -191,28 +314,30 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     let subtotal = 0;
     let discountTotal = 0;
     let taxTotal = 0;
+    let grandTotal = 0;
     let unitsCount = 0;
 
     cart.forEach((item) => {
-      const lineSubtotal = item.unitPrice * item.quantity;
-      const lineDiscount = item.discount * item.quantity;
-      const netLine = Math.max(0, lineSubtotal - lineDiscount);
-      const effectiveTaxRate = isCartTaxEnabled ? item.taxRate || db.settings.defaultTaxRate || 0.14 : 0;
-      const lineTax = netLine * effectiveTaxRate;
+      const line = calculateLineAccounting({
+        unitPrice: item.unitPrice,
+        quantity: item.quantity,
+        discountPerItem: item.discount,
+        taxRate: item.taxRate ?? db.settings.defaultTaxRate ?? 0.14,
+        isTaxEnabled: isCartTaxEnabled,
+      });
 
-      subtotal += lineSubtotal;
-      discountTotal += lineDiscount;
-      taxTotal += lineTax;
+      subtotal += line.subtotal;
+      discountTotal += line.discountTotal;
+      taxTotal += line.taxAmount;
+      grandTotal += line.totalWithTax;
       unitsCount += item.quantity;
     });
 
-    const grandTotal = subtotal - discountTotal + (isCartTaxEnabled ? taxTotal : 0);
-
     return {
-      subtotal: Math.round(subtotal * 100) / 100,
-      discountTotal: Math.round(discountTotal * 100) / 100,
-      taxTotal: isCartTaxEnabled ? Math.round(taxTotal * 100) / 100 : 0,
-      grandTotal: Math.round(grandTotal * 100) / 100,
+      subtotal: roundToTwoDecimals(subtotal),
+      discountTotal: roundToTwoDecimals(discountTotal),
+      taxTotal: isCartTaxEnabled ? roundToTwoDecimals(taxTotal) : 0,
+      grandTotal: roundToTwoDecimals(grandTotal),
       itemsCount: cart.length,
       unitsCount,
     };
@@ -296,8 +421,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 
   const updateCartDiscount = useCallback((productId: string, discount: number) => {
+    const requestedDiscount = Number.isFinite(discount) ? Math.max(0, discount) : 0;
     setCart((prev) =>
-      prev.map((item) => (item.product.id === productId ? { ...item, discount: Math.max(0, discount) } : item))
+      prev.map((item) =>
+        item.product.id === productId
+          ? { ...item, discount: Math.min(item.unitPrice, requestedDiscount) }
+          : item
+      )
     );
   }, []);
 
@@ -326,26 +456,86 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         showToast('السلة فارغة!', 'error');
         return null;
       }
-      const invNumber = `INV-${Date.now().toString().slice(-6)}`;
-      const now = Date.now();
-      const change = Math.max(0, params.amountPaid - cartTotals.grandTotal);
 
-      const items = cart.map((c) => {
-        const netLine = Math.max(0, c.unitPrice * c.quantity - c.discount * c.quantity);
-        const effectiveRate = isCartTaxEnabled ? c.taxRate || db.settings.defaultTaxRate || 0.14 : 0;
-        const taxAmount = netLine * effectiveRate;
-        return {
-          productId: c.product.id,
-          productName: c.product.name,
-          barcode: c.product.barcode,
-          quantity: c.quantity,
-          unitPrice: c.unitPrice,
-          costPrice: c.product.costPrice,
-          discount: c.discount * c.quantity,
+      if (params.paymentMethod === 'credit') {
+        showToast('الدفع الآجل غير مفعّل حاليًا.', 'error');
+        return null;
+      }
+
+      const paidAmount = Number(params.amountPaid);
+      if (!Number.isFinite(paidAmount) || paidAmount < 0) {
+        showToast('يرجى إدخال مبلغ دفع صحيح.', 'error');
+        return null;
+      }
+
+      const roundedPaidAmount = roundToTwoDecimals(paidAmount);
+      if (params.paymentMethod === 'cash' && roundedPaidAmount < cartTotals.grandTotal) {
+        showToast('المبلغ المستلم أقل من إجمالي الفاتورة.', 'error');
+        return null;
+      }
+      if (
+        params.paymentMethod !== 'cash' &&
+        Math.abs(roundedPaidAmount - cartTotals.grandTotal) >= 0.01
+      ) {
+        showToast('يجب أن يساوي مبلغ الدفع الإلكتروني إجمالي الفاتورة.', 'error');
+        return null;
+      }
+
+      const productById = new Map(db.products.map((product) => [product.id, product]));
+      const unavailableItem = cart.find((item) => {
+        const liveProduct = productById.get(item.product.id);
+        return !liveProduct || !Number.isFinite(liveProduct.stock) || liveProduct.stock < item.quantity;
+      });
+      if (unavailableItem) {
+        const liveProduct = productById.get(unavailableItem.product.id);
+        showToast(
+          liveProduct
+            ? `الكمية المتاحة من "${liveProduct.name}" لم تعد تكفي لإتمام البيع.`
+            : `الصنف "${unavailableItem.product.name}" لم يعد موجودًا في المخزن.`,
+          'error'
+        );
+        return null;
+      }
+
+      const now = Date.now();
+      const invoiceSequence = getNextDocumentSequence(
+        db.nextInvoiceSequence,
+        db.invoices.map((invoice) => invoice.invoiceNumber),
+        'INV'
+      );
+      const year = new Date(now).getFullYear();
+      const sequenceText = String(invoiceSequence).padStart(6, '0');
+      const invNumber = `INV-${year}-${sequenceText}`;
+      const change =
+        params.paymentMethod === 'cash'
+          ? roundToTwoDecimals(roundedPaidAmount - cartTotals.grandTotal)
+          : 0;
+
+      const items = cart.map((cartItem) => {
+        const product = productById.get(cartItem.product.id)!;
+        const effectiveRate = isCartTaxEnabled
+          ? cartItem.taxRate ?? db.settings.defaultTaxRate ?? 0.14
+          : 0;
+        const line = calculateLineAccounting({
+          unitPrice: cartItem.unitPrice,
+          quantity: cartItem.quantity,
+          discountPerItem: cartItem.discount,
           taxRate: effectiveRate,
-          subtotal: netLine,
-          taxAmount,
-          total: netLine + taxAmount,
+          isTaxEnabled: isCartTaxEnabled,
+        });
+
+        return {
+          productId: product.id,
+          productName: product.name,
+          barcode: product.barcode,
+          quantity: cartItem.quantity,
+          unitPrice: cartItem.unitPrice,
+          costPrice: product.costPrice,
+          discount: line.discountTotal,
+          taxRate: effectiveRate,
+          subtotal: line.netLineTotal,
+          taxAmount: line.taxAmount,
+          total: line.totalWithTax,
         };
       });
 
@@ -358,7 +548,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
 
       const newInvoice: Invoice = {
-        id: `inv-${Date.now()}`,
+        id: `inv-${year}-${sequenceText}`,
         invoiceNumber: invNumber,
         timestamp: now,
         items,
@@ -367,8 +557,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         taxTotal: cartTotals.taxTotal,
         grandTotal: cartTotals.grandTotal,
         paymentMethod: params.paymentMethod,
-        amountPaid: params.amountPaid,
-        changeDue: Math.round(change * 100) / 100,
+        amountPaid: roundedPaidAmount,
+        changeDue: change,
         customerId: params.customerId,
         customerName: params.customerName || 'عميل نقدي',
         customerTaxNumber: params.customerTaxNumber,
@@ -379,13 +569,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         notes: params.notes,
       };
 
-      const updatedProducts = db.products.map((p) => {
-        const inCart = cart.find((item) => item.product.id === p.id);
-        if (inCart) return { ...p, stock: Math.max(0, p.stock - inCart.quantity), updatedAt: now };
-        return p;
+      const updatedProducts = db.products.map((product) => {
+        const cartItem = cart.find((item) => item.product.id === product.id);
+        if (!cartItem) return product;
+        return {
+          ...product,
+          stock: product.stock - cartItem.quantity,
+          updatedAt: now,
+        };
       });
 
-      const nextDb: AppDatabase = { ...db, products: updatedProducts, invoices: [newInvoice, ...db.invoices] };
+      const nextDb: AppDatabase = {
+        ...db,
+        products: updatedProducts,
+        invoices: [newInvoice, ...db.invoices],
+        nextInvoiceSequence: invoiceSequence + 1,
+      };
       setDb(nextDb);
       saveDatabaseImmediate(nextDb);
       setCart([]);
@@ -474,9 +673,26 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const addExpense = useCallback(
     (expenseData: Omit<Expense, 'id'>) => {
-      const newExp: Expense = { ...expenseData, id: `exp-${Date.now()}` };
+      const now = Date.now();
       setDb((prev) => {
-        const next = { ...prev, expenses: [newExp, ...prev.expenses] };
+        const expenseSequence = getNextDocumentSequence(
+          prev.nextExpenseSequence,
+          prev.expenses.map((expense) => expense.receiptNumber),
+          'EXP'
+        );
+        const year = new Date(now).getFullYear();
+        const sequenceText = String(expenseSequence).padStart(6, '0');
+        const generatedReceiptNumber = `EXP-${year}-${sequenceText}`;
+        const newExpense: Expense = {
+          ...expenseData,
+          id: `exp-${year}-${sequenceText}`,
+          receiptNumber: expenseData.receiptNumber?.trim() || generatedReceiptNumber,
+        };
+        const next = {
+          ...prev,
+          expenses: [newExpense, ...prev.expenses],
+          nextExpenseSequence: expenseSequence + 1,
+        };
         saveDatabaseDebounced(next);
         return next;
       });
