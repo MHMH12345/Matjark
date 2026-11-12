@@ -9,16 +9,12 @@ import {
   BarChart3,
   TrendingUp,
   Award,
-  PieChart,
-  ShoppingBag,
   CreditCard,
-  Banknote,
-  DollarSign,
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 
 export const ReportsScreen: React.FC = () => {
-  const { invoices, products, settings, formatCurrency } = useStore();
+  const { invoices, settings, formatCurrency } = useStore();
 
   // Top Selling Items (memoized)
   const topSellingProducts = useMemo(() => {
@@ -152,7 +148,7 @@ export const ReportsScreen: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* SVG Daily Trend Chart */}
+        {/* MUI X Daily Trend Chart */}
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--spacious">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
