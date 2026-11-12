@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { MuiCard } from '../ui/MuiCard';
 import {
   Wallet,
   ArrowDownRight,
@@ -227,94 +228,20 @@ export const AccountingScreen: React.FC = () => {
     <div className="space-y-4">
       {/* Financial Executive Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="bg-white dark:bg-[#1e1e1e] p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-slate-500">المبيعات (قبل الضريبة)</span>
-            <ArrowUpRight className="w-4 h-4 text-emerald-600" />
-          </div>
-          <span className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
-            {formatCurrency(financialSummary.grossRevenue)}
-          </span>
-          <span className="block text-[11px] text-slate-400 mt-1">
-            تكلفة البضاعة: {formatCurrency(financialSummary.costOfGoodsSold)}
-          </span>
-        </div>
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--horizontal"></MuiCard>
 
-        <div className="bg-white dark:bg-[#1e1e1e] p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-slate-500">مجمل الربح (Gross Profit)</span>
-            <span className="text-xs font-mono font-bold text-blue-600">
-              {financialSummary.grossRevenue > 0
-                ? `${Math.round((financialSummary.grossProfit / financialSummary.grossRevenue) * 100)}%`
-                : '0%'}
-            </span>
-          </div>
-          <span className="text-2xl font-bold font-mono text-blue-600 dark:text-blue-400">
-            {formatCurrency(financialSummary.grossProfit)}
-          </span>
-          <span className="block text-[11px] text-slate-400 mt-1">قبل خصم المصروفات التشغيلية</span>
-        </div>
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--horizontal"></MuiCard>
 
-        <div className="bg-white dark:bg-[#1e1e1e] p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-slate-500">المصروفات التشغيلية</span>
-            <TrendingDown className="w-4 h-4 text-rose-500" />
-          </div>
-          <span className="text-2xl font-bold font-mono text-rose-600 dark:text-rose-400">
-            {formatCurrency(financialSummary.totalExpenses)}
-          </span>
-          <span className="block text-[11px] text-slate-400 mt-1">
-            {expenses.length} سند صرف مسجل
-          </span>
-        </div>
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--horizontal"></MuiCard>
 
-        <div className="bg-white dark:bg-[#1e1e1e] p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-slate-500">صافي الأرباح (Net Profit)</span>
-            <Wallet className="w-4 h-4 text-emerald-600" />
-          </div>
-          <span
-            className={`text-2xl font-bold font-mono ${
-              financialSummary.netProfit >= 0
-                ? 'text-emerald-600 dark:text-emerald-400'
-                : 'text-rose-600'
-            }`}
-          >
-            {formatCurrency(financialSummary.netProfit)}
-          </span>
-          <span className="block text-[11px] text-slate-400 mt-1">
-            الربح الصافي بعد كامل التكاليف
-          </span>
-        </div>
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--horizontal"></MuiCard>
       </div>
 
       {/* VAT Settlement Banner */}
       {settings.enableTax ? (
-        <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-4 rounded-xl shadow-sm flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h4 className="text-sm font-bold flex items-center gap-2">
-              <FileCheck className="w-4 h-4 text-blue-300" />
-              <span>تسوية ضريبة القيمة المضافة (إقرار القيمة المضافة - 14%)</span>
-            </h4>
-            <p className="text-xs text-blue-200 mt-0.5">
-              الضريبة المحصلة من المبيعات ({formatCurrency(financialSummary.salesVatCollected)}) - ضريبة المصروفات القابلة للاسترداد ({formatCurrency(financialSummary.expensesVatPaid)})
-            </p>
-          </div>
-          <div className="bg-white/10 px-4 py-2 rounded-lg text-end">
-            <span className="text-[11px] text-blue-200 block">صافي الضريبة المستحقة للسداد:</span>
-            <span className="text-xl font-bold font-mono text-white">
-              {formatCurrency(financialSummary.netVatPayable)}
-            </span>
-          </div>
-        </div>
+        <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--horizontal"></MuiCard>
       ) : (
-        <div className="bg-slate-100 dark:bg-[#1a1a1a] text-slate-700 dark:text-slate-300 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs">
-            <FileCheck className="w-4 h-4 text-slate-400" />
-            <span>حالة الضريبة: <strong>معفاة / ملغاة</strong> (المحل يعمل بدون إضافة ضريبة قيمة مضافة على الفواتير)</span>
-          </div>
-          <span className="text-xs font-mono text-slate-500">معدل الضريبة: 0%</span>
-        </div>
+        <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal"></MuiCard>
       )}
 
       {/* Expenses Table */}
