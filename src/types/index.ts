@@ -1,3 +1,6 @@
+export type ScaledMoney = number;
+export type BasisPoints = number;
+
 export type PaymentMethod = 'cash' | 'card' | 'wallet' | 'transfer' | 'credit';
 
 export type InvoiceStatus = 'completed' | 'refunded' | 'partially_refunded' | 'voided';
