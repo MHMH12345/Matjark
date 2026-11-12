@@ -71,7 +71,7 @@ export const InvoicesScreen: React.FC = () => {
         headerName: 'رقم الفاتورة',
         width: 140,
         renderCell: (row) => (
-          <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
+          <span className="font-mono font-bold text-[var(--md-sys-color-primary)]">
             {row.invoiceNumber}
           </span>
         ),
@@ -81,7 +81,7 @@ export const InvoicesScreen: React.FC = () => {
         headerName: 'التاريخ والوقت',
         width: 160,
         renderCell: (row) => (
-          <span className="text-[11px] text-slate-600 dark:text-slate-400 font-mono">
+          <span className="text-[11px] text-[var(--md-sys-color-on-surface-variant)] font-mono">
             {new Date(row.timestamp).toLocaleDateString('ar-EG', {
               year: 'numeric',
               month: 'short',
@@ -97,7 +97,7 @@ export const InvoicesScreen: React.FC = () => {
         headerName: 'العميل',
         minWidth: 140,
         renderCell: (row) => (
-          <span className="font-medium text-slate-800 dark:text-slate-200 truncate">
+          <span className="font-medium text-[var(--md-sys-color-on-surface)] truncate">
             {row.customerName || 'عميل نقدي'}
           </span>
         ),
@@ -112,15 +112,15 @@ export const InvoicesScreen: React.FC = () => {
           const isCash = row.paymentMethod === 'cash';
           const isWallet = row.paymentMethod === 'wallet';
           return (
-            <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800">
+            <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-[var(--md-sys-color-surface-container-high)]">
               {isCard ? (
-                <CreditCard className="w-3 h-3 text-blue-500" />
+                <CreditCard className="w-3 h-3 text-[var(--md-sys-color-primary)]" />
               ) : isCash ? (
-                <Banknote className="w-3 h-3 text-emerald-500" />
+                <Banknote className="w-3 h-3 text-[var(--md-sys-color-success)]" />
               ) : isWallet ? (
-                <span className="text-[10px] font-bold text-rose-500">كاش</span>
+                <span className="text-[10px] font-bold text-[var(--md-sys-color-error)]">كاش</span>
               ) : (
-                <Clock className="w-3 h-3 text-amber-500" />
+                <Clock className="w-3 h-3 text-[var(--md-sys-color-warning)]" />
               )}
               {isCard ? 'فيزا/ميزة' : isCash ? 'نقدي' : isWallet ? 'فودافون كاش' : 'تحويل'}
             </span>
@@ -140,7 +140,7 @@ export const InvoicesScreen: React.FC = () => {
         width: 120,
         align: 'right',
         renderCell: (row) => (
-          <span className="font-mono text-slate-500">
+          <span className="font-mono text-[var(--md-sys-color-on-surface-variant)]">
             {row.taxTotal > 0 ? formatCurrency(row.taxTotal) : 'معفاة'}
           </span>
         ),
@@ -151,7 +151,7 @@ export const InvoicesScreen: React.FC = () => {
         width: 130,
         align: 'right',
         renderCell: (row) => (
-          <span className="font-mono font-bold text-slate-900 dark:text-slate-100">
+          <span className="font-mono font-bold text-[var(--md-sys-color-on-surface)]">
             {formatCurrency(row.grandTotal)}
           </span>
         ),
@@ -210,48 +210,48 @@ export const InvoicesScreen: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
-            <span className="text-xs text-slate-500 block">إجمالي المبيعات النشطة</span>
-            <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">إجمالي المبيعات النشطة</span>
+            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-success)]">
               {formatCurrency(invoiceMetrics.completedSum)}
             </span>
           </div>
-          <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600">
+          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)]">
             <CheckCircle2 className="w-5 h-5" />
           </div>
         </MuiCard>
 
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
-            <span className="text-xs text-slate-500 block">عدد الفواتير المصدرة</span>
-            <span className="text-xl font-bold font-mono text-slate-900 dark:text-slate-100">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">عدد الفواتير المصدرة</span>
+            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-on-surface)]">
               {invoiceMetrics.completedCount} فاتورة
             </span>
           </div>
-          <div className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600">
+          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-primary)]">
             <FileText className="w-5 h-5" />
           </div>
         </MuiCard>
 
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
-            <span className="text-xs text-slate-500 block">ضريبة القيمة المضافة المحصلة</span>
-            <span className="text-xl font-bold font-mono text-purple-600 dark:text-purple-400">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">ضريبة القيمة المضافة المحصلة</span>
+            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-tertiary)]">
               {formatCurrency(invoiceMetrics.taxTotal)}
             </span>
           </div>
-          <div className="p-2.5 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600">
+          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-tertiary)]">
             <span className="font-bold text-xs font-mono">VAT</span>
           </div>
         </MuiCard>
 
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
-            <span className="text-xs text-slate-500 block">المبالغ المسترجعة</span>
-            <span className="text-xl font-bold font-mono text-rose-500">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">المبالغ المسترجعة</span>
+            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-error)]">
               {formatCurrency(invoiceMetrics.refundedSum)}
             </span>
           </div>
-          <div className="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/50 text-rose-600">
+          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-error)]">
             <RotateCcw className="w-5 h-5" />
           </div>
         </MuiCard>
