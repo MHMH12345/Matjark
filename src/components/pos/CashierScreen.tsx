@@ -894,7 +894,7 @@ export const CashierScreen: React.FC = () => {
             <MuiSwitch
               checked={isCartTaxEnabled}
               onChange={(event) => setIsCartTaxEnabled(event.target.checked)}
-              label="ضريبة القيمة المضافة (14%)"
+              label="ضريبة القيمة المضافة المشمولة في سعر الرف"
               className="matjark-pos-tax-switch"
             />
             <span className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)] whitespace-nowrap">
