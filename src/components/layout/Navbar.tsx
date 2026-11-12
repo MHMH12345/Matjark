@@ -46,7 +46,7 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#181818]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs">
+    <header className="sticky top-0 z-40 bg-[var(--md-sys-color-surface)] backdrop-blur-md border-b border-[var(--md-sys-color-outline-variant)] shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo & Brand */}
@@ -56,17 +56,17 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+                <span className="text-base font-extrabold text-[var(--md-sys-color-on-surface)] tracking-tight">
                   مَتْجَرَك
                 </span>
-                <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">
+                <span className="text-xs font-mono font-bold text-[var(--md-sys-color-primary)]">
                   MATJARK
                 </span>
-                <span className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-[10px] font-bold px-1.5 py-0.2 rounded">
+                <span className="bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-on-success-container)] text-[10px] font-bold px-1.5 py-0.2 rounded">
                   V2 ULTRA
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400">React 19 & Material Architecture</p>
+              <p className="text-[10px] text-[var(--md-sys-color-outline)]">React 19 & Material Architecture</p>
             </div>
           </div>
 
@@ -82,7 +82,7 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer ${
                     isActive
                       ? 'bg-blue-600 text-white shadow-sm'
-                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      : 'text-[var(--md-sys-color-on-surface-variant)] dark:text-slate-300 hover:bg-[var(--md-sys-color-surface-container-high)] dark:hover:bg-slate-800'
                   }`}
                 >
                   {item.icon}
@@ -90,7 +90,7 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
                   {item.id === 'pos' && cartTotals.unitsCount > 0 && (
                     <span
                       className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold font-mono ${
-                        isActive ? 'bg-white text-blue-600' : 'bg-blue-600 text-white'
+                        isActive ? 'bg-white text-[var(--md-sys-color-primary)]' : 'bg-blue-600 text-white'
                       }`}
                     >
                       {cartTotals.unitsCount}
@@ -110,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors cursor-pointer"
               title="انقر لفتح مختبر قياس الأداء المباشر واختبار المقارنة"
             >
-              <Activity className="w-3.5 h-3.5 animate-pulse text-emerald-500" />
+              <Activity className="w-3.5 h-3.5 animate-pulse text-[var(--md-sys-color-success)]" />
               <span>{fps} FPS</span>
             </button>
 
@@ -118,16 +118,16 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface-variant)] dark:text-[var(--md-sys-color-outline)] dark:hover:text-slate-200 hover:bg-[var(--md-sys-color-surface-container-high)] dark:hover:bg-slate-800 transition-colors cursor-pointer"
               title={theme === 'dark' ? 'التحويل إلى الوضع النهاري' : 'التحويل إلى الوضع الليلي'}
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-[var(--md-sys-color-warning)]" /> : <Moon className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
         {/* Mobile / Tablet Horizontal Navigation Scroll */}
-        <div className="flex lg:hidden overflow-x-auto no-scrollbar py-2 gap-1 border-t border-slate-100 dark:border-slate-800/60">
+        <div className="flex lg:hidden overflow-x-auto no-scrollbar py-2 gap-1 border-t border-[var(--md-sys-color-outline-variant)]">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
             return (
@@ -138,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                   isActive
                     ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    : 'text-[var(--md-sys-color-on-surface-variant)] dark:text-slate-300 hover:bg-[var(--md-sys-color-surface-container-high)] dark:hover:bg-slate-800'
                 }`}
               >
                 {item.icon}
@@ -146,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
                 {item.id === 'pos' && cartTotals.unitsCount > 0 && (
                   <span
                     className={`text-[10px] px-1 rounded-full font-mono ${
-                      isActive ? 'bg-white text-blue-600' : 'bg-blue-600 text-white'
+                      isActive ? 'bg-white text-[var(--md-sys-color-primary)]' : 'bg-blue-600 text-white'
                     }`}
                   >
                     {cartTotals.unitsCount}
