@@ -437,7 +437,10 @@ export const CashierScreen: React.FC = () => {
   }, [heldSaleCompleted, holdAddReturning, cart.length, openQuickHold]);
 
   const handleHoldAddAnimationEnd = useCallback((event: React.AnimationEvent<HTMLDivElement>) => {
-    if (event.animationName !== 'matjark-hold-add-return' || !holdAddReturning) return;
+    if (
+      !['matjark-hold-add-return', 'matjark-hold-add-return-small'].includes(event.animationName) ||
+      !holdAddReturning
+    ) return;
     setHoldAddReturning(false);
     setHeldSaleCompleted(true);
     if (holdCompletionTimerRef.current !== null) {
