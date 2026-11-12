@@ -4,6 +4,7 @@
  */
 
 import React, { useMemo } from 'react';
+import { MuiCard } from '../ui/MuiCard';
 import {
   BarChart3,
   TrendingUp,
@@ -104,7 +105,7 @@ export const ReportsScreen: React.FC = () => {
     <div className="space-y-4">
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-[#1e1e1e] p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
           <div className="flex items-center gap-2 text-slate-500 mb-2">
             <TrendingUp className="w-4 h-4 text-emerald-600" />
             <h3 className="text-xs font-bold">معدل مبيعات آخر 7 أيام</h3>
@@ -117,9 +118,9 @@ export const ReportsScreen: React.FC = () => {
             </span>
             <span className="text-xs text-slate-400">{settings.currency} / اليوم</span>
           </div>
-        </div>
+        </MuiCard>
 
-        <div className="bg-white dark:bg-[#1e1e1e] p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
           <div className="flex items-center gap-2 text-slate-500 mb-2">
             <CreditCard className="w-4 h-4 text-blue-600" />
             <h3 className="text-xs font-bold">نسبة المدفوعات الإلكترونية (فيزا / ميزة)</h3>
@@ -132,9 +133,9 @@ export const ReportsScreen: React.FC = () => {
               ({formatCurrency(paymentBreakdown.card.total)})
             </span>
           </div>
-        </div>
+        </MuiCard>
 
-        <div className="bg-white dark:bg-[#1e1e1e] p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
           <div className="flex items-center gap-2 text-slate-500 mb-2">
             <Award className="w-4 h-4 text-amber-500" />
             <h3 className="text-xs font-bold">المنتج الأكثر طلبًا</h3>
@@ -147,12 +148,12 @@ export const ReportsScreen: React.FC = () => {
               {topSellingProducts[0] ? `${topSellingProducts[0].quantity} قطعة مباعة` : ''}
             </span>
           </div>
-        </div>
+        </MuiCard>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* SVG Daily Trend Chart */}
-        <div className="bg-white dark:bg-[#1e1e1e] p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--spacious">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -188,7 +189,7 @@ export const ReportsScreen: React.FC = () => {
         </div>
 
         {/* Top 5 Products Leaderboard */}
-        <div className="bg-white dark:bg-[#1e1e1e] p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--spacious">
           <div className="flex items-center gap-2 mb-4">
             <Award className="w-5 h-5 text-amber-500" />
             <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
@@ -224,8 +225,8 @@ export const ReportsScreen: React.FC = () => {
               ))
             )}
           </div>
-        </div>
-      </div>
+        </MuiCard>
+      </MuiCard>
     </div>
   );
 };
