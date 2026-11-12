@@ -354,8 +354,8 @@ html:not(.dark) .pos-snackbar-box {
   to { opacity: 1; transform: translateY(0); }
 }
 
-html:not(.dark) #root {
-  color: #1d1b20 !important;
+#root {
+  color: var(--md-sys-color-on-background) !important;
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -379,10 +379,7 @@ html:not(.dark) #root {
   color: var(--md-sys-color-primary);
 }
 .matjark-icon-button--danger {
-  color: #b3261e;
-}
-.dark .matjark-icon-button--danger {
-  color: #ffb4ab;
+  color: var(--md-sys-color-error);
 }
 .matjark-sidebar-theme {
   position: absolute !important;
@@ -1754,21 +1751,32 @@ html:not(.dark) #root {
 }
 
 .matjark-chip-delete {
-  display: inline-grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  margin-inline-start: 2px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--md-sys-color-on-surface-variant);
-  cursor: pointer;
+  display: inline-flex !important;
+  flex: 0 0 28px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  margin-inline-start: 2px !important;
+  padding: 0 !important;
+  --mtrl-sys-color-primary: var(--md-sys-color-error);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-error);
 }
 
-.matjark-chip-delete:hover {
-  background: var(--md-sys-color-surface-container-high);
-  color: var(--md-sys-color-error);
+.matjark-chip-delete::part(icon-button) {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  border-radius: 50% !important;
+  color: var(--md-sys-color-error) !important;
+}
+
+.matjark-chip-delete:hover::part(icon-button) {
+  background: var(--md-sys-color-error-container) !important;
+  color: var(--md-sys-color-error) !important;
 }
 
 /* Ensure MUI X Charts inherit the same application palette and typography. */
