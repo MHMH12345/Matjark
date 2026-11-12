@@ -131,7 +131,7 @@ export const AccountingScreen: React.FC = () => {
         headerName: 'رقم السند',
         width: 130,
         renderCell: (row) => (
-          <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
+          <span className="font-mono font-bold text-[var(--md-sys-color-on-surface-variant)]">
             {row.receiptNumber || row.id}
           </span>
         ),
@@ -141,7 +141,7 @@ export const AccountingScreen: React.FC = () => {
         headerName: 'التاريخ',
         width: 140,
         renderCell: (row) => (
-          <span className="text-[11px] font-mono text-slate-500">
+          <span className="text-[11px] font-mono text-[var(--md-sys-color-on-surface-variant)]">
             {new Date(row.date).toLocaleDateString('ar-EG', {
               year: 'numeric',
               month: 'short',
@@ -156,8 +156,8 @@ export const AccountingScreen: React.FC = () => {
         minWidth: 180,
         renderCell: (row) => (
           <div className="flex flex-col truncate">
-            <span className="font-bold text-slate-800 dark:text-slate-200 truncate">{row.title}</span>
-            {row.notes && <span className="text-[10px] text-slate-400 truncate">{row.notes}</span>}
+            <span className="font-bold text-[var(--md-sys-color-on-surface)] truncate">{row.title}</span>
+            {row.notes && <span className="text-[10px] text-[var(--md-sys-color-outline)] truncate">{row.notes}</span>}
           </div>
         ),
       },
@@ -175,7 +175,7 @@ export const AccountingScreen: React.FC = () => {
         width: 120,
         align: 'center',
         renderCell: (row) => (
-          <span className="text-xs text-slate-600 dark:text-slate-400">
+          <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">
             {row.paymentMethod === 'card' ? 'فيزا/ميزة' : row.paymentMethod === 'cash' ? 'نقدي (كاش)' : 'تحويل'}
           </span>
         ),
@@ -186,7 +186,7 @@ export const AccountingScreen: React.FC = () => {
         width: 120,
         align: 'right',
         renderCell: (row) => (
-          <span className="font-mono text-xs text-slate-500">
+          <span className="font-mono text-xs text-[var(--md-sys-color-on-surface-variant)]">
             {formatCurrency(row.taxAmount || 0)}
           </span>
         ),
@@ -197,7 +197,7 @@ export const AccountingScreen: React.FC = () => {
         width: 140,
         align: 'right',
         renderCell: (row) => (
-          <span className="font-mono font-bold text-rose-600 dark:text-rose-400">
+          <span className="font-mono font-bold text-[var(--md-sys-color-error)]">
             {formatCurrency(row.amount + (row.taxAmount || 0))}
           </span>
         ),
@@ -230,60 +230,60 @@ export const AccountingScreen: React.FC = () => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <MuiCard variant="outlined" className="matjark-surface-card">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-slate-500">المبيعات (قبل الضريبة)</span>
-            <ArrowUpRight className="w-4 h-4 text-emerald-600" />
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">المبيعات (قبل الضريبة)</span>
+            <ArrowUpRight className="w-4 h-4 text-[var(--md-sys-color-success)]" />
           </div>
-          <span className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
+          <span className="text-2xl font-bold font-mono text-[var(--md-sys-color-on-surface)]">
             {formatCurrency(financialSummary.grossRevenue)}
           </span>
-          <span className="block text-[11px] text-slate-400 mt-1">
+          <span className="block text-[11px] text-[var(--md-sys-color-outline)] mt-1">
             تكلفة البضاعة: {formatCurrency(financialSummary.costOfGoodsSold)}
           </span>
         </MuiCard>
 
         <MuiCard variant="outlined" className="matjark-surface-card">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-slate-500">مجمل الربح (Gross Profit)</span>
-            <span className="text-xs font-mono font-bold text-blue-600">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">مجمل الربح (Gross Profit)</span>
+            <span className="text-xs font-mono font-bold text-[var(--md-sys-color-primary)]">
               {financialSummary.grossRevenue > 0
                 ? `${Math.round((financialSummary.grossProfit / financialSummary.grossRevenue) * 100)}%`
                 : '0%'}
             </span>
           </div>
-          <span className="text-2xl font-bold font-mono text-blue-600 dark:text-blue-400">
+          <span className="text-2xl font-bold font-mono text-[var(--md-sys-color-primary)]">
             {formatCurrency(financialSummary.grossProfit)}
           </span>
-          <span className="block text-[11px] text-slate-400 mt-1">قبل خصم المصروفات التشغيلية</span>
+          <span className="block text-[11px] text-[var(--md-sys-color-outline)] mt-1">قبل خصم المصروفات التشغيلية</span>
         </MuiCard>
 
         <MuiCard variant="outlined" className="matjark-surface-card">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-slate-500">المصروفات التشغيلية</span>
-            <TrendingDown className="w-4 h-4 text-rose-500" />
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">المصروفات التشغيلية</span>
+            <TrendingDown className="w-4 h-4 text-[var(--md-sys-color-error)]" />
           </div>
-          <span className="text-2xl font-bold font-mono text-rose-600 dark:text-rose-400">
+          <span className="text-2xl font-bold font-mono text-[var(--md-sys-color-error)]">
             {formatCurrency(financialSummary.totalExpenses)}
           </span>
-          <span className="block text-[11px] text-slate-400 mt-1">
+          <span className="block text-[11px] text-[var(--md-sys-color-outline)] mt-1">
             {expenses.length} سند صرف مسجل
           </span>
         </MuiCard>
 
         <MuiCard variant="outlined" className="matjark-surface-card">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-slate-500">صافي الأرباح (Net Profit)</span>
-            <Wallet className="w-4 h-4 text-emerald-600" />
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">صافي الأرباح (Net Profit)</span>
+            <Wallet className="w-4 h-4 text-[var(--md-sys-color-success)]" />
           </div>
           <span
             className={`text-2xl font-bold font-mono ${
               financialSummary.netProfit >= 0
-                ? 'text-emerald-600 dark:text-emerald-400'
-                : 'text-rose-600'
+                ? 'text-[var(--md-sys-color-success)]'
+                : 'text-[var(--md-sys-color-error)]'
             }`}
           >
             {formatCurrency(financialSummary.netProfit)}
           </span>
-          <span className="block text-[11px] text-slate-400 mt-1">
+          <span className="block text-[11px] text-[var(--md-sys-color-outline)] mt-1">
             الربح الصافي بعد كامل التكاليف
           </span>
         </MuiCard>
@@ -311,10 +311,10 @@ export const AccountingScreen: React.FC = () => {
       ) : (
         <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div className="flex items-center gap-2 text-xs">
-            <FileCheck className="w-4 h-4 text-slate-400" />
+            <FileCheck className="w-4 h-4 text-[var(--md-sys-color-outline)]" />
             <span>حالة الضريبة: <strong>معفاة / ملغاة</strong> (المحل يعمل بدون إضافة ضريبة قيمة مضافة على الفواتير)</span>
           </div>
-          <span className="text-xs font-mono text-slate-500">معدل الضريبة: 0%</span>
+          <span className="text-xs font-mono text-[var(--md-sys-color-on-surface-variant)]">معدل الضريبة: 0%</span>
         </MuiCard>
       )}
 
@@ -366,13 +366,13 @@ export const AccountingScreen: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+              <label className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] block mb-1">
                 بند / فئة المصروف
               </label>
               <MuiSelect
                 value={category}
                 onChange={(e) => setCategory(e.target.value as any)}
-                className="w-full bg-white dark:bg-[#1e1e1e] border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-sm text-slate-800 dark:text-slate-100 outline-none"
+                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg p-2 text-sm text-[var(--md-sys-color-on-surface)] dark:text-slate-100 outline-none"
               >
                 <option value="rent">إيجار المحل أو المستودع</option>
                 <option value="salaries">رواتب وأجور الموظفين</option>
@@ -385,13 +385,13 @@ export const AccountingScreen: React.FC = () => {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+              <label className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] block mb-1">
                 طريقة الدفع
               </label>
               <MuiSelect
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value as any)}
-                className="w-full bg-white dark:bg-[#1e1e1e] border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-sm text-slate-800 dark:text-slate-100 outline-none"
+                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg p-2 text-sm text-[var(--md-sys-color-on-surface)] dark:text-slate-100 outline-none"
               >
                 <option value="card">بطاقة بنكية (فيزا / ميزة / ماستركارد)</option>
                 <option value="transfer">تحويل بنكي / إنستاباي InstaPay</option>
