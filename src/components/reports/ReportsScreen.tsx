@@ -4,6 +4,7 @@
  */
 
 import React, { useMemo } from 'react';
+import { BarChart } from '@mui/x-charts/BarChart';
 import { MuiCard } from '../ui/MuiCard';
 import {
   BarChart3,
@@ -158,35 +159,55 @@ export const ReportsScreen: React.FC = () => {
             <div className="flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                منحنى المبيعات اليومية (خفيف وسريع بدون مكتبات خارجية)
+                المبيعات اليومية — آخر 7 أيام
               </h3>
             </div>
           </div>
 
-          {/* Pure SVG Bar Chart */}
-          <div className="h-56 flex items-end justify-between gap-3 pt-6 px-2 border-b border-slate-200 dark:border-slate-800">
-            {dailyTrends.days.map((d, idx) => {
-              const heightPct = Math.max(10, Math.round((d.total / dailyTrends.maxVal) * 100));
-
-              return (
-                <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-                  <span className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {d.total}
-                  </span>
-                  <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md h-full flex items-end overflow-hidden max-w-[48px]">
-                    <div
-                      style={{ height: `${heightPct}%` }}
-                      className="w-full bg-blue-600 hover:bg-blue-500 rounded-t-md transition-all duration-300 relative"
-                    />
-                  </div>
-                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 pt-1">
-                    {d.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+                    <BarChart
+            xAxis={[{
+              data: dailyTrends.days.map((day) => day.label),
+              scaleType: 'band',
+              tickLabelStyle: {
+                fill: 'var(--md-sys-color-on-surface-variant)',
+                fontFamily: 'Cairo',
+                fontSize: 12,
+              },
+            }]}
+            yAxis={[{
+              min: 0,
+              valueFormatter: (value: number) => formatCurrency(value),
+              tickLabelStyle: {
+                fill: 'var(--md-sys-color-on-surface-variant)',
+                fontFamily: 'Cairo',
+                fontSize: 11,
+              },
+            }]}
+            series={[{
+              data: dailyTrends.days.map((day) => day.total),
+              label: 'المبيعات اليومية',
+              valueFormatter: (value) => value == null ? '' : formatCurrency(value),
+            }]}
+            colors={['var(--md-sys-color-primary)']}
+            height={260}
+            margin={{ top: 16, right: 16, bottom: 34, left: 64 }}
+            grid={{ horizontal: true }}
+            sx={{
+              width: '100%',
+              direction: 'rtl',
+              '& .MuiChartsAxis-line, & .MuiChartsAxis-tick': {
+                stroke: 'var(--md-sys-color-outline-variant)',
+              },
+              '& .MuiChartsGrid-line': {
+                stroke: 'var(--md-sys-color-outline-variant)',
+                strokeOpacity: 0.45,
+              },
+              '& .MuiChartsAxis-tickLabel': {
+                fill: 'var(--md-sys-color-on-surface-variant)',
+                fontFamily: 'Cairo',
+              },
+            }}
+          />
 
         {/* Top 5 Products Leaderboard */}
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--spacious">
