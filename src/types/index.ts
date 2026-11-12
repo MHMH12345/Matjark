@@ -60,6 +60,7 @@ export interface Invoice {
   cashierName: string;
   status: InvoiceStatus;
   isTaxEnabled: boolean;
+  pricesIncludeTax?: boolean;
   zatcaQrString?: string;
   notes?: string;
 }
@@ -108,6 +109,7 @@ export interface StoreSettings {
   phone: string;
   enableTax: boolean; // خيار إلغاء أو تفعيل الضريبة للمرونة التامة
   defaultTaxRate: number; // 0.14 for Egypt 14% or custom
+  pricesIncludeTax?: boolean; // true when sale prices already include VAT
   currency: string; // ج.م
   currencyEn: string; // EGP
   currencyFormat?: 'ar' | 'en' | 'both'; // 'ar' => 1,250.00 ج.م, 'en' => 1,250.00 EGP, 'both' => 1,250.00 ج.م (EGP)
