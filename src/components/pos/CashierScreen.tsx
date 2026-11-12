@@ -812,17 +812,15 @@ export const CashierScreen: React.FC = () => {
                   onClick={handleHoldPlusClick}
                 />
               </div>
-            </div>            {((heldListOpen && holdStorage.sales.length > 0) || (!heldListOpen && (cart.length > 0 || Boolean(holdStorage.activeId)))) && (
-              <MuiButton
-                variant="text"
-                color="secondary"
-                size="small"
-                startIcon={<Trash2 className="w-4 h-4" />}
-                onClick={handleClearAction}
-              >
-                {'تفريغ'}
-              </MuiButton>
-            )}
+            </div>            <MuiIconButton
+              icon={<Trash2 width={18} height={18} className="matjark-hold-icon" />}
+              ariaLabel="تفريغ أو حذف الفاتورة الحالية"
+              variant="filled"
+              size="small"
+              className="matjark-hold-button matjark-hold-button--clear"
+              disabled={!((heldListOpen && holdStorage.sales.length > 0) || (!heldListOpen && (cart.length > 0 || Boolean(holdStorage.activeId))))}
+              onClick={handleClearAction}
+            />
 
           </div>
         </div>
