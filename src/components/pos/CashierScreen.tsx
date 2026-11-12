@@ -595,7 +595,7 @@ export const CashierScreen: React.FC = () => {
     const activeHeldId = holdStorageRef.current.activeId;
     const invoice = checkoutInvoice({
       paymentMethod: selectedPayment,
-      amountPaid: Number(paidAmount) || cartTotals.grandTotal,
+      amountPaid: Number(paidAmount),
       customerId: cust?.id,
       customerName: cust?.name,
       customerTaxNumber: cust?.taxNumber,
