@@ -555,7 +555,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setDb((prev) => {
         const expenseSequence = getNextDocumentSequence(
           prev.nextExpenseSequence,
-          prev.expenses.map((expense) => expense.receiptNumber)
+          prev.expenses.map((expense) => expense.receiptNumber?.startsWith('EXP-') ? expense.receiptNumber : undefined)
         );
         const year = new Date(now).getFullYear();
         const sequenceText = String(expenseSequence).padStart(6, '0');
