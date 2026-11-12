@@ -189,7 +189,7 @@ export const InventoryScreen: React.FC = () => {
               alt=""
               loading="lazy"
               decoding="async"
-              className="w-8 h-8 rounded-md object-cover border border-slate-200 dark:border-slate-700 mx-auto"
+              className="w-8 h-8 rounded-md object-cover border border-[var(--md-sys-color-outline-variant)] dark:border-slate-700 mx-auto"
             />
           );
         },
@@ -200,8 +200,8 @@ export const InventoryScreen: React.FC = () => {
         minWidth: 160,
         renderCell: (row) => (
           <div className="flex flex-col truncate">
-            <span className="font-bold text-slate-900 dark:text-slate-100 truncate">{row.name}</span>
-            {row.nameEn && <span className="text-[10px] text-slate-400 truncate">{row.nameEn}</span>}
+            <span className="font-bold text-[var(--md-sys-color-on-surface)] truncate">{row.name}</span>
+            {row.nameEn && <span className="text-[10px] text-[var(--md-sys-color-outline)] truncate">{row.nameEn}</span>}
           </div>
         ),
       },
@@ -210,7 +210,7 @@ export const InventoryScreen: React.FC = () => {
         headerName: 'الباركود',
         width: 140,
         renderCell: (row) => (
-          <span className="font-mono text-xs text-slate-600 dark:text-slate-400 tracking-wider">
+          <span className="font-mono text-xs text-[var(--md-sys-color-on-surface-variant)] tracking-wider">
             {row.barcode}
           </span>
         ),
@@ -227,7 +227,7 @@ export const InventoryScreen: React.FC = () => {
         width: 130,
         align: 'right',
         renderCell: (row) => (
-          <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
+          <span className="font-mono font-bold text-[var(--md-sys-color-primary)]">
             {formatCurrency(row.salePrice)}
           </span>
         ),
@@ -238,7 +238,7 @@ export const InventoryScreen: React.FC = () => {
         width: 120,
         align: 'right',
         renderCell: (row) => (
-          <span className="font-mono text-slate-500">
+          <span className="font-mono text-[var(--md-sys-color-on-surface-variant)]">
             {formatCurrency(row.costPrice)}
           </span>
         ),
@@ -252,7 +252,7 @@ export const InventoryScreen: React.FC = () => {
           const profit = row.salePrice - row.costPrice;
           const pct = Math.round((profit / (row.costPrice || 1)) * 100);
           return (
-            <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+            <span className="text-[11px] font-mono text-[var(--md-sys-color-success)] font-semibold">
               +{pct}%
             </span>
           );
@@ -271,7 +271,7 @@ export const InventoryScreen: React.FC = () => {
             <div className="flex items-center justify-center gap-1.5">
               <span
                 className={`font-mono font-bold ${
-                  isOut ? 'text-rose-600' : isLow ? 'text-amber-600' : 'text-slate-800 dark:text-slate-200'
+                  isOut ? 'text-[var(--md-sys-color-error)]' : isLow ? 'text-[var(--md-sys-color-warning)]' : 'text-[var(--md-sys-color-on-surface)]'
                 }`}
               >
                 {row.stock} {row.unit}
@@ -322,48 +322,48 @@ export const InventoryScreen: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
-            <span className="text-xs text-slate-500 block">إجمالي المنتجات</span>
-            <span className="text-xl font-bold font-mono text-slate-900 dark:text-slate-100">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">إجمالي المنتجات</span>
+            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-on-surface)]">
               {inventoryStats.totalItems.toLocaleString('ar-EG')}
             </span>
           </div>
-          <div className="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600">
+          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-primary)]">
             <Package className="w-5 h-5" />
           </div>
         </MuiCard>
 
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
-            <span className="text-xs text-slate-500 block">قيمة المخزون (سعر البيع)</span>
-            <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">قيمة المخزون (سعر البيع)</span>
+            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-success)]">
               {formatCurrency(inventoryStats.totalSaleValuation)}
             </span>
           </div>
-          <div className="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600">
+          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)]">
             <TrendingUp className="w-5 h-5" />
           </div>
         </MuiCard>
 
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
-            <span className="text-xs text-slate-500 block">تكلفة رأس المال</span>
-            <span className="text-xl font-bold font-mono text-slate-700 dark:text-slate-300">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">تكلفة رأس المال</span>
+            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-on-surface-variant)]">
               {formatCurrency(inventoryStats.totalCostValuation)}
             </span>
           </div>
-          <div className="p-2.5 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600">
+          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-tertiary)]">
             <DollarSign className="w-5 h-5" />
           </div>
         </MuiCard>
 
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
           <div>
-            <span className="text-xs text-slate-500 block">نواقص تحتاج إعادة طلب</span>
-            <span className="text-xl font-bold font-mono text-amber-600">
+            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">نواقص تحتاج إعادة طلب</span>
+            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-warning)]">
               {inventoryStats.lowStockCount}
             </span>
           </div>
-          <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600">
+          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-warning-container)] text-[var(--md-sys-color-warning)]">
             <AlertTriangle className="w-5 h-5" />
           </div>
         </MuiCard>
@@ -422,11 +422,11 @@ export const InventoryScreen: React.FC = () => {
         <form onSubmit={handleSaveProduct} className="space-y-4">
           {/* Image Upload with Client-Side Compression */}
           <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
-            <div className="w-20 h-20 rounded-lg overflow-hidden bg-white dark:bg-[#202020] border border-slate-300 dark:border-slate-700 shrink-0 flex items-center justify-center relative">
+            <div className="w-20 h-20 rounded-lg overflow-hidden bg-white dark:bg-[#202020] border border-[var(--md-sys-color-outline)] shrink-0 flex items-center justify-center relative">
               {imageUrl ? (
                 <img src={imageUrl} alt="preview" className="w-full h-full object-cover" />
               ) : (
-                <ImageIcon className="w-8 h-8 text-slate-400" />
+                <ImageIcon className="w-8 h-8 text-[var(--md-sys-color-outline)]" />
               )}
               {isCompressingImage && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-[10px]">
@@ -436,7 +436,7 @@ export const InventoryScreen: React.FC = () => {
             </div>
 
             <div className="flex-1">
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+              <label className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] block mb-1">
                 صورة المنتج (يتم ضغطها آليًا إلى WebP فائق الخفة)
               </label>
               <div className="flex flex-wrap items-center gap-2">
@@ -459,7 +459,7 @@ export const InventoryScreen: React.FC = () => {
                   tabIndex={-1}
                 />
               </div>
-              <p className="text-[10px] text-slate-400 mt-1">
+              <p className="text-[10px] text-[var(--md-sys-color-outline)] mt-1">
                 تطبيق ضغط متقدم على المتصفح يمنع استهلاك الذاكرة وتخمة التخزين
               </p>
             </div>
@@ -505,13 +505,13 @@ export const InventoryScreen: React.FC = () => {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+              <label className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] block mb-1">
                 وحدة القياس
               </label>
               <MuiSelect
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
-                className="w-full bg-white dark:bg-[#1e1e1e] border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-slate-100 outline-none focus:border-blue-600"
+                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg px-3 py-2 text-sm text-[var(--md-sys-color-on-surface)] outline-none focus:border-blue-600"
               >
                 <option value="قطعة">قطعة</option>
                 <option value="علبة">علبة</option>
