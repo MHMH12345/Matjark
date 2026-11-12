@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
 import { Chip as MaterialChip, Chips as MaterialChips } from 'material/react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { X } from 'lucide-react';
+import { MuiIconButton } from './MuiIconButton';
 
 export interface MuiChipProps {
   label: React.ReactNode;
@@ -47,14 +49,14 @@ export const MuiChip: React.FC<MuiChipProps> = memo(({
         </MChip>
       </MChips>
       {onDelete && (
-        <button
-          type="button"
+        <MuiIconButton
+          icon={<X width={14} height={14} />}
+          ariaLabel="حذف"
+          variant="standard"
+          size="extraSmall"
           className="matjark-chip-delete"
-          aria-label="حذف"
           onClick={onDelete}
-        >
-          ×
-        </button>
+        />
       )}
     </span>
   );
