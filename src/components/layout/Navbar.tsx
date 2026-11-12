@@ -81,8 +81,8 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
                   onClick={() => setActiveTab(item.id)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer ${
                     isActive
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'text-[var(--md-sys-color-on-surface-variant)] dark:text-slate-300 hover:bg-[var(--md-sys-color-surface-container-high)] dark:hover:bg-slate-800'
+                      ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-sm'
+                      : 'text-[var(--md-sys-color-on-surface-variant)] dark:text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container-high)] dark:hover:bg-[var(--md-sys-color-surface-container-high)]'
                   }`}
                 >
                   {item.icon}
@@ -90,7 +90,7 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
                   {item.id === 'pos' && cartTotals.unitsCount > 0 && (
                     <span
                       className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold font-mono ${
-                        isActive ? 'bg-white text-[var(--md-sys-color-primary)]' : 'bg-blue-600 text-white'
+                        isActive ? 'bg-white text-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]'
                       }`}
                     >
                       {cartTotals.unitsCount}
@@ -107,7 +107,7 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
             <button
               type="button"
               onClick={onOpenPerformanceModal}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--md-sys-color-success)]/30 bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)] text-xs font-mono font-semibold hover:bg-[var(--md-sys-color-success-container)] transition-colors cursor-pointer"
               title="انقر لفتح مختبر قياس الأداء المباشر واختبار المقارنة"
             >
               <Activity className="w-3.5 h-3.5 animate-pulse text-[var(--md-sys-color-success)]" />
@@ -118,7 +118,7 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface-variant)] dark:text-[var(--md-sys-color-outline)] dark:hover:text-slate-200 hover:bg-[var(--md-sys-color-surface-container-high)] dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface-variant)] dark:text-[var(--md-sys-color-outline)] dark:hover:text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container-high)] dark:hover:bg-[var(--md-sys-color-surface-container-high)] transition-colors cursor-pointer"
               title={theme === 'dark' ? 'التحويل إلى الوضع النهاري' : 'التحويل إلى الوضع الليلي'}
             >
               {theme === 'dark' ? <Sun className="w-4 h-4 text-[var(--md-sys-color-warning)]" /> : <Moon className="w-4 h-4" />}
@@ -137,8 +137,8 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
                 onClick={() => setActiveTab(item.id)}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-[var(--md-sys-color-on-surface-variant)] dark:text-slate-300 hover:bg-[var(--md-sys-color-surface-container-high)] dark:hover:bg-slate-800'
+                    ? 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-xs'
+                    : 'text-[var(--md-sys-color-on-surface-variant)] dark:text-[var(--md-sys-color-on-surface-variant)] hover:bg-[var(--md-sys-color-surface-container-high)] dark:hover:bg-[var(--md-sys-color-surface-container-high)]'
                 }`}
               >
                 {item.icon}
@@ -146,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
                 {item.id === 'pos' && cartTotals.unitsCount > 0 && (
                   <span
                     className={`text-[10px] px-1 rounded-full font-mono ${
-                      isActive ? 'bg-white text-[var(--md-sys-color-primary)]' : 'bg-blue-600 text-white'
+                      isActive ? 'bg-white text-[var(--md-sys-color-primary)]' : 'bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)]'
                     }`}
                   >
                     {cartTotals.unitsCount}
