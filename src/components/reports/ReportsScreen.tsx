@@ -80,7 +80,7 @@ export const ReportsScreen: React.FC = () => {
       const d = new Date(now);
       d.setDate(now.getDate() - i);
       const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      const dayEnd = dayStart + 86400000;
+      const dayEnd = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime();
 
       let sum = 0;
       invoices.forEach((inv) => {
