@@ -59,9 +59,9 @@ export const INITIAL_SETTINGS: StoreSettings = {
   branchName: 'فرع المعادي - القاهرة',
   address: 'شارع النصر، المعادي الجديدة، القاهرة، جمهورية مصر العربية',
   phone: '01012345678',
-  enableTax: false, // مرونة تامة: يمكن تفعيلها أو إلغاؤها بضغطة زر
+  enableTax: true, // VAT is enabled by default for the Egyptian sample store.
   defaultTaxRate: 0.14, // ضريبة القيمة المضافة المصرية 14%
-  pricesIncludeTax: false, // Keep the existing behavior unless the store chooses inclusive pricing.
+  pricesIncludeTax: true, // Shelf and POS prices are final prices that already include VAT.
   currency: 'ج.م',
   currencyEn: 'EGP',
   currencyFormat: 'ar',
@@ -459,7 +459,17 @@ export function loadDatabase(): AppDatabase {
       customers: Array.isArray(parsed.customers) ? parsed.customers : INITIAL_CUSTOMERS,
       suppliers: Array.isArray(parsed.suppliers) ? parsed.suppliers : INITIAL_SUPPLIERS,
       expenses: Array.isArray(parsed.expenses) ? parsed.expenses : INITIAL_EXPENSES,
-      settings: { ...INITIAL_SETTINGS, ...(parsed.settings || {}), currency: 'ج.م', currencyEn: 'EGP' },
+      settings: {
+        ...INITIAL_SETTINGS,
+        ...(parsed.settings || {}),
+        // Older databases predate the inclusive-price option; migrate them to the agreed POS model.
+        enableTax: parsed.settings?.pricesIncludeTax === undefined
+          ? true
+          : (parsed.settings.enableTax ?? INITIAL_SETTINGS.enableTax),
+        pricesIncludeTax: parsed.settings?.pricesIncludeTax ?? true,
+        currency: 'ج.م',
+        currencyEn: 'EGP',
+      },
       version: 2,
       nextInvoiceSequence: parsed.nextInvoiceSequence,
       nextExpenseSequence: parsed.nextExpenseSequence,
