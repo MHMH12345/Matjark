@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useRef } from 'react';
+import { MuiCard } from '../ui/MuiCard';
 import {
   Settings,
   Download,
@@ -97,7 +98,7 @@ export const SettingsScreen: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Store Identity & Egyptian Market Info */}
-      <div className="bg-white dark:bg-[#1e1e1e] p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--spacious">
         <div className="flex items-center gap-2.5 pb-4 mb-4 border-b border-slate-200 dark:border-slate-800 text-blue-600 dark:text-blue-400">
           <Store className="w-5 h-5" />
           <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
@@ -158,7 +159,7 @@ export const SettingsScreen: React.FC = () => {
           </div>
 
           {/* Tax Flexibility Section */}
-          <div className="p-4 bg-slate-50 dark:bg-[#161616] rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+          <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--compact">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
@@ -199,7 +200,7 @@ export const SettingsScreen: React.FC = () => {
                 />
               </div>
             )}
-          </div>
+          </MuiCard>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <MuiTextField
@@ -258,10 +259,10 @@ export const SettingsScreen: React.FC = () => {
             </MuiButton>
           </div>
         </form>
-      </div>
+      </MuiCard>
 
       {/* Google Drive Cloud Backup Integration */}
-      <div className="bg-white dark:bg-[#1e1e1e] p-6 rounded-xl border border-blue-200 dark:border-blue-900/60 shadow-sm space-y-4">
+      <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--spacious">
         <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2.5 text-blue-600 dark:text-blue-400">
             <Cloud className="w-5 h-5" />
@@ -309,7 +310,7 @@ export const SettingsScreen: React.FC = () => {
             استعادة النسخة السحابية من Google Drive
           </MuiButton>
         </div>
-      </div>
+      </MuiCard>
 
       {/* Local Backup and File Management */}
       <div className="bg-white dark:bg-[#1e1e1e] p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
