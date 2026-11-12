@@ -214,6 +214,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         discountPerItem: item.discount,
         taxRate: item.taxRate ?? db.settings.defaultTaxRate ?? 0.14,
         isTaxEnabled: isCartTaxEnabled,
+        pricesIncludeTax: db.settings.pricesIncludeTax ?? false,
       });
       subtotal += line.subtotal;
       discountTotal += line.discountTotal;
@@ -404,6 +405,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           discountPerItem: cartItem.discount,
           taxRate: effectiveRate,
           isTaxEnabled: isCartTaxEnabled,
+          pricesIncludeTax: db.settings.pricesIncludeTax ?? false,
         });
 
         return {
@@ -447,6 +449,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         cashierName: 'الكاشير الرئيسي',
         status: 'completed',
         isTaxEnabled: isCartTaxEnabled,
+        pricesIncludeTax: db.settings.pricesIncludeTax ?? false,
         zatcaQrString: zatcaBase64,
         notes: params.notes,
       };
