@@ -155,7 +155,6 @@ export const CashierScreen: React.FC = () => {
     settings,
     customers,
     isCartTaxEnabled,
-    setIsCartTaxEnabled,
     formatCurrency,
     replaceCart,
   } = useStore();
