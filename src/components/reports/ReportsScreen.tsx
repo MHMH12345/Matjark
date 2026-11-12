@@ -247,7 +247,7 @@ export const ReportsScreen: React.FC = () => {
             )}
           </div>
         </MuiCard>
-      </MuiCard>
+      </div>
     </div>
   );
 };
