@@ -16,10 +16,10 @@ const sizes = { small: 's', medium: 'm', large: 'l' } as const;
 const variants = { contained: 'filled', outlined: 'outlined', text: 'text' } as const;
 const palette: Record<string, React.CSSProperties> = {
   primary: { '--mtrl-sys-color-primary': 'var(--md-sys-color-primary)', '--mtrl-sys-color-on-primary': 'var(--md-sys-color-on-primary)' } as React.CSSProperties,
-  secondary: { '--mtrl-sys-color-primary': '#625b71', '--mtrl-sys-color-on-primary': '#ffffff' } as React.CSSProperties,
-  success: { '--mtrl-sys-color-primary': '#2e7d32', '--mtrl-sys-color-on-primary': '#ffffff' } as React.CSSProperties,
-  error: { '--mtrl-sys-color-primary': '#ba1a1a', '--mtrl-sys-color-on-primary': '#ffffff' } as React.CSSProperties,
-  warning: { '--mtrl-sys-color-primary': '#865300', '--mtrl-sys-color-on-primary': '#ffffff' } as React.CSSProperties,
+  secondary: { '--mtrl-sys-color-primary': 'var(--md-sys-color-secondary)', '--mtrl-sys-color-on-primary': 'var(--md-sys-color-on-secondary)' } as React.CSSProperties,
+  success: { '--mtrl-sys-color-primary': 'var(--md-sys-color-success)', '--mtrl-sys-color-on-primary': 'var(--md-sys-color-on-success)' } as React.CSSProperties,
+  error: { '--mtrl-sys-color-primary': 'var(--md-sys-color-error)', '--mtrl-sys-color-on-primary': 'var(--md-sys-color-on-error)' } as React.CSSProperties,
+  warning: { '--mtrl-sys-color-primary': 'var(--md-sys-color-warning)', '--mtrl-sys-color-on-primary': 'var(--md-sys-color-on-warning)' } as React.CSSProperties,
 };
 const iconMarkup = (node: React.ReactNode) => node && React.isValidElement(node) ? renderToStaticMarkup(node) : undefined;
 
