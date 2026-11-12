@@ -1706,6 +1706,12 @@ html:not(.dark) #root {
   background: color-mix(in srgb, var(--md-sys-color-surface-container-high) 48%, transparent) !important;
 }
 
+
+.matjark-vat-settlement::part(card) {
+  background: var(--md-sys-color-primary-container) !important;
+  border-color: color-mix(in srgb, var(--md-sys-color-primary) 32%, var(--md-sys-color-outline-variant)) !important;
+}
+
 /* Native Material chip wrapper used by status and category labels. */
 .matjark-chip-host {
   display: inline-flex;
