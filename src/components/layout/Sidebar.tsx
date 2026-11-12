@@ -24,6 +24,7 @@ export const Sidebar: React.FC = () => {
   const activeTabRef = useRef<ActiveTab>('pos');
   const toggleThemeRef = useRef<() => void>(() => undefined);
   const setActiveTabRef = useRef<(tab: ActiveTab) => void>(() => undefined);
+  const profileAnchorRef = useRef<HTMLElement | null>(null);
   const { activeTab, setActiveTab, theme, toggleTheme, products, cartTotals } = useStore();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
@@ -37,7 +38,8 @@ export const Sidebar: React.FC = () => {
   }, [products]);
 
   const syncProfileAnchor = (rail: any) => {
-    const profileItem = rail.element.querySelector<HTMLElement>('[data-id="profile"]');
+    const profileItem = rail.element.querySelector('[data-id="profile"]') as HTMLElement | null;
+    profileAnchorRef.current = profileItem;
     if (profileItem) profileItem.id = 'matjark-profile-trigger';
   };
 
@@ -155,7 +157,7 @@ export const Sidebar: React.FC = () => {
         open={profileMenuOpen}
         onOpen={() => setProfileMenuOpen(true)}
         onClose={() => setProfileMenuOpen(false)}
-        anchor="matjark-profile-trigger"
+        anchor={profileAnchorRef.current as HTMLElement}
         position="left-start"
         layer="top"
         className="matjark-sidebar-profile-menu"
