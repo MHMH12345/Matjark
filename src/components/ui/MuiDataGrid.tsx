@@ -143,7 +143,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
   return (
     <MCard variant="outlined" fullWidth className="matjark-data-grid-shell flex flex-col w-full overflow-hidden">
       {/* Table Toolbar */}
-      <div className="p-3 bg-[var(--md-sys-color-surface-container-low)] dark:bg-[#181818] border-b border-[var(--md-sys-color-outline-variant)] flex flex-wrap items-center justify-between gap-3">
+      <div className="p-3 bg-[var(--md-sys-color-surface-container-low)] dark:bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] flex flex-wrap items-center justify-between gap-3">
         <div className="relative flex-1 min-w-[240px] max-w-md">
           <MuiTextField
             value={searchTerm}
@@ -166,7 +166,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
 
         <div className="flex items-center gap-3">
           {toolbarActions}
-          <div className="text-[11px] font-medium text-[var(--md-sys-color-on-surface-variant)] bg-white dark:bg-[#252525] px-2.5 py-1.5 rounded-md border border-[var(--md-sys-color-outline-variant)] dark:border-slate-700">
+          <div className="text-[11px] font-medium text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface)] px-2.5 py-1.5 rounded-md border border-[var(--md-sys-color-outline-variant)] dark:border-[var(--md-sys-color-outline-variant)]">
             <span>إجمالي: </span>
             <strong className="text-[var(--md-sys-color-primary)]">{totalCount.toLocaleString('ar-EG')}</strong>
             <span className="ms-1 text-[10px] text-[var(--md-sys-color-outline)]">({visibleRows.length} في الذاكرة)</span>
@@ -175,7 +175,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
       </div>
 
       {/* Header Row */}
-      <div className="flex items-center bg-[var(--md-sys-color-surface-container-high)] dark:bg-[#151515] border-b border-[var(--md-sys-color-outline-variant)] text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] dark:text-slate-300 select-none pe-2">
+      <div className="flex items-center bg-[var(--md-sys-color-surface-container-high)] dark:bg-[var(--md-sys-color-surface-container-high)] border-b border-[var(--md-sys-color-outline-variant)] text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] dark:text-[var(--md-sys-color-on-surface-variant)] select-none pe-2">
         {columns.map((col, idx) => {
           const isSorted = sortField === col.field;
           const sortable = col.sortable !== false;
@@ -189,8 +189,8 @@ function MuiDataGridInner<T extends Record<string, any>>({
                 minWidth: col.minWidth || 90,
                 flex: col.width ? 'none' : 1,
               }}
-              className={`px-3 py-3 flex items-center gap-1.5 text-[var(--md-sys-color-on-surface-variant)] dark:text-slate-200 ${
-                sortable ? 'cursor-pointer hover:bg-slate-200/60 dark:hover:bg-slate-800/80 transition-colors' : ''
+              className={`px-3 py-3 flex items-center gap-1.5 text-[var(--md-sys-color-on-surface-variant)] dark:text-[var(--md-sys-color-on-surface)] ${
+                sortable ? 'cursor-pointer hover:bg-[var(--md-sys-color-surface-container-high)] transition-colors' : ''
               } ${col.align === 'center' ? 'justify-center' : col.align === 'right' ? 'justify-end' : 'justify-start'}`}
             >
               <span className="truncate">{col.headerName}</span>
@@ -279,7 +279,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
       </div>
 
       {/* Footer Info */}
-      <div className="px-4 py-2 bg-[var(--md-sys-color-surface-container-low)] dark:bg-[#181818] border-t border-[var(--md-sys-color-outline-variant)] text-[11px] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-between">
+      <div className="px-4 py-2 bg-[var(--md-sys-color-surface-container-low)] dark:bg-[var(--md-sys-color-surface-container-low)] border-t border-[var(--md-sys-color-outline-variant)] text-[11px] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-between">
         <span>
           نافذة العرض الافتراضية النشطة: من {startIndex + 1} إلى {Math.min(endIndex, totalCount)}
         </span>
