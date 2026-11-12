@@ -1780,3 +1780,17 @@ html:not(.dark) #root {
   color: var(--md-sys-color-on-surface-variant);
 }
 
+
+.matjark-perf-comparison::part(card) {
+  background: var(--md-sys-color-primary-container) !important;
+  border-color: color-mix(in srgb, var(--md-sys-color-primary) 32%, var(--md-sys-color-outline-variant)) !important;
+}
+
+.matjark-perf-success-card::part(card) {
+  background: var(--md-sys-color-success-container) !important;
+  border-color: color-mix(in srgb, var(--md-sys-color-success) 38%, var(--md-sys-color-outline-variant)) !important;
+}
+
+.matjark-perf-stress::part(card) {
+  background: var(--md-sys-color-surface-container-low) !important;
+}
