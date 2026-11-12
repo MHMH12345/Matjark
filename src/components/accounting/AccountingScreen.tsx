@@ -294,15 +294,15 @@ export const AccountingScreen: React.FC = () => {
         <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--horizontal">
           <div>
             <h4 className="text-sm font-bold flex items-center gap-2">
-              <FileCheck className="w-4 h-4 text-blue-300" />
+              <FileCheck className="w-4 h-4 text-[var(--md-sys-color-primary)]" />
               <span>تسوية ضريبة القيمة المضافة (إقرار القيمة المضافة - 14%)</span>
             </h4>
-            <p className="text-xs text-blue-200 mt-0.5">
+            <p className="text-xs text-[var(--md-sys-color-on-primary-container)] mt-0.5">
               الضريبة المحصلة من المبيعات ({formatCurrency(financialSummary.salesVatCollected)}) - ضريبة المصروفات القابلة للاسترداد ({formatCurrency(financialSummary.expensesVatPaid)})
             </p>
           </div>
-          <div className="bg-white/10 px-4 py-2 rounded-lg text-end">
-            <span className="text-[11px] text-blue-200 block">صافي الضريبة المستحقة للسداد:</span>
+          <div className="bg-[var(--md-sys-color-primary)]/10 px-4 py-2 rounded-lg text-end">
+            <span className="text-[11px] text-[var(--md-sys-color-on-primary-container)] block">صافي الضريبة المستحقة للسداد:</span>
             <span className="text-xl font-bold font-mono text-white">
               {formatCurrency(financialSummary.netVatPayable)}
             </span>
@@ -372,7 +372,7 @@ export const AccountingScreen: React.FC = () => {
               <MuiSelect
                 value={category}
                 onChange={(e) => setCategory(e.target.value as any)}
-                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg p-2 text-sm text-[var(--md-sys-color-on-surface)] dark:text-slate-100 outline-none"
+                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg p-2 text-sm text-[var(--md-sys-color-on-surface)] dark:text-[var(--md-sys-color-on-surface)] outline-none"
               >
                 <option value="rent">إيجار المحل أو المستودع</option>
                 <option value="salaries">رواتب وأجور الموظفين</option>
@@ -391,7 +391,7 @@ export const AccountingScreen: React.FC = () => {
               <MuiSelect
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value as any)}
-                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg p-2 text-sm text-[var(--md-sys-color-on-surface)] dark:text-slate-100 outline-none"
+                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg p-2 text-sm text-[var(--md-sys-color-on-surface)] dark:text-[var(--md-sys-color-on-surface)] outline-none"
               >
                 <option value="card">بطاقة بنكية (فيزا / ميزة / ماستركارد)</option>
                 <option value="transfer">تحويل بنكي / إنستاباي InstaPay</option>
