@@ -26,63 +26,29 @@ import { GridColumn, MuiDataGrid } from '../ui/MuiDataGrid';
 import { MuiDialog } from '../ui/MuiDialog';
 import { MuiTextField } from '../ui/MuiTextField';
 import { MuiSelect } from '../ui/MuiSelect';
+import { computeAccountingMetrics, roundToTwoDecimals } from '../../utils/currency';
 
 export const AccountingScreen: React.FC = () => {
-  const { expenses, addExpense, deleteExpense, invoices, settings, showToast, formatCurrency } = useStore();
+  const { expenses, addExpense, deleteExpense, invoices, products, settings, showToast, formatCurrency } = useStore();
 
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<Expense['category']>('utilities');
   const [amount, setAmount] = useState<number>(100);
-  const [taxAmount, setTaxAmount] = useState<number>(14);
+  const [taxAmount, setTaxAmount] = useState<number>(roundToTwoDecimals(100 * settings.defaultTaxRate));
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card');
   const [notes, setNotes] = useState('');
   const [receiptNumber, setReceiptNumber] = useState('');
 
-  // Comprehensive P&L Financial Calculations
-  const financialSummary = useMemo(() => {
-    let grossRevenue = 0;
-    let costOfGoodsSold = 0;
-    let salesVatCollected = 0;
-
-    invoices.forEach((inv) => {
-      if (inv.status === 'completed') {
-        grossRevenue += inv.subtotal;
-        salesVatCollected += inv.taxTotal;
-
-        inv.items.forEach((item) => {
-          costOfGoodsSold += item.costPrice * item.quantity;
-        });
-      }
-    });
-
-    let totalExpenses = 0;
-    let expensesVatPaid = 0;
-
-    expenses.forEach((e) => {
-      totalExpenses += e.amount;
-      expensesVatPaid += e.taxAmount || 0;
-    });
-
-    const grossProfit = grossRevenue - costOfGoodsSold;
-    const netProfit = grossProfit - totalExpenses;
-    const netVatPayable = salesVatCollected - expensesVatPaid;
-
-    return {
-      grossRevenue: Math.round(grossRevenue * 100) / 100,
-      costOfGoodsSold: Math.round(costOfGoodsSold * 100) / 100,
-      grossProfit: Math.round(grossProfit * 100) / 100,
-      totalExpenses: Math.round(totalExpenses * 100) / 100,
-      netProfit: Math.round(netProfit * 100) / 100,
-      salesVatCollected: Math.round(salesVatCollected * 100) / 100,
-      expensesVatPaid: Math.round(expensesVatPaid * 100) / 100,
-      netVatPayable: Math.round(netVatPayable * 100) / 100,
-    };
-  }, [invoices, expenses]);
+  // Shared financial calculation rules are also used by the rest of the application.
+  const financialSummary = useMemo(
+    () => computeAccountingMetrics({ invoices, expenses, products }),
+    [invoices, expenses, products]
+  );
 
   const handleAmountChange = (val: number) => {
     setAmount(val);
-    setTaxAmount(Math.round(val * settings.defaultTaxRate * 100) / 100);
+    setTaxAmount(roundToTwoDecimals(val * settings.defaultTaxRate));
   };
 
   const handleCreateExpense = (e: React.FormEvent) => {
@@ -100,12 +66,12 @@ export const AccountingScreen: React.FC = () => {
       date: Date.now(),
       paymentMethod,
       notes,
-      receiptNumber: receiptNumber || `EXP-${Date.now().toString().slice(-5)}`,
+      receiptNumber: receiptNumber.trim() || undefined,
     });
 
     setTitle('');
     setAmount(100);
-    setTaxAmount(15);
+    setTaxAmount(roundToTwoDecimals(100 * settings.defaultTaxRate));
     setNotes('');
     setReceiptNumber('');
     setAddModalOpen(false);
@@ -295,7 +261,7 @@ export const AccountingScreen: React.FC = () => {
           <div>
             <h4 className="text-sm font-bold flex items-center gap-2">
               <FileCheck className="w-4 h-4 text-[var(--md-sys-color-primary)]" />
-              <span>تسوية ضريبة القيمة المضافة (إقرار القيمة المضافة - 14%)</span>
+              <span>تسوية ضريبة القيمة المضافة (إقرار القيمة المضافة - {Math.round(settings.defaultTaxRate * 100)}%)</span>
             </h4>
             <p className="text-xs text-[var(--md-sys-color-on-primary-container)] mt-0.5">
               الضريبة المحصلة من المبيعات ({formatCurrency(financialSummary.salesVatCollected)}) - ضريبة المصروفات القابلة للاسترداد ({formatCurrency(financialSummary.expensesVatPaid)})
