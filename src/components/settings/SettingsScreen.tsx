@@ -184,7 +184,7 @@ export const SettingsScreen: React.FC = () => {
             </div>
 
             {formState.enableTax && (
-              <div className="pt-2">
+              <div className="pt-2 space-y-3">
                 <MuiTextField
                   label="نسبة ضريبة القيمة المضافة (14% = 0.14)"
                   type="number"
@@ -198,6 +198,24 @@ export const SettingsScreen: React.FC = () => {
                   }
                   helperText="القيمة الافتراضية 0.14 تعادل 14% ضريبة القيمة المضافة المصرية"
                 />
+                <div>
+                  <label className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] block mb-1">
+                    طريقة احتساب الضريبة في سعر البيع
+                  </label>
+                  <MuiSelect
+                    value={formState.pricesIncludeTax ? 'inclusive' : 'exclusive'}
+                    onChange={(e) =>
+                      setFormState({ ...formState, pricesIncludeTax: e.target.value === 'inclusive' })
+                    }
+                    className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg p-2.5 text-xs text-[var(--md-sys-color-on-surface)] dark:text-[var(--md-sys-color-on-surface)] outline-none"
+                  >
+                    <option value="exclusive">السعر قبل الضريبة — تُضاف الضريبة فوق السعر</option>
+                    <option value="inclusive">السعر شامل الضريبة — تُستخرج الضريبة من السعر</option>
+                  </MuiSelect>
+                  <p className="text-[11px] text-[var(--md-sys-color-on-surface-variant)] mt-1">
+                    يؤثر الاختيار على إجمالي الفاتورة وقيمة الضريبة وصافي الإيراد، ولا يغيّر سعر الصنف المسجل.
+                  </p>
+                </div>
               </div>
             )}
           </MuiCard>
