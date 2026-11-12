@@ -61,6 +61,7 @@ export const INITIAL_SETTINGS: StoreSettings = {
   phone: '01012345678',
   enableTax: false, // مرونة تامة: يمكن تفعيلها أو إلغاؤها بضغطة زر
   defaultTaxRate: 0.14, // ضريبة القيمة المضافة المصرية 14%
+  pricesIncludeTax: false, // Keep the existing behavior unless the store chooses inclusive pricing.
   currency: 'ج.م',
   currencyEn: 'EGP',
   currencyFormat: 'ar',
