@@ -277,7 +277,7 @@ export const InventoryScreen: React.FC = () => {
                 {row.stock} {row.unit}
               </span>
               {isLow && (
-                <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" title="قارب النفاد" />
+                <span className="w-2 h-2 rounded-full bg-[var(--md-sys-color-warning)] inline-block" title="قارب النفاد" />
               )}
             </div>
           );
@@ -511,7 +511,7 @@ export const InventoryScreen: React.FC = () => {
               <MuiSelect
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
-                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg px-3 py-2 text-sm text-[var(--md-sys-color-on-surface)] outline-none focus:border-blue-600"
+                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg px-3 py-2 text-sm text-[var(--md-sys-color-on-surface)] outline-none focus:border-[var(--md-sys-color-primary)]"
               >
                 <option value="قطعة">قطعة</option>
                 <option value="علبة">علبة</option>
