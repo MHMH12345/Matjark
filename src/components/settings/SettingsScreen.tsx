@@ -99,9 +99,9 @@ export const SettingsScreen: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Store Identity & Egyptian Market Info */}
       <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--spacious">
-        <div className="flex items-center gap-2.5 pb-4 mb-4 border-b border-slate-200 dark:border-slate-800 text-blue-600 dark:text-blue-400">
+        <div className="flex items-center gap-2.5 pb-4 mb-4 border-b border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-primary)]">
           <Store className="w-5 h-5" />
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="text-base font-bold text-[var(--md-sys-color-on-surface)]">
             بيانات المنشأة والمتجر التجاري
           </h3>
         </div>
@@ -162,11 +162,11 @@ export const SettingsScreen: React.FC = () => {
           <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--compact">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                  <Percent className="w-4 h-4 text-blue-500" />
+                <h4 className="text-xs font-bold text-[var(--md-sys-color-on-surface)] flex items-center gap-1.5">
+                  <Percent className="w-4 h-4 text-[var(--md-sys-color-primary)]" />
                   <span>نظام ضريبة القيمة المضافة (مرونة الحسابات)</span>
                 </h4>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
                   يمكنك إلغاء احتساب الضريبة بالكامل للمتاجر المعفاة، أو تفعيلها بنسبة 14% أو النسبة المطلوبة.
                 </p>
               </div>
@@ -177,7 +177,7 @@ export const SettingsScreen: React.FC = () => {
                   onChange={(e) => setFormState({ ...formState, enableTax: e.target.checked })}
                   aria-label="تفعيل ضريبة القيمة المضافة"
                 />
-                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                <span className="text-xs font-bold text-[var(--md-sys-color-on-surface-variant)]">
                   {formState.enableTax ? 'الضريبة مفعّلة' : 'الضريبة ملغاة (معفاة)'}
                 </span>
               </div>
@@ -214,13 +214,13 @@ export const SettingsScreen: React.FC = () => {
               onChange={(e) => setFormState({ ...formState, currencyEn: e.target.value })}
             />
             <div>
-              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
+              <label className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] block mb-1">
                 نمط عرض العملة
               </label>
               <MuiSelect
                 value={formState.currencyFormat || 'ar'}
                 onChange={(e) => setFormState({ ...formState, currencyFormat: e.target.value as any })}
-                className="w-full bg-white dark:bg-[#1e1e1e] border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-xs text-slate-800 dark:text-slate-100 outline-none"
+                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg p-2.5 text-xs text-[var(--md-sys-color-on-surface)] dark:text-slate-100 outline-none"
               >
                 <option value="ar">عربي قياسي (مثال: 1,250.00 ج.م)</option>
                 <option value="both">عربي مع الرمز الدولي (مثال: 1,250.00 ج.م (EGP))</option>
@@ -236,13 +236,13 @@ export const SettingsScreen: React.FC = () => {
           />
 
           <div className="flex items-center gap-6 pt-2">
-            <div className="flex items-center gap-3 text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <div className="flex items-center gap-3 text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)]">
               <MuiSwitch
                 checked={formState.enableAudioBeep}
                 onChange={(e) => setFormState({ ...formState, enableAudioBeep: e.target.checked })}
                 aria-label="تفعيل التنبيه الصوتي"
               />
-              <Volume2 className="w-4 h-4 text-blue-500" />
+              <Volume2 className="w-4 h-4 text-[var(--md-sys-color-primary)]" />
               <span>تفعيل التنبيه الصوتي السريع عند مسح الباركود (Web Audio API)</span>
             </div>
           </div>
@@ -263,27 +263,27 @@ export const SettingsScreen: React.FC = () => {
 
       {/* Google Drive Cloud Backup Integration */}
       <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--spacious">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-2.5 text-blue-600 dark:text-blue-400">
+        <div className="flex items-center justify-between pb-3 border-b border-[var(--md-sys-color-outline-variant)]">
+          <div className="flex items-center gap-2.5 text-[var(--md-sys-color-primary)]">
             <Cloud className="w-5 h-5" />
-            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+            <h3 className="text-base font-bold text-[var(--md-sys-color-on-surface)]">
               النسخ الاحتياطي السحابي لجوجل درايف (Google Drive Cloud Sync)
             </h3>
           </div>
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-on-success-container)]">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Google Drive Ready</span>
           </span>
         </div>
 
-        <p className="text-xs text-slate-500 leading-relaxed">
+        <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] leading-relaxed">
           يتيح لك هذا الخيار مزامنة وتأمين كامل قاعدة بيانات متجرك (المنتجات، الفواتير، العملاء، المصروفات) سحابيًا إلى مساحتك في Google Drive، والرجوع إليها أو استعادتها فورًا في أي وقت أو من أي جهاز آخر.
         </p>
 
         {settings.lastGoogleDriveBackup && (
-          <div className="text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-[#161616] p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div className="text-[11px] text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface-container-low)] p-2.5 rounded-lg border border-[var(--md-sys-color-outline-variant)] flex items-center justify-between">
             <span>آخر نسخة تم رفعها إلى Google Drive:</span>
-            <strong className="font-mono text-blue-600 dark:text-blue-400">
+            <strong className="font-mono text-[var(--md-sys-color-primary)]">
               {new Date(settings.lastGoogleDriveBackup).toLocaleString('ar-EG')}
             </strong>
           </div>
@@ -313,15 +313,15 @@ export const SettingsScreen: React.FC = () => {
       </MuiCard>
 
       {/* Local Backup and File Management */}
-      <div className="bg-white dark:bg-[#1e1e1e] p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-        <div className="flex items-center gap-2.5 pb-3 border-b border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
-          <ShieldCheck className="w-5 h-5 text-emerald-600" />
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+      <div className="bg-[var(--md-sys-color-surface-container)] p-6 rounded-xl border border-[var(--md-sys-color-outline-variant)] shadow-sm space-y-4">
+        <div className="flex items-center gap-2.5 pb-3 border-b border-[var(--md-sys-color-outline-variant)] text-[var(--md-sys-color-on-surface-variant)]">
+          <ShieldCheck className="w-5 h-5 text-[var(--md-sys-color-success)]" />
+          <h3 className="text-base font-bold text-[var(--md-sys-color-on-surface)]">
             النسخ الاحتياطي المحلي اليدوي (ملفات JSON)
           </h3>
         </div>
 
-        <p className="text-xs text-slate-500 leading-relaxed">
+        <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] leading-relaxed">
           يمكنك أيضًا تنزيل ملف نسخة احتياطية كامل بصيغة JSON على جهاز الكمبيوتر الخاص بك، أو استيراد ملف محفوظ مسبقًا.
         </p>
 
