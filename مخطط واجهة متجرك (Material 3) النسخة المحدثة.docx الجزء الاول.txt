@@ -1,0 +1,529 @@
+مخطط واجهة متجرك (Material 3): النسخة المحدثة
+نسخة موحّدة تجمع «المخطط» و«ملحق (أ): المصادقة والجلسات وإدارة المستخدمين»، وتُسلَّم على 4 أجزاء. هذا هو PART 1: الأساس والتحديثات المفهومية (بلا شاشات تفصيلية).
+PART 1 — الأساس والتحديثات المفهومية
+0. ما تحققت منه في الكود قبل الكتابة
+0.1 ما لم أجده في الملفات التي استلمتها
+وثيقة «مخطط واجهة متجرك» المرفقة تنتهي عند القسم 8، ولا تحتوي على أي قسم 9 ولا على «ملحق (أ)». فلم أرَ 9.7 الأصلية ولا ReauthSheet في 9.1.
+لذلك كتبتُ هنا 9.7 و9.12 و9.13 كتعريف كامل من الصفر، ووضعتُ في رأس كل جدول متأثر عبارة الإلغاء المطلوبة. إن كان الملحق (أ) يحمل أسماء صلاحيات أو سلوكاً يخالف ما هنا فأرسله لأوحّده قبل PART 2.
+0.2 ما وجدته في الكود الفعلي
+الملف	ما وجدته	الأثر على هذه الوثيقة
+src/components/ui/	10 أغلفة: MuiButton, MuiChip, MuiChipGroup, MuiDataGrid, MuiDialog, MuiIconButton, MuiSelect, MuiSnackbar, MuiSwitch, MuiTextField	لا يوجد غلاف لـ BottomSheet ولا Card ولا Tabs ولا Badge ولا List. وMenu يُستورد مباشرة في Sidebar.tsx
+MuiButton	variant: contained / outlined / text فقط، وألوان secondary/success/error/warning بقيم hex ثابتة	لا يوجد tonal، وهذا يخالف مبدأ «لا ألوان ثابتة»
+MuiTextField وMuiSelect	لا خاصية variant (outlined / filled)	حقل البحث pill يحتاج خاصية جديدة
+MuiDialog	maxWidth من sm إلى full، وtitle وactions	لا سلوك «شاشة كاملة على الموبايل» مدمج
+src/types/index.ts	لا يوجد User ولا Role ولا Shift ولا Batch ولا AuditLog. Invoice.cashierName نص حر. InvoiceStatus يحوي voided فعلاً. المبالغ number عشرية	كل الواجهات الجديدة في القسم 5 إضافية
+Customer.balance	تعليق النوع يقول «موجب = دائن للمتجر»، بينما CustomersScreen يلوّن الموجب كمستحق (عنبري)	تناقض يجب حسمه في Phase 0 لأن تجاوز الحد الائتماني يعتمد على إشارة الرصيد
+StoreContext.tsx	لا مستخدم ولا وردية. checkoutInvoice بلا shiftId أو userId. refundInvoice(id) كلي وبلا صلاحية. deleteExpense وdeleteProduct حذف فعلي. restoreFromDatabase وresetToSampleData وloadBenchmarkStressTest مدمرة	تتعارض مع 9.13 وتُعالج في Checklist
+storage.ts وCashierScreen.tsx	قاعدة واحدة في localStorage بمفتاح matjark_store_db_v2_egp، والفواتير المعلقة بمفتاح matjark_pos_held_sales_v1	سجل التدقيق لا يوضع في أي منهما (القسم 6)
+src/index.css	رموز --md-sys-color-* موجودة نهارياً (:root) وليلياً (.dark). لا توجد أي رموز --matjark-*	رموز النجاح والتحذير (3.2) تُنشأ في Phase 0
+0.3 قرارات حاسمة للتعارضات بين النسخ
+البند	النسخة السابقة	المعتمد الآن
+المرتجع الكامل والجزئي	ممنوع على الكاشير	مسموح بموافقة مدير عبر PIN
+خصم أكبر من 10%	ممنوع على الكاشير	مسموح بموافقة مدير
+تجاوز الحد الائتماني	في 5.6: «للمدير: خيار تجاوز بـ PIN»	مسموح بموافقة مدير، وتُوحَّد في 9.12
+حذف صنف بعد إضافته للسلة	حر	مسموح بموافقة مدير بعد فترة سماح (9.7)
+ReauthSheet و OverrideSheet	مكوّنان منفصلان (افتراض)	مكوّن واحد ReauthSheet بخاصية mode (9.12)
+«المتوقع في الدرج»	ظاهر دائماً	يظل ظاهراً في بطاقة الوردية، ويُخفى داخل Dialog التقفيل فقط (6.6.3)
+9.7 مصفوفة الصلاحيات
+مُحدَّث في هذه النسخة، يُلغي ما سبق في 9.7.
+الرموز: ✓ مباشر · 🔒 بموافقة مدير عبر PIN · ✗ ممنوع · * ضمن السقف في الجدول الثاني، وما فوقه يُطلب مستوى أعلى.
+الإجراء (actionKey)	كاشير	مشرف	مدير	مالك	محاسب	Audit
+sale.create / sale.hold	✓	✓	✓	✓	✗	لا
+sale.discount.up_to_10	✓	✓	✓	✓	✗	لا
+sale.discount.over_10	🔒	✓*	✓*	✓	✗	نعم
+refund.partial	🔒	✓*	✓*	✓	✗	نعم
+refund.full	🔒	🔒	✓*	✓	✗	نعم
+credit.limit.exceed	🔒	🔒	✓*	✓	✗	نعم
+cart.remove_after_add	🔒	✓	✓	✓	✗	نعم
+invoice.void_open_shift	🔒	🔒	✓ (بشروط 9.13)	✓	✗	نعم
+receipt.reprint	✓ (ورديته فقط)	✓ (اليوم)	✓	✓	✓ قراءة	نعم
+drawer.cash_in / drawer.cash_out	✓ حتى الحد، 🔒 فوقه	✓*	✓	✓	✗	نعم
+shift.open / shift.close (أعمى)	✓	✓	✓	✓	✗	نعم
+shift.reopen	✗	✗	✗	✓	✗	نعم
+product.price_edit / product.archive	✗	✗	✓	✓	✗	نعم
+stock.adjust	✗	🔒	✓	✓	✗	نعم
+purchase.create	✗	✗	✓	✓	✓	نعم
+reports.financial.view	✗	✗	✓	✓	✓	لا
+tax.decision.approve	✗	✗	✗	✓	✓	نعم
+user.manage / security.settings	✗	✗	✗	✓	✗	نعم
+backup.export	✗	✗	✓	✓	✓	نعم
+backup.restore	✗	✗	✗	✓	✗	نعم
+قرار فترة السماح لحذف السطر (cart.remove_after_add): الحذف خلال 30 ثانية من إضافة السطر (تصحيح مسح خاطئ) مباشر ويُسجَّل بسطر خفيف، والحذف بعدها أو بعد عرض الإجمالي للعميل أو بعد الطباعة يحتاج موافقة. القيمة قابلة للضبط (cartRemoveGraceSeconds). هذا تحديد لي لأن الحرفية تجعل كل مسح خاطئ يحتاج PIN.
+جدول حدود الموافقة
+مُحدَّث في هذه النسخة، يُلغي ما سبق في 9.7.
+كل القيم افتراضات مبدئية للتأكيد، وتُضبط في الإعدادات > الأمان > سياسة الموافقات.
+الإجراء	سقف المشرف	سقف المدير	فوق المدير	Audit
+خصم أكبر من 10%	حتى 20%	حتى 50%	المالك	نعم
+مرتجع جزئي	حتى 500 ج.م	حتى 5,000 ج.م	المالك	نعم
+مرتجع كامل	لا يوافق	حتى 5,000 ج.م	المالك	نعم
+تجاوز الحد الائتماني	لا يوافق	حتى 25% فوق الحد	المالك (وأي عميل متأخر أكثر من 60 يوماً)	نعم
+حذف سطر بعد الإضافة	يوافق (بلا سقف مبلغ)	يوافق	لا ينطبق	نعم
+حذف/إلغاء فاتورة في وردية مفتوحة	لا يوافق	يوافق بشروط 9.13	المالك إن لم تتحقق الشروط	نعم
+سحب/إيداع نقدي من الدرج	حتى 1,000 ج.م	أي مبلغ	لا ينطبق	نعم
+أسئلة الحدود:
+السؤال	القرار
+هل يوجد سقف للمبلغ؟	نعم، في الجدول أعلاه، وكل سقف له مستوى أعلى يتجاوزه
+هل يستطيع المشرف الموافقة على بعضها؟	نعم، ضمن سقفه فقط، وتتطلب صلاحية override.manage المفعَّلة له
+ماذا لو الكاشير نفسه مدير؟	لا يمر تلقائياً بلا أثر: إن كانت آخر إعادة مصادقة له خلال 5 دقائق يمر دون سؤال جديد، وإلا يُطلب PIN مرة واحدة. تُسجَّل الموافقة selfApproved: true. ولا يوافق مدير على إجراء هو طلبه فوق سقف المدير، بل يلزم مالك
+هل يوجد حد أقصى لعدد Override في الوردية؟	نعم. لكل كاشير: عند 5 موافقات ممنوحة تظهر علامة تنبيه في تقرير الوردية، وعند 15 يتوقف إلا بموافقة المالك
+هل الموافقة تبقى صالحة؟	لا. تُستعمل مرة واحدة فقط لإجراء واحد، وصلاحيتها 60 ثانية
+6.6 الوردية: التقفيل الأعمى (Blind Close)
+مُحدَّث في هذه النسخة، يعدّل 6.6 السابق.
+6.6.1 المبدأ: من يقفل الوردية يعدّ الدرج ويُدخل المبلغ قبل أن يرى المتوقع. ينطبق ذلك على أي مستخدم يقفل، مدير أو كاشير.
+6.6.2 المراحل الثلاث
+المرحلة	ما يظهر داخل Dialog التقفيل	الكاشير	المدير (خارج Dialog)	التقرير المطبوع	وجهة الفرق
+(أ) قبل إدخال المبلغ الفعلي	اسم الكاشير، وقت الفتح، المدة، الرصيد الافتتاحي، عدد الفواتير، مجاميع الدفع غير النقدي (بطاقة، محفظة، آجل). حقل «المبلغ الفعلي بالدرج» وعدّاد الفئات 5 إلى 200 ج.م. مخفي: المتوقع، المبيعات النقدية، المرتجعات النقدية، مجاميع حركات الدرج	يرى المعروض فقط	يرى كل شيء في بطاقة الوردية، لكن Dialog التقفيل نفسه أعمى لأي مستخدم	لا يُطبع شيء قبل التأكيد	لا فرق بعد
+(ب) بعد الإدخال وقبل التأكيد	المبلغ المُدخل بخط كبير مع تفصيل الفئات، وحقل ملاحظة اختياري، وSwitch «طباعة التقرير». زر filled «تأكيد المبلغ» وtext «تعديل»	يرى ما أدخله فقط، بلا فرق	لا يتغير	لا يُطبع	لا فرق بعد
+(ج) بعد التقفيل	شاشة نتيجة: المتوقع والفعلي والفرق (مجمَّدة) وحالة الوردية «مقفلة»	يرى النتيجة كاملة بعد التأكيد	يرى كل شيء + سجل إعادة العدّ والملاحظة	تقرير كامل: المتوقع، الفعلي، الفرق، الملاحظة، اسم المقفِل	يُسجَّل كحركة shift_variance على نفس الوردية في CashDrawerMovement، ويظهر في الحسابات > ملخص كبند مستقل «فروق الدرج». ليس مصروفاً ولا إيراداً، ويراجعه المحاسب
+Audit: نعم. يُسجَّل: shift.close.started وshift.close.confirmed (المبلغ المُدخل، الفئات، عدد مرات العدّ) وshift.close.variance (المتوقع، الفعلي، الفرق، الملاحظة).
+قاعدة الفرق: إن كان الفرق ضمن هامش التسامح (افتراضي 5 ج.م) تُقفل الوردية مباشرة. إن تجاوزه يُكشف الفرق للمقفِل، ويُسمح له بـ إعادة عدّ واحدة فقط، ثم تُلزمه ملاحظة قبل الإغلاق النهائي. كل عدّ يُسجَّل في audit، وبذلك لا يمكن ضبط الرقم على الفرق المعروف دون أثر.
+6.6.3 هل «المتوقع في الدرج» يظل ظاهراً في بطاقة الوردية اليومية؟
+المعتمد (افتراضك): نعم يظل ظاهراً في البطاقة، ويُخفى فقط داخل Dialog التقفيل.
+تحذير: هذا يُضعف الغرض من الإغلاق الأعمى. الكاشير يستطيع ببساطة قراءة المتوقع من البطاقة قبل فتح Dialog ثم كتابته. للتخفيف أضفتُ إعداداً blindCloseStrict في الإعدادات > الأمان:
+القيمة	السلوك
+false (الافتراضي المعتمد)	المتوقع ظاهر في البطاقة لكل الأدوار
+true (موصى به للمحال التي بها أكثر من كاشير)	المتوقع مخفي عن دور الكاشير والمشرف طوال الوردية المفتوحة، ويظهر للمدير والمالك والمحاسب فقط
+6.6.4 حالات الحافة
+الحالة	السلوك	Audit
+أغلق الكاشير التطبيق قبل التأكيد	تبقى الوردية open، وتُحفظ مسودة تقفيل محلية (المبلغ والفئات والوقت). عند الفتح التالي يظهر شريط «تقفيل غير مكتمل» وزر «متابعة». المسودة لا تُعدّ تقفيلاً ولا تكشف أي فرق، وتنتهي بعد 12 ساعة	shift.close.draft_saved / draft_discarded
+الوردية مفتوحة باسم كاشير والجهاز مع آخر	لا يقفلها إلا مدير أو مالك، بصفة «نيابة عن»	shift.close.on_behalf_of
+اكتُشف خطأ بعد التأكيد	لا تعديل على الوردية. المدير يضيف «تسوية بعد التقفيل» (post_close_adjustment) بمبلغ وسبب إلزامي، والمالك إن تجاوز سقف المدير	shift.adjustment.added
+من يعيد فتح وردية مقفولة	المالك فقط، بسبب إلزامي، بشرط عدم فتح وردية تالية على نفس الدرج ولا إقفال فترة محاسبية لاحقة. تُنشأ revision جديدة ولا تُمسح لقطة التقفيل الأصلية	shift.reopened
+9.12 موافقة المدير (Manager Override)
+9.12.1 المكوّنات الجديدة (كلها غير موجودة اليوم في src/components/ui/)
+الاسم	Props المقترحة	أين يُستخدم	إنشاء في src/components/ui
+ReauthSheet	open, mode: 'session_unlock' | 'sensitive_action' | 'manager_override', actionKey?, summary?: OverrideSummaryRow[], requesterId, eligibleApproverIds?, maxAttempts? (3), lockSeconds? (60), onGranted(grant: OverrideGrant), onCancel()	الكاشير، الفواتير، العملاء (الحد الائتماني)، الوردية والدرج، الإعدادات	لا، يوضع في src/components/auth/ لأنه يعتمد على منطق الصلاحيات
+MuiBottomSheet	open, onClose, title?, children, actions?, dismissible? (true), maxWidth? (560)	كل نافذة سفلية (الدفع، الاختيار، التفاصيل)	نعم
+PinField	value, onChange, length (4 إلى 6), error?, disabled?, autoFocus?, onComplete?, ariaLabel	ReauthSheet، وشاشة الدخول (PART 2)	نعم
+PermissionGate	permission (مفتاح)، actionKey?, children, fallback?, onNeedOverride?(actionKey) + hook usePermission(key) يعيد 'allow' | 'override' | 'deny'	كل زر إجراء حساس	لا، في src/components/auth/
+9.12.2 المشغّل: كل إجراء له 🔒 في 9.7 للمستخدم الحالي. يقرأ PermissionGate النتيجة 'override' فيفتح ReauthSheet بوضع manager_override قبل تنفيذ الإجراء، ولا يُنفَّذ شيء حتى تصل onGranted.
+9.12.3 بنية الـ Sheet من الأعلى للأسفل
+مقبض السحب.
+العنوان «موافقة المدير» title-large، وتحته اسم الإجراء body-medium.
+بطاقة outlined للقراءة فقط (الجدول 9.12.7): كل صف تسمية body-small على on-surface-variant وقيمة title-medium. لا يمكن تعديلها من هنا.
+Select «المعتمِد»: يعرض فقط المستخدمين الذين يملكون override.manage ويقع الإجراء ضمن سقفهم. إن وُجد معتمد واحد يُختار تلقائياً.
+PinField (4 إلى 6 خانات) مع نص مساعد «المحاولات المتبقية: 3».
+Button text «استخدم كلمة المرور» يستبدل الحقل بـ TextField من نوع password.
+أسفل الشاشة: Button text «إلغاء» وButton filled بحجم كبير 56dp «موافقة».
+العرض: BottomSheet بعرض كامل على الموبايل، وبحد أقصى 560dp ومتمركز على الكمبيوتر.
+9.12.4 PIN الخاطئ
+المحاولة	ما يحدث	Audit
+1 و2	اهتزاز خفيف للحقل، مسح الأرقام، «PIN غير صحيح، تبقى N محاولات»	override.denied.pin_failed (رقم المحاولة)
+3	يُغلق الـ Sheet ويُلغى الإجراء. الجلسة والسلة والفاتورة تبقى كما هي، ولا تسجيل خروج. يُقفل مسار الموافقة على هذا الجهاز 60 ثانية (الزر يعرض «حاول بعد 60 ث») ويظهر Snackbar بلون error	override.locked
+جولة ثانية (3 فشلات أخرى)	قفل 5 دقائق وعلامة security.alert تظهر في تقرير الوردية	security.alert
+جولة ثالثة	يُطلب من الكاشير إعادة إدخال PIN الخاص به عند أي إجراء حساس تالٍ، وتظهر علامة في تقرير الوردية	security.reauth_required
+قرار: القفل على مستوى الجهاز والمسار، لا على حساب المعتمِد. لو قفلنا حساب المدير لاستطاع أي كاشير تعطيل المدير عمداً بتخمين PIN. وبالمثل لا نسجّل خروج الكاشير في منتصف بيع حتى لا نفقد السلة.
+9.12.5 مستخدم بلا صلاحية override.manage
+لا يظهر في قائمة المعتمِدين. إن أدخل شخص PIN مستخدم لا يملك الصلاحية فالرسالة «هذا المستخدم لا يملك صلاحية الموافقة»، وتُحسب محاولة فاشلة (حتى لا يُستخدم للاستكشاف)، وتسجَّل override.denied.no_permission.
+إن اختار الطالب نفسه وهو لا يملكها، يُرفض. وإن كان يملكها فتنطبق قاعدة الموافقة الذاتية في 9.7.
+إن لم يوجد أي معتمِد مؤهل، تظهر «لا يوجد معتمِد لهذا الإجراء» ويبقى الإجراء محظوراً. المالك مؤهل دائماً.
+9.12.6 الإغلاق دون كسر الجلسة: زر إلغاء، أو ✕، أو Esc، أو سحب لأسفل. كلها تُلغي الإجراء فقط بلا أي أثر جانبي: السلة والحقول المفتوحة تبقى، ويعود التركيز إلى الزر الذي فتح الـ Sheet. وتُغلق تلقائياً بعد 90 ثانية خمولاً. يُسجَّل override.cancelled.
+9.12.7 ما يُعرض في الـ Sheet لكل إجراء
+الإجراء	الصفوف المعروضة (قراءة فقط)
+refund.full	رقم الفاتورة، التاريخ، العميل، الإجمالي، طريقة الدفع الأصلية، المبلغ المسترد، طريقة الاسترداد، السبب، الكاشير الأصلي
+refund.partial	نفس السابق مع الأصناف المرتجعة وكمياتها وصافي المسترد
+sale.discount.over_10	الصنف أو الفاتورة، النسبة والمبلغ، السعر قبل وبعد، الهامش بعد الخصم، سقف المعتمِد
+credit.limit.exceed	العميل، رصيده الحالي، الحد، قيمة الفاتورة، الرصيد بعدها، تاريخ آخر سداد
+cart.remove_after_add	الصنف، الكمية، السعر، منذ متى أُضيف، عدد مرات الحذف في هذه الفاتورة
+invoice.void_open_shift	رقم الفاتورة، الإجمالي، حالة الطباعة، طريقة الدفع، الوردية، السبب
+drawer.cash_in / cash_out	النوع، المبلغ، فئة السبب، بند الملاحظة. لا يُعرض رصيد الدرج المتوقع (لتبقى الوردية عمياء)
+stock.adjust	الصنف، الكمية قبل وبعد، سبب التسوية
+9.12.8 سياسة «Override المعلّق»: لا يوجد في MVP. القرار موثَّق: لا مزامنة بين الأجهزة، فلا طريق لوصول الطلب إلى جهاز المدير. عند غيابه يرى الكاشير «تعذّر الحصول على موافقة» مع خيارات: تعليق الفاتورة، أو إتمامها بدون الإجراء الحساس، أو المحاولة لاحقاً. تبقى الحالة pending محجوزة في النوع OverrideRequest لمرحلة المزامنة اللاحقة.
+9.12.9 العلاقة بـ ReauthSheet (9.1): مكوّن واحد، يختلف بالخاصية mode:
+mode	من يُدخل PIN	الملخص	الصلاحية الناتجة
+session_unlock	المستخدم نفسه	لا يوجد	يفتح الجلسة
+sensitive_action	المستخدم نفسه	اختياري	يؤكد هوية الفاعل لمرة واحدة
+manager_override	معتمِد آخر أو نفسه (9.7)	إلزامي	OverrideGrant لإجراء واحد، صالح 60 ثانية
+Audit: نعم. يُسجَّل لكل عملية: requesterId, approverId, actionKey, targetType/targetId, لقطة الملخص، النتيجة، رقم المحاولة، deviceId, selfApproved.
+9.13 السجل غير القابل للتعديل (Immutable Ledger)
+9.13.1 القواعد الصريحة
+لا حذف ولا تعديل لفاتورة مكتملة أو سند صرف معتمد أو حركة درج مسجَّلة. تُمنع على مستوى دوال StoreContext لا في الواجهة فقط.
+التصحيح يتم بإشعار دائن CreditNote مرتبط بالفاتورة الأصلية (invoiceId وinvoiceNumber).
+أرقام الفواتير تسلسلية بلا فجوات، والفاتورة الملغاة voided تحتفظ برقمها ولا يُعاد استخدامه.
+المنتج والعميل والمورد الذين لهم حركات لا يُحذفون، بل يُؤرشفون (archivedAt).
+المصروف المعتمد يُعكس بقيد معاكس (reverseExpense) ولا يُحذف.
+تغيير سعر أو تكلفة صنف لاحقاً لا يمس الفواتير القديمة (لقطة الفاتورة).
+الاستعادة وإعادة التهيئة عمليات مدمرة: للمالك فقط، بنسخة احتياطية تلقائية قبلها، وAudit. وتُخفى loadBenchmarkStressTest وresetToSampleData في الإصدار الإنتاجي.
+9.13.2 ظهور الفاتورة والمرتجع في قائمة واحدة (6.4)
+تحت الفاتورة الأصلية صف فرعي مُزاح بأيقونة ↩ ورقم CN-… والمبلغ بالسالب بلون error.
+شارة الفاتورة الأصلية «مرتجعة جزئياً» أو «مرتجعة»، وعمود «الصافي» = الإجمالي − مجموع الإشعارات الدائنة.
+تبويب «مرتجعة» يعرض الإشعارات الدائنة نفسها مع رابط للفاتورة الأصلية.
+الموبايل: سطر إضافي في البطاقة «ما أُرجع: …».
+بطاقات KPI: صافي المبيعات = المبيعات − الإشعارات الدائنة (لا تُعرض المرتجعات وحدها كإيراد سالب).
+9.13.3 الإجابات الصريحة (أ إلى و)
+السؤال	القرار	السبب	Audit
+(أ) هل يمكن حذف فاتورة في وردية مفتوحة؟	لا حذف فعلي أبداً. يُسمح بـإلغاء إداري (voided) بشروط مجتمعة: الوردية ما زالت مفتوحة، printCount = 0 ولم يُرسل إيصالها رقمياً، لم يُستلم عليها نقد (آجل أو غير نقدي، وغير النقدي يتطلب رقم مرجع لعكس العملية)، موافقة مدير، وسبب إلزامي. النتيجة: تبقى ظاهرة مشطوبة، وتعكس المخزون ورصيد العميل بحركات معاكسة	قبل الطباعة والنقد لم يخرج التزام خارجي. بعدهما يصير الحذف إخفاء لحركة ورقية أو نقدية، فيُعالج بإشعار دائن. وإن أُرسلت الفاتورة إلى ETA فلا إلغاء، إشعار دائن فقط	نعم
+(ب) المدير غائب، هل يوجد طلب موافقة معلّق؟	لا في MVP (9.12.8)	لا مزامنة بين الأجهزة	نعم (override.cancelled)
+(ج) إعادة الطبع تعيد البيانات حرفياً؟	نعم، من لقطة الفاتورة المجمَّدة (9.13.4)	الفاتورة وثيقة، لا تُعاد حسابها	نعم
+(د) المرتجع يعيد المخزون للدفعة الأصلية أم لجديدة؟	للأصلية إن وُجدت وكانت صلاحيتها سارية، وإلا لدفعة جديدة (9.13.5)	تتبع الصلاحية والتكلفة	نعم
+(هـ) PIN خاطئ 3 مرات؟	يُغلق الـ Sheet ويُلغى الإجراء ويُقفل المسار على الجهاز 60 ثانية، والجلسة تبقى (9.12.4)	لا فقدان لبيع جارٍ ولا تعطيل للمدير	نعم
+(و) السحب والإيداع النقدي من الدرج يحتاجان PIN مدير؟	حتى 200 ج.م للحركة الواحدة وبمجموع 500 ج.م في الوردية: بلا PIN لكن بسبب إلزامي. فوق ذلك PIN مدير (المشرف حتى 1,000 ج.م). والسحب للخزنة (safe_drop) فوق 200 ج.م يتطلب PIN دائماً	حركة بلا PIN قد تخفي عجزاً، فنقيّدها بسقف وسبب	نعم
+9.13.4 إعادة طباعة الإيصال
+نفس البيانات حرفياً: الأسطر والأسعار والضرائب وبيانات ETA وبيانات المتجر وقت البيع، من receiptSnapshot المجمَّد، لا من الإعدادات الحالية. اسم المتجر أو عنوانه لو تغيّرا لاحقاً يبقى القديم على النسخة (والنوع Invoice الحالي لا يحمل بيانات المتجر، فيُضاف receiptSnapshot).
+علامة مائية مائلة «نسخة» وسطر في الرأس.
+التذييل: «أُعيدت الطباعة بتاريخ {وقت} بواسطة {المستخدم}».
+يزيد reprintCount. Audit: نعم.
+9.13.5 المرتجع والدفعات
+لكل سطر مُرجَع نحدد الدفعات التي خرج منها (batchAllocations على سطر الفاتورة).
+إن كانت الدفعة الأصلية موجودة وصلاحيتها تتجاوز minShelfLifeDaysForRestock (افتراضي 7 أيام) وسبب المرتجع ليس «تالف» تُعاد إليها الكمية.
+وإلا تُنشأ دفعة جديدة بتاريخ اليوم وsourceCreditNoteId وبتكلفة الدفعة الأصلية، وبصلاحية الأصل إن كانت سارية، أو تُحال إلى الحجر (quarantine).
+الأصناف غير المتتبَّعة بالدفعات: زيادة رصيد فقط.
+المرتجع التالف لا يدخل المخزون القابل للبيع ويُسجَّل قيد هالك.
+Audit: نعم. يُسجَّل لكل مرتجع الدفعات المتأثرة قبل وبعد.
+9.13.6 سياسة الاحتفاظ بـ audit_log: 5 سنوات افتراضياً (تُزاد ولا تُنقَص). لا حذف تلقائي: بعد المدة يُصدَّر JSONL مختوماً بتجزئة، ثم لا يُحذف إلا بإجراء صريح من المالك. التفصيل في القسم 6.
+5. واجهات TypeScript المضافة إلى src/types/index.ts
+قواعد التوافق: كلها إضافية. لا تُحذف ولا تُغيَّر أي واجهة موجودة. التواريخ number (epoch ms) كالموجود. المبالغ ScaledMoney والنِّسب BasisPoints المعرَّفان في مرحلة الضرائب، ولا يُعاد تعريفهما هنا (فلا ترحيل ثانٍ للمبالغ). المفاتيح من 9.7.
+// ===== الصلاحيات (9.7) =====
+// لماذا: قائمة مغلقة تمنع أخطاء الكتابة في actionKey وتُستخدم في PermissionGate وaudit_log.
+export type PermissionKey =
+  | 'sale.create' | 'sale.hold' | 'sale.discount.up_to_10' | 'sale.discount.over_10'
+  | 'refund.partial' | 'refund.full' | 'credit.limit.exceed' | 'cart.remove_after_add'
+  | 'invoice.void_open_shift' | 'receipt.reprint' | 'drawer.cash_in' | 'drawer.cash_out'
+  | 'shift.open' | 'shift.close' | 'shift.reopen' | 'product.price_edit' | 'product.archive'
+  | 'stock.adjust' | 'purchase.create' | 'reports.financial.view' | 'tax.decision.approve'
+  | 'user.manage' | 'security.settings' | 'backup.export' | 'backup.restore' | 'override.manage';
+
+export type RoleKey = 'owner' | 'manager' | 'supervisor' | 'cashier' | 'accountant';
+
+// لماذا: approvalTier يحدد أي سقف في جدول حدود الموافقة ينطبق (0 لا يوافق، 1 مشرف، 2 مدير، 3 مالك).
+export interface Role {
+  key: RoleKey;
+  label: string;
+  isSystem: boolean;
+  approvalTier: 0 | 1 | 2 | 3;
+}
+
+export type PermissionEffect = 'allow' | 'override' | 'deny';
+
+// لماذا: أقصى مبلغ أو نسبة يمكن لدور الموافقة عليها قبل التصعيد (9.7).
+export interface OverrideCeiling {
+  maxAmount?: ScaledMoney;
+  maxPercentBp?: BasisPoints;
+}
+
+export interface Permission {
+  key: PermissionKey;
+  label: string;
+  group: string;       // كاشير، مخزن، حسابات، أمان...
+  sensitive: boolean;  // true يعني Audit دائماً
+}
+
+// لماذا: تعريف الدور لكل صلاحية (✓ / 🔒 / ✗ في المصفوفة) بدل تشفيرها في الكود.
+export interface RolePermission {
+  roleKey: RoleKey;
+  permission: PermissionKey;
+  effect: PermissionEffect;
+  ceiling?: OverrideCeiling;
+}
+
+// لماذا: استثناء لمستخدم بعينه دون إنشاء دور جديد. يرتبط بـ User.
+export interface UserPermissionOverride {
+  id: string;
+  userId: string;
+  permission: PermissionKey;
+  effect: PermissionEffect;
+  grantedBy: string;
+  reason: string;
+  expiresAt?: number;
+  createdAt: number;
+}
+
+// لماذا: لا مستخدمين في النظام اليوم (Invoice.cashierName نص حر). يحل محله userId تدريجياً.
+export interface User {
+  id: string;
+  username: string;
+  displayName: string;
+  roleKey: RoleKey;
+  pinHash: string;           // تجزئة + ملح، لا PIN خام أبداً
+  pinSalt: string;
+  passwordHash?: string;
+  passwordSalt?: string;
+  isActive: boolean;
+  lastLoginAt?: number;
+  createdAt: number;
+  createdBy: string;
+  archivedAt?: number;       // لا حذف فعلي (9.13)
+}
+
+// ===== الوردية والدرج (6.6) =====
+export type ShiftStatus = 'open' | 'closing' | 'closed';
+
+// لماذا: ربط كل فاتورة وحركة درج بوردية. المتوقع يُحسب ويُخزَّن عند التأكيد فقط (إغلاق أعمى).
+export interface Shift {
+  id: string;
+  shiftNumber: number;
+  drawerId: string;
+  deviceId: string;
+  status: ShiftStatus;
+  openedBy: string;
+  openedAt: number;
+  openingBalance: ScaledMoney;
+  closedBy?: string;
+  closedOnBehalfOf?: string;   // عند إقفال المدير نيابة عن كاشير
+  closedAt?: number;
+  countedCash?: ScaledMoney;
+  expectedCash?: ScaledMoney;  // لا يُعبَّأ قبل التأكيد
+  variance?: ScaledMoney;
+  varianceNote?: string;
+  recountCount: number;        // مسموح بواحدة فقط
+  revision: number;            // يزيد عند إعادة الفتح، ولا تُمحى اللقطة الأصلية
+  overrideCountByUser: Record<string, number>;
+}
+
+export type DrawerMovementKind =
+  | 'opening' | 'cash_sale' | 'cash_refund' | 'expense'
+  | 'cash_out' | 'cash_in' | 'safe_drop'
+  | 'shift_variance' | 'post_close_adjustment' | 'closing';
+
+// لماذا: سجل لا يُعدَّل لكل حركة نقدية، منه يُحسب المتوقع ويُراجَع الفرق.
+export interface CashDrawerMovement {
+  id: string;
+  seq: number;
+  shiftId: string;
+  kind: DrawerMovementKind;
+  amount: ScaledMoney;         // موجب = داخل الدرج
+  reasonCode?: string;
+  note?: string;
+  refType?: 'invoice' | 'credit_note' | 'expense' | 'purchase';
+  refId?: string;
+  userId: string;
+  approvedBy?: string;
+  overrideGrantId?: string;
+  createdAt: number;
+}
+
+// ===== المشتريات والدفعات =====
+// لماذا: لا فاتورة شراء اليوم (المشتريات مصروف نوع inventory_purchase). هذا يربط المورد والمخزون.
+export interface PurchaseInvoiceLine {
+  id: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+  bonusQuantity?: number;
+  unitCost: ScaledMoney;
+  taxRateBp: BasisPoints;
+  batchNumber?: string;
+  expiryDate?: string;         // ISO
+}
+
+export interface PurchaseInvoice {
+  id: string;
+  number: string;
+  supplierId: string;
+  supplierInvoiceNumber?: string;
+  date: number;
+  lines: PurchaseInvoiceLine[];
+  subtotal: ScaledMoney;
+  taxTotal: ScaledMoney;
+  total: ScaledMoney;
+  paid: ScaledMoney;
+  paymentMethod: PaymentMethod;
+  status: 'draft' | 'posted' | 'reversed';
+  reversalOf?: string;         // الإلغاء بقيد معاكس لا حذف
+  shiftId?: string;
+  postedBy: string;
+  createdAt: number;
+}
+
+// لماذا: تتبع الصلاحية وإعادة المرتجع للدفعة الأصلية (9.13.5). يرتبط بـ Product.
+export interface ProductBatch {
+  id: string;
+  productId: string;
+  batchNumber: string;
+  receivedAt: number;
+  expiryDate?: string;
+  quantityReceived: number;
+  quantityRemaining: number;
+  unitCost: ScaledMoney;
+  sourceType: 'purchase' | 'opening' | 'credit_note' | 'adjustment';
+  sourceId?: string;
+  status: 'active' | 'quarantine' | 'expired' | 'depleted';
+}
+
+// ===== التدقيق والموافقات =====
+export type AuditCategory =
+  | 'auth' | 'override' | 'sale' | 'refund' | 'void' | 'drawer' | 'shift'
+  | 'inventory' | 'purchase' | 'settings' | 'security' | 'backup' | 'tax';
+
+// لماذا: سجل لا يُعدَّل ومتسلسل بالتجزئة (القسم 6). يُخزَّن في IndexedDB لا localStorage.
+export interface AuditLogEntry {
+  id: string;
+  seq: number;                 // متزايد بلا فجوات
+  createdAt: number;
+  userId: string;
+  userNameSnapshot: string;
+  roleSnapshot: RoleKey;
+  deviceId: string;
+  sessionId: string;
+  actionKey: string;           // مثل override.denied.pin_failed
+  category: AuditCategory;
+  severity: 'info' | 'warning' | 'critical';
+  result: 'success' | 'denied' | 'failed' | 'cancelled';
+  targetType?: string;
+  targetId?: string;
+  shiftId?: string;
+  before?: Record<string, unknown>;
+  after?: Record<string, unknown>;
+  reason?: string;
+  approvedBy?: string;
+  selfApproved?: boolean;
+  overrideGrantId?: string;
+  appVersion: string;
+  prevHash: string;
+  hash: string;
+}
+
+export interface OverrideSummaryRow {
+  label: string;
+  value: string;
+}
+
+// لماذا: طلب الموافقة (في الذاكرة في MVP، ويُسجَّل أثره في audit_log). pending محجوزة للمزامنة لاحقاً.
+export interface OverrideRequest {
+  id: string;
+  actionKey: PermissionKey;
+  requesterId: string;
+  targetType: string;
+  targetId?: string;
+  summary: OverrideSummaryRow[];
+  status: 'pending' | 'granted' | 'denied' | 'cancelled' | 'expired';
+  approverId?: string;
+  selfApproved: boolean;
+  attempts: number;
+  createdAt: number;
+  resolvedAt?: number;
+  grantId?: string;
+}
+
+// لماذا: إذن موافقة لإجراء واحد، ينتهي بعد 60 ثانية ولا يُستخدم مرتين.
+export interface OverrideGrant {
+  id: string;
+  requestId: string;
+  approverId: string;
+  actionKey: PermissionKey;
+  targetId?: string;
+  issuedAt: number;
+  expiresAt: number;
+  consumedAt?: number;
+}
+
+// ===== الإشعار الدائن (9.13) =====
+// لماذا: التصحيح الوحيد المسموح لفاتورة مكتملة. هذا التعريف هو نفسه CreditNote في مرحلة الضرائب (دمج في تعريف واحد).
+export interface CreditNoteLine {
+  id: string;
+  productId: string;
+  quantity: number;
+  refundNet: ScaledMoney;
+  refundTax: ScaledMoney;
+  reasonCode: 'defective' | 'wrong_item' | 'changed_mind' | 'pricing_error' | 'other';
+  batchAllocations: { batchId: string; quantity: number }[];
+  restock: 'to_original_batch' | 'new_batch' | 'quarantine' | 'none';
+}
+
+export interface CreditNote {
+  id: string;
+  number: string;              // CN-...
+  invoiceId: string;
+  invoiceNumber: string;
+  createdAt: number;
+  shiftId?: string;
+  userId: string;
+  approvedBy?: string;
+  overrideGrantId?: string;
+  lines: CreditNoteLine[];
+  totalRefund: ScaledMoney;
+  refundMethod: 'cash' | 'original_method' | 'customer_balance' | 'exchange';
+  reason: string;
+  rateRule: 'original' | 'effective_at_return';
+  decisionId?: string;         // إلزامي لو rateRule = effective_at_return
+}
+
+// ===== حقول إضافية على Invoice (اختيارية، فلا تكسر الموجود) =====
+// لماذا: إثبات الوردية والمستخدم، وإعادة الطبع الحرفية، وإلغاء إداري قبل الطباعة.
+export interface InvoiceLedgerFields {
+  shiftId?: string;
+  userId?: string;
+  printCount?: number;
+  reprintCount?: number;
+  receiptSnapshot?: Record<string, unknown>;  // بيانات المتجر والأسطر وقت البيع
+  voidedAt?: number;
+  voidedBy?: string;
+  voidReason?: string;
+  paymentReversalRef?: string;  // مرجع عكس العملية لغير النقدي
+  etaSubmitted?: boolean;       // true يمنع الإلغاء، إشعار دائن فقط
+}
+
+// ===== سياسة الأمان في StoreSettings =====
+// لماذا: كل الأرقام الافتراضية في 9.7 و6.6 قابلة للضبط من الإعدادات > الأمان.
+export interface SecurityPolicySettings {
+  cartRemoveGraceSeconds: number;      // 30
+  blindCloseStrict: boolean;           // false
+  varianceToleranceCents: ScaledMoney; // 5 ج.م
+  drawerFreeLimit: ScaledMoney;        // 200 ج.م للحركة
+  drawerFreeShiftTotal: ScaledMoney;   // 500 ج.م للوردية
+  overrideWarnPerShift: number;        // 5
+  overrideHardCapPerShift: number;     // 15
+  minShelfLifeDaysForRestock: number;  // 7
+  auditRetentionYears: number;         // 5
+  ceilings: Record<string, Record<'supervisor' | 'manager', OverrideCeiling>>;
+}
+تذكير: Invoice يصبح Invoice extends InvoiceLedgerFields، وStoreSettings يضيف الحقل الاختياري security?: SecurityPolicySettings، فلا يتغير شكل أي حقل قائم.
+6. هيكل audit_log الموسّع
+التخزين: قاعدة IndexedDB مستقلة matjark_audit، بمخزن audit_log للإضافة فقط (لا put ولا delete إلا دالة الأرشفة الخاصة بالمالك). لا يوضع في localStorage ولا في ملف matjark_store_db_v2_egp، لأن حدّه نحو 5MB وكل حفظ يعيد كتابة القاعدة كلها.
+6.1 الحقول: كما في AuditLogEntry (القسم 5). تسلسل التجزئة: hash = SHA-256(prevHash + JSON مُرتَّب المفاتيح للسجل بدون hash) عبر SubtleCrypto، وأي كسر في السلسلة يُظهره زر «تحقق من سلامة السجل».
+6.2 الفهرسة المقترحة
+الفهرس	الغرض
+seq (فريد)	الترتيب والتحقق من عدم وجود فجوات
+[userId, createdAt]	نشاط مستخدم
+[actionKey, createdAt]	كل مرات إجراء بعينه
+[deviceId, createdAt]	مصدر العملية
+[targetType, targetId]	تاريخ كيان (فاتورة، وردية)
+shiftId	تقرير الوردية
+createdAt	الفلترة بالتاريخ
+6.3 سياسة الاحتفاظ: 5 سنوات (auditRetentionYears، تُزاد ولا تُنقَص). أرشفة لا حذف تلقائي: بعد المدة يُصدَّر ما تجاوزها إلى JSONL مختوم بتجزئة السجل الأخير، ثم لا يُحذف من القاعدة إلا بإجراء صريح من المالك مع Audit لعملية الأرشفة نفسها.
+6.4 التصدير مع النسخة الاحتياطية
+audit_log.jsonl: سجل في كل سطر، UTF-8، بالترتيب التصاعدي لـ seq.
+audit_manifest.json: العدد، أول وآخر seq، تجزئة آخر سجل، وقت التصدير، المستخدم.
+CSV فقط للعرض البشري على نتيجة فلتر (لا يصلح للاستعادة).
+الاستعادة تتحقق من سلسلة التجزئة، وتُرفض النسخة المكسورة إلا بقرار المالك.
+6.5 العرض في الإعدادات > الأمان > سجل التدقيق (مالك فقط، والمحاسب قراءة)
+Top App Bar: العنوان يميناً، IconButton «تصدير» يساراً.
+شريط فلاتر Chips قابل للتمرير: المستخدم، الفئة (AuditCategory)، النتيجة، الجهاز، وشريحة «التاريخ» تفتح منتقي من/إلى.
+حقل بحث filled pill بالرقم المرجعي أو actionKey.
+MuiDataGrid: الوقت، المستخدم، الإجراء، الهدف، النتيجة (شارة)، الجهاز. الصف ذو severity: critical بخلفية error-container.
+الضغط على صف يفتح لوحة تفاصيل (BottomSheet على الموبايل): كل الحقول، وقبل وبعد جنباً إلى جنب.
+الأسفل: Button outlined «تحقق من سلامة السجل»، وButton text «أرشفة السجلات القديمة» (مالك).
+Audit لعرض السجل وتصديره: نعم (audit.viewed, audit.exported).
+7. خارطة التنفيذ المرحلية المحدَّثة
+المرحلة	الملفات	مخاطر على StoreContext	معايير Done
+Phase 0 الأساس + المصادقة + audit_log + Types	إنشاء: src/storage/idb.ts، src/utils/audit.ts، src/utils/permissions.ts، src/context/AuthContext.tsx، src/components/ui/MuiBottomSheet.tsx، PinField.tsx، src/components/auth/ReauthSheet.tsx وPermissionGate.tsx. تعديل: types/index.ts (إضافات القسم 5)، utils/storage.ts (ترحيل إصدار القاعدة)، index.css (رموز --matjark-success/warning)، MuiButton.tsx (إضافة tonal وإزالة قيم hex)	تغيير شكل AppDatabase يكسر loadDatabase وrestoreFromDatabase. الفواتير القديمة بلا shiftId. إشارة Customer.balance	التطبيق يعمل كما كان بمستخدم مالك واحد. الدخول يُسجَّل في audit. نسخة قديمة تُستعاد دون فقد. الترجمة تحت strict. إشارة Customer.balance موثّقة ومتسقة بين النوع والشاشة
+Phase 1 الكاشير + Manager Override	تعديل: CashierScreen.tsx (PermissionGate على الخصم وحذف السطر وتجاوز الحد)، StoreContext.tsx (checkoutInvoice يقبل userId اختيارياً، وتحقق الخصم). إنشاء: OverrideService في src/utils/overrides.ts	الفواتير المعلقة بمفتاح matjark_pos_held_sales_v1 قد تحمل لقطات قديمة. دالة updateCartDiscount غير موصولة اليوم	PIN خاطئ 3 مرات يغلق الـ Sheet بلا فقد للسلة. الموافقة لا تُستخدم مرتين. موافقة المدير الذاتية تُسجَّل. حذف سطر خلال 30 ثانية حر
+Phase 2 الوردية + Blind Close + CashDrawerMovement	إنشاء: ShiftContext.tsx، ShiftScreen.tsx، OpenShiftSheet، CloseShiftDialog، DrawerMovementSheet. تعديل: checkoutInvoice يربط shiftId، وتقرير الوردية المطبوع	إلزام وردية مفتوحة قد يوقف البيع. الحل: علَم requireOpenShift معطل افتراضياً حتى الاختبار	إغلاق أعمى لا يكشف المتوقع. إعادة عدّ واحدة. مسودة تبقى بعد إغلاق التطبيق. المتوقع يطابق الحركات يدوياً. الفرق يظهر في الحسابات
+Phase 3 المخزن + الفواتير + Immutable Ledger	إنشاء: ProductBatch، PurchaseInvoice، شاشات الدفعات والمشتريات، createCreditNote، voidInvoice، reverseExpense، عدّاد ترقيم تسلسلي. تعديل: استبدال refundInvoice وdeleteExpense، وأرشفة المنتج بدل deleteProduct	استبدال refundInvoice يمس InvoicesScreen. ترحيل الفواتير القديمة لتحمل receiptSnapshot. تعارض CreditNote مع تعريف الضرائب	لا مسار في الكود يحذف فاتورة أو مصروفاً. مرتجع جزئي يعيد للدفعة الصحيحة. إعادة الطبع مطابقة حرفياً للأصل مع علامة «نسخة»
+Phase 4 الحسابات + الإعدادات + التقارير	تعديل: AccountingScreen (فلتر التاريخ، فروق الدرج)، SettingsScreen (الأمان وسجل التدقيق والنسخ)، تقارير بالفترة. إنشاء: مصدّر JSONL	الاعتماد على computeAccountingMetrics غير المستخدمة اليوم	تصدير واستعادة مع التحقق من السلسلة. الحسابات تعرض صافي المبيعات بعد الإشعارات الدائنة. كل القيم الافتراضية للأمان قابلة للضبط
+ملاحظة ترتيب: أنواع الضرائب (مرحلتها الأولى) تُدمج مع أنواع هذه الوثيقة في Phase 0 في ملف واحد، لأن CreditNote وScaledMoney يظهران في الاثنتين.
+Checklist للتنفيذ (PART 1)
+يُنشأ
+☐ src/storage/idb.ts، src/utils/audit.ts، src/utils/permissions.ts، src/utils/overrides.ts
+☐ src/context/AuthContext.tsx
+☐ src/components/ui/MuiBottomSheet.tsx، src/components/ui/PinField.tsx
+☐ src/components/auth/ReauthSheet.tsx، src/components/auth/PermissionGate.tsx
+يُعدَّل
+☐ src/types/index.ts: إضافات القسم 5 فقط (مع دمج أنواع الضرائب)
+☐ src/index.css: رموز --matjark-success/warning بالقيمتين النهارية والليلية
+☐ src/components/ui/MuiButton.tsx: إضافة tonal، وإزالة الألوان الثابتة
+☐ src/utils/storage.ts: ترحيل الإصدار مع مستخدم مالك افتراضي
+☐ src/context/StoreContext.tsx: إضافات فقط (currentUser، can()، userId اختياري)، لا تغيير في توقيعات الدوال الحالية في هذا الجزء
+يُحذف أو يُخفى (في مراحله اللاحقة)
+☐ deleteExpense وdeleteProduct الفعليان يُستبدلان بالعكس والأرشفة (Phase 3)
+☐ refundInvoice(id) الكلي يُستبدل بـ createCreditNote (Phase 3)
+☐ loadBenchmarkStressTest وresetToSampleData تُخفيان في الإصدار الإنتاجي
+☐ Navbar.tsx غير المستخدم يُحذف بعد التأكد
+يُختبر
+☐ التطبيق بعد ترحيل القاعدة يعمل بلا تغيير ظاهر
+☐ المصفوفة 9.7: كل خلية 🔒 تفتح ReauthSheet، وكل ✗ مخفي أو معطل
+☐ PIN خاطئ 3 مرات: يُلغى الإجراء، تبقى الجلسة والسلة، قفل 60 ثانية
+☐ الموافقة تُستهلك مرة واحدة وتنتهي بعد 60 ثانية
+☐ سجل التدقيق: تسلسل seq بلا فجوات، وسلسلة التجزئة سليمة
+☐ إشارة Customer.balance موحَّدة قبل ربط الحد الائتماني
+PART 1 جاهز — أكمل إلى PART 2؟
