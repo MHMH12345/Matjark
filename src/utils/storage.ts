@@ -21,7 +21,7 @@ const STORAGE_KEY = 'matjark_store_db_v2_egp';
 
 const getNextInvoiceSequence = (invoices: Invoice[]): number => {
   const highest = invoices.reduce((max, invoice) => {
-    const match = invoice.invoiceNumber.match(/^INV-(?:\\d{4}-)?(\\d+)$/);
+    const match = invoice.invoiceNumber.match(/^INV-(?:[0-9]{4}-)?([0-9]+)$/);
     return match ? Math.max(max, Number(match[1]) || 0) : max;
   }, 0);
   return highest + 1;
@@ -29,7 +29,7 @@ const getNextInvoiceSequence = (invoices: Invoice[]): number => {
 
 const getNextExpenseSequence = (expenses: Expense[]): number => {
   const highest = expenses.reduce((max, expense) => {
-    const match = expense.receiptNumber?.match(/^EXP-(?:\\d{4}-)?(\\d+)$/);
+    const match = expense.receiptNumber?.match(/^EXP-(?:[0-9]{4}-)?([0-9]+)$/);
     return match ? Math.max(max, Number(match[1]) || 0) : max;
   }, 0);
   return highest + 1;
