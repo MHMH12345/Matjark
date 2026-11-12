@@ -123,25 +123,23 @@ export function calculateLineAccounting(params: {
   taxAmount: number;
   totalWithTax: number;
 } {
-  const quantity = Math.max(0, params.quantity);
-  const unitPrice = Math.max(0, params.unitPrice);
-  const discount = Math.max(0, params.discountPerItem || 0);
+  const quantity = Number.isFinite(params.quantity) ? Math.max(0, params.quantity) : 0;
+  const unitPrice = Number.isFinite(params.unitPrice) ? Math.max(0, params.unitPrice) : 0;
+  const requestedDiscount = Number.isFinite(params.discountPerItem)
+    ? Math.max(0, params.discountPerItem ?? 0)
+    : 0;
+  const discount = Math.min(unitPrice, requestedDiscount);
 
   const subtotal = roundToTwoDecimals(unitPrice * quantity);
   const discountTotal = roundToTwoDecimals(discount * quantity);
   const netLineTotal = Math.max(0, roundToTwoDecimals(subtotal - discountTotal));
 
-  const effectiveTaxRate = params.isTaxEnabled ? Math.max(0, params.taxRate) : 0;
+  const taxRate = Number.isFinite(params.taxRate) ? Math.max(0, params.taxRate) : 0;
+  const effectiveTaxRate = params.isTaxEnabled ? taxRate : 0;
   const taxAmount = roundToTwoDecimals(netLineTotal * effectiveTaxRate);
   const totalWithTax = roundToTwoDecimals(netLineTotal + taxAmount);
 
-  return {
-    subtotal,
-    discountTotal,
-    netLineTotal,
-    taxAmount,
-    totalWithTax,
-  };
+  return { subtotal, discountTotal, netLineTotal, taxAmount, totalWithTax };
 }
 
 /**
@@ -166,6 +164,7 @@ export function computeAccountingMetrics(params: {
   invoices: Array<{
     status: string;
     subtotal: number;
+    discountTotal?: number;
     taxTotal: number;
     grandTotal: number;
     items: Array<{ costPrice: number; quantity: number }>;
@@ -173,6 +172,7 @@ export function computeAccountingMetrics(params: {
   expenses: Array<{
     amount: number;
     taxAmount?: number;
+    category?: string;
   }>;
   products: Array<{
     stock: number;
@@ -184,32 +184,37 @@ export function computeAccountingMetrics(params: {
   let costOfGoodsSold = 0;
   let salesVatCollected = 0;
 
-  params.invoices.forEach((inv) => {
-    if (inv.status === 'completed') {
-      grossRevenue += inv.subtotal;
-      salesVatCollected += inv.taxTotal || 0;
+  params.invoices.forEach((invoice) => {
+    if (invoice.status !== 'completed') return;
 
-      inv.items.forEach((item) => {
-        costOfGoodsSold += (item.costPrice || 0) * (item.quantity || 0);
-      });
-    }
+    // Invoice.subtotal is pre-discount; recognize revenue after discounts.
+    grossRevenue += Math.max(0, invoice.subtotal - (invoice.discountTotal || 0));
+    salesVatCollected += invoice.taxTotal || 0;
+
+    invoice.items.forEach((item) => {
+      costOfGoodsSold += (item.costPrice || 0) * (item.quantity || 0);
+    });
   });
 
   let totalExpenses = 0;
   let expensesVatPaid = 0;
 
-  params.expenses.forEach((e) => {
-    totalExpenses += e.amount || 0;
-    expensesVatPaid += e.taxAmount || 0;
+  params.expenses.forEach((expense) => {
+    // Inventory purchases are assets; their cost enters COGS when the goods are sold.
+    if (expense.category !== 'inventory_purchase') {
+      totalExpenses += expense.amount || 0;
+    }
+    // Input VAT is tracked separately, including VAT paid on inventory purchases.
+    expensesVatPaid += expense.taxAmount || 0;
   });
 
   let inventoryValuationSale = 0;
   let inventoryValuationCost = 0;
 
-  params.products.forEach((p) => {
-    if (p.stock > 0) {
-      inventoryValuationSale += p.salePrice * p.stock;
-      inventoryValuationCost += p.costPrice * p.stock;
+  params.products.forEach((product) => {
+    if (product.stock > 0) {
+      inventoryValuationSale += product.salePrice * product.stock;
+      inventoryValuationCost += product.costPrice * product.stock;
     }
   });
 
