@@ -13,9 +13,43 @@ export interface AppDatabase {
   expenses: Expense[];
   settings: StoreSettings;
   version: number;
+  nextInvoiceSequence?: number;
+  nextExpenseSequence?: number;
 }
 
 const STORAGE_KEY = 'matjark_store_db_v2_egp';
+
+const getNextInvoiceSequence = (invoices: Invoice[]): number => {
+  const highest = invoices.reduce((max, invoice) => {
+    const match = invoice.invoiceNumber.match(/^INV-(?:\\d{4}-)?(\\d+)$/);
+    return match ? Math.max(max, Number(match[1]) || 0) : max;
+  }, 0);
+  return highest + 1;
+};
+
+const getNextExpenseSequence = (expenses: Expense[]): number => {
+  const highest = expenses.reduce((max, expense) => {
+    const match = expense.receiptNumber?.match(/^EXP-(?:\\d{4}-)?(\\d+)$/);
+    return match ? Math.max(max, Number(match[1]) || 0) : max;
+  }, 0);
+  return highest + 1;
+};
+
+const ensureDatabaseSequences = (db: AppDatabase): AppDatabase => ({
+  ...db,
+  nextInvoiceSequence: Math.max(
+    Number.isSafeInteger(db.nextInvoiceSequence) && (db.nextInvoiceSequence ?? 0) > 0
+      ? db.nextInvoiceSequence!
+      : 1,
+    getNextInvoiceSequence(db.invoices)
+  ),
+  nextExpenseSequence: Math.max(
+    Number.isSafeInteger(db.nextExpenseSequence) && (db.nextExpenseSequence ?? 0) > 0
+      ? db.nextExpenseSequence!
+      : 1,
+    getNextExpenseSequence(db.expenses)
+  ),
+});
 
 export const INITIAL_SETTINGS: StoreSettings = {
   storeName: 'سوبر ماركت البركة',
@@ -390,7 +424,7 @@ let saveDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function loadDatabase(): AppDatabase {
   if (typeof window === 'undefined') {
-    return {
+    return ensureDatabaseSequences({
       products: INITIAL_PRODUCTS,
       invoices: INITIAL_INVOICES,
       customers: INITIAL_CUSTOMERS,
@@ -398,13 +432,13 @@ export function loadDatabase(): AppDatabase {
       expenses: INITIAL_EXPENSES,
       settings: INITIAL_SETTINGS,
       version: 2,
-    };
+    });
   }
 
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      const db: AppDatabase = {
+      const db = ensureDatabaseSequences({
         products: INITIAL_PRODUCTS,
         invoices: INITIAL_INVOICES,
         customers: INITIAL_CUSTOMERS,
@@ -412,13 +446,13 @@ export function loadDatabase(): AppDatabase {
         expenses: INITIAL_EXPENSES,
         settings: INITIAL_SETTINGS,
         version: 2,
-      };
+      });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
       return db;
     }
 
     const parsed = JSON.parse(raw) as AppDatabase;
-    return {
+    return ensureDatabaseSequences({
       products: Array.isArray(parsed.products) && parsed.products.length > 0 ? parsed.products : INITIAL_PRODUCTS,
       invoices: Array.isArray(parsed.invoices) ? parsed.invoices : INITIAL_INVOICES,
       customers: Array.isArray(parsed.customers) ? parsed.customers : INITIAL_CUSTOMERS,
@@ -426,10 +460,12 @@ export function loadDatabase(): AppDatabase {
       expenses: Array.isArray(parsed.expenses) ? parsed.expenses : INITIAL_EXPENSES,
       settings: { ...INITIAL_SETTINGS, ...(parsed.settings || {}), currency: 'ج.م', currencyEn: 'EGP' },
       version: 2,
-    };
+      nextInvoiceSequence: parsed.nextInvoiceSequence,
+      nextExpenseSequence: parsed.nextExpenseSequence,
+    });
   } catch (err) {
     console.error('Failed to parse database from localStorage:', err);
-    return {
+    return ensureDatabaseSequences({
       products: INITIAL_PRODUCTS,
       invoices: INITIAL_INVOICES,
       customers: INITIAL_CUSTOMERS,
@@ -437,7 +473,7 @@ export function loadDatabase(): AppDatabase {
       expenses: INITIAL_EXPENSES,
       settings: INITIAL_SETTINGS,
       version: 2,
-    };
+    });
   }
 }
 
