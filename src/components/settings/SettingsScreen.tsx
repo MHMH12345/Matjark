@@ -220,7 +220,7 @@ export const SettingsScreen: React.FC = () => {
               <MuiSelect
                 value={formState.currencyFormat || 'ar'}
                 onChange={(e) => setFormState({ ...formState, currencyFormat: e.target.value as any })}
-                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg p-2.5 text-xs text-[var(--md-sys-color-on-surface)] dark:text-slate-100 outline-none"
+                className="w-full bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] rounded-lg p-2.5 text-xs text-[var(--md-sys-color-on-surface)] dark:text-[var(--md-sys-color-on-surface)] outline-none"
               >
                 <option value="ar">عربي قياسي (مثال: 1,250.00 ج.م)</option>
                 <option value="both">عربي مع الرمز الدولي (مثال: 1,250.00 ج.م (EGP))</option>
