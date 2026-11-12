@@ -12,6 +12,7 @@ import 'material/styles/divider';
 import 'material/styles/dialog';
 import 'material/styles/bottom-sheet';
 import 'material/styles/navigation-rail';
+import 'material/styles/navigation-bar';
 import App from './App.tsx';
 import './index.css';
 

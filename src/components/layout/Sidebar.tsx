@@ -7,6 +7,7 @@ import {
   ShoppingCart,
   Package,
   FileText,
+  Users,
   Wallet,
   BarChart3,
   Settings,
@@ -67,6 +68,7 @@ export const Sidebar: React.FC = () => {
           badge: lowStockCount > 0 ? String(lowStockCount) : undefined,
         },
         { id: 'invoices', label: 'الفواتير', icon: toSvgString(FileText), active: activeTabRef.current === 'invoices' },
+        { id: 'customers', label: 'العملاء', icon: toSvgString(Users), active: activeTabRef.current === 'customers' },
         { id: 'accounting', label: 'المحاسبة', icon: toSvgString(Wallet), active: activeTabRef.current === 'accounting' },
         { id: 'reports', label: 'التقارير', icon: toSvgString(BarChart3), active: activeTabRef.current === 'reports' },
         { id: 'settings', label: 'الإعدادات', icon: toSvgString(Settings), active: activeTabRef.current === 'settings' },
@@ -148,7 +150,7 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className="matjark-sidebar relative h-full bg-[var(--md-sys-color-surface)] border-l border-[var(--md-sys-color-outline-variant)] shrink-0 hidden md:flex flex-col items-center z-30 overflow-visible"
+      className="matjark-sidebar relative h-full bg-[var(--md-sys-color-surface)] border-l border-[var(--md-sys-color-outline-variant)] shrink-0 flex flex-col items-center z-30 overflow-visible"
       dir="rtl"
     >
       <div ref={containerRef} className="matjark-sidebar-rail-host flex-1 min-h-0 w-full" />

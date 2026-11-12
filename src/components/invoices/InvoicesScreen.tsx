@@ -25,6 +25,8 @@ import { GridColumn, MuiDataGrid } from '../ui/MuiDataGrid';
 import { MuiDialog } from '../ui/MuiDialog';
 import { MuiIconButton } from '../ui/MuiIconButton';
 import { MuiChipGroup } from '../ui/MuiChipGroup';
+import { Money } from '../ui/Money';
+import { DateTime } from '../ui/DateTime';
 
 export const InvoicesScreen: React.FC = () => {
   const { invoices, refundInvoice, settings, formatCurrency } = useStore();
@@ -81,15 +83,7 @@ export const InvoicesScreen: React.FC = () => {
         headerName: 'التاريخ والوقت',
         width: 160,
         renderCell: (row) => (
-          <span className="text-[11px] text-[var(--md-sys-color-on-surface-variant)] font-mono">
-            {new Date(row.timestamp).toLocaleDateString('ar-EG', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </span>
+          <DateTime value={row.timestamp} format="dateTime" className="text-[11px] text-[var(--md-sys-color-on-surface-variant)] font-mono" />
         ),
       },
       {
@@ -151,9 +145,12 @@ export const InvoicesScreen: React.FC = () => {
         width: 130,
         align: 'right',
         renderCell: (row) => (
-          <span className="font-mono font-bold text-[var(--md-sys-color-on-surface)]">
-            {formatCurrency(row.grandTotal)}
-          </span>
+          <Money
+            amount={row.grandTotal}
+            currency={settings.currency}
+            currencyFormat={settings.currencyFormat}
+            className="font-bold text-[var(--md-sys-color-on-surface)]"
+          />
         ),
       },
       {
@@ -201,7 +198,7 @@ export const InvoicesScreen: React.FC = () => {
         ),
       },
     ],
-    [refundInvoice, formatCurrency]
+    [refundInvoice, formatCurrency, settings.currency, settings.currencyFormat]
   );
 
   return (
