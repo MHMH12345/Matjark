@@ -139,6 +139,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isCartTaxEnabled, setIsCartTaxEnabled] = useState<boolean>(() => db.settings.enableTax ?? false);
 
   useEffect(() => {
+    setIsCartTaxEnabled(db.settings.enableTax ?? false);
+  }, [db.settings.enableTax]);
+
+  useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
       document.documentElement.setAttribute('data-theme-mode', 'dark');
