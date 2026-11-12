@@ -189,7 +189,7 @@ export const InventoryScreen: React.FC = () => {
               alt=""
               loading="lazy"
               decoding="async"
-              className="w-8 h-8 rounded-md object-cover border border-[var(--md-sys-color-outline-variant)] dark:border-slate-700 mx-auto"
+              className="w-8 h-8 rounded-md object-cover border border-[var(--md-sys-color-outline-variant)] dark:border-[var(--md-sys-color-outline-variant)] mx-auto"
             />
           );
         },
@@ -422,7 +422,7 @@ export const InventoryScreen: React.FC = () => {
         <form onSubmit={handleSaveProduct} className="space-y-4">
           {/* Image Upload with Client-Side Compression */}
           <MuiCard variant="filled" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
-            <div className="w-20 h-20 rounded-lg overflow-hidden bg-white dark:bg-[#202020] border border-[var(--md-sys-color-outline)] shrink-0 flex items-center justify-center relative">
+            <div className="w-20 h-20 rounded-lg overflow-hidden bg-[var(--md-sys-color-surface-container)] border border-[var(--md-sys-color-outline)] shrink-0 flex items-center justify-center relative">
               {imageUrl ? (
                 <img src={imageUrl} alt="preview" className="w-full h-full object-cover" />
               ) : (
