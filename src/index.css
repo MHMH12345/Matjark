@@ -1361,7 +1361,7 @@ html:not(.dark) #root {
 /* The plus is the same Material IconButton, only one size smaller and green. */
 .matjark-pos-hold-add {
   position: absolute;
-  left: -42px;
+  right: -42px;
   top: 50%;
   z-index: 0;
   display: inline-flex;
@@ -1409,11 +1409,11 @@ html:not(.dark) #root {
 @keyframes matjark-hold-add-enter {
   0% {
     opacity: 0;
-    transform: translate(52px, -50%) rotate(0deg);
+    transform: translate(-52px, -50%) rotate(0deg);
   }
   72% {
     opacity: 1;
-    transform: translate(-2px, -50%) rotate(330deg);
+    transform: translate(2px, -50%) rotate(330deg);
   }
   100% {
     opacity: 1;
@@ -1428,11 +1428,11 @@ html:not(.dark) #root {
   }
   72% {
     opacity: 0.85;
-    transform: translate(54px, -50%) rotate(30deg);
+    transform: translate(-54px, -50%) rotate(30deg);
   }
   100% {
     opacity: 0;
-    transform: translate(52px, -50%) rotate(0deg);
+    transform: translate(-52px, -50%) rotate(0deg);
   }
 }
 
@@ -1517,8 +1517,8 @@ html:not(.dark) #root {
   }
 
   .matjark-pos-hold-add {
-    left: -38px;
-    transform: translate(46px, -50%) rotate(0deg);
+    right: -38px;
+    transform: translate(-46px, -50%) rotate(0deg);
   }
 
   .matjark-pos-hold-add--visible {
@@ -1538,15 +1538,15 @@ html:not(.dark) #root {
 }
 
 @keyframes matjark-hold-add-enter-small {
-  0% { opacity: 0; transform: translate(46px, -50%) rotate(0deg); }
-  72% { opacity: 1; transform: translate(-2px, -50%) rotate(330deg); }
+  0% { opacity: 0; transform: translate(-46px, -50%) rotate(0deg); }
+  72% { opacity: 1; transform: translate(2px, -50%) rotate(330deg); }
   100% { opacity: 1; transform: translate(0, -50%) rotate(360deg); }
 }
 
 @keyframes matjark-hold-add-return-small {
   0% { opacity: 1; transform: translate(0, -50%) rotate(360deg); }
-  72% { opacity: 0.85; transform: translate(48px, -50%) rotate(30deg); }
-  100% { opacity: 0; transform: translate(46px, -50%) rotate(0deg); }
+  72% { opacity: 0.85; transform: translate(-48px, -50%) rotate(30deg); }
+  100% { opacity: 0; transform: translate(-46px, -50%) rotate(0deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
