@@ -740,17 +740,6 @@ export const CashierScreen: React.FC = () => {
             <MBadge label={String(cartTotals.unitsCount)} variant="large" color="primary" className="matjark-pos-cart-count-badge" />
           </div>
           <div className="matjark-pos-cart-header-actions flex items-center gap-1.5" dir="rtl">
-            {((heldListOpen && holdStorage.sales.length > 0) || (!heldListOpen && (cart.length > 0 || Boolean(holdStorage.activeId)))) && (
-              <MuiButton
-                variant="text"
-                color="secondary"
-                size="small"
-                startIcon={<Trash2 className="w-4 h-4" />}
-                onClick={handleClearAction}
-              >
-                {'تفريغ'}
-              </MuiButton>
-            )}
             <div className="matjark-pos-hold-indicator">
               {(holdStorage.sales.length > 0 || holdAddReturning || heldSaleCompleted) && (
                 <MProgress
@@ -823,7 +812,18 @@ export const CashierScreen: React.FC = () => {
                   onClick={handleHoldPlusClick}
                 />
               </div>
-            </div>
+            </div>            {((heldListOpen && holdStorage.sales.length > 0) || (!heldListOpen && (cart.length > 0 || Boolean(holdStorage.activeId)))) && (
+              <MuiButton
+                variant="text"
+                color="secondary"
+                size="small"
+                startIcon={<Trash2 className="w-4 h-4" />}
+                onClick={handleClearAction}
+              >
+                {'تفريغ'}
+              </MuiButton>
+            )}
+
           </div>
         </div>
 
