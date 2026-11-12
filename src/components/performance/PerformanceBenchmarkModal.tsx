@@ -212,7 +212,7 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
                 <span className="text-2xl font-bold font-mono text-[var(--md-sys-color-success)]">
                   {benchmarkResult.speedupMultiplier}x أسرع
                 </span>
-                <span className="text-[10px] text-emerald-700/80 dark:text-[var(--md-sys-color-success)]/80">
+                <span className="text-[10px] text-[var(--md-sys-color-success)]">
                   استجابة فورية بدون أي تأخير على واجهة المستخدم
                 </span>
               </MuiCard>
@@ -263,7 +263,7 @@ export const PerformanceBenchmarkModal: React.FC<{ open: boolean; onClose: () =>
           </h4>
           <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
             <table className="w-full text-start">
-              <thead className="bg-slate-100 dark:bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]">
+              <thead className="bg-[var(--md-sys-color-surface-container-high)] text-[var(--md-sys-color-on-surface-variant)]">
                 <tr>
                   <th className="p-3 text-start">عنصر النظام</th>
                   <th className="p-3 text-start">المشكلة السابقة (قبل التحسين)</th>
