@@ -2952,6 +2952,99 @@ html:not(.dark) .pos-snackbar-box {
   color: var(--md-sys-color-on-secondary-container) !important;
 }
 
+/* Landscape cashier vertical sizing: the toolbar is separate from the full-height work area. */
+@media (orientation: landscape) and (max-width: 900px) and (max-height: 500px) and (pointer: coarse) {
+  .matjark-app-main--cashier {
+    display: flex !important;
+    flex: 1 1 0% !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .matjark-screen-host--cashier {
+    display: flex !important;
+    flex: 1 1 0% !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .matjark-cashier-screen-layout {
+    display: flex !important;
+    flex: 1 1 0% !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .matjark-mobile-cashier-appbar {
+    display: flex !important;
+    flex: 0 0 44px !important;
+    width: 100% !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+  }
+
+  .matjark-mobile-cashier-actions--landscape {
+    flex: 1 1 0% !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .matjark-mobile-cashier-actions--landscape .matjark-pos-search-field-wrap {
+    flex: 1 1 0% !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 38px !important;
+    margin: 0 !important;
+    align-self: center !important;
+  }
+
+  .matjark-pos-root {
+    display: flex !important;
+    flex: 1 1 0% !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .matjark-pos-products-panel,
+  .matjark-pos-cart-panel {
+    height: 100% !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    align-self: stretch !important;
+  }
+
+  .matjark-pos-cart-panel {
+    flex: 2 1 0% !important;
+  }
+
+  .matjark-pos-products-panel {
+    flex: 3 1 0% !important;
+  }
+}
+
 /* The landscape search belongs beside the cashier title, not above the products. */
 @media (orientation: landscape) and (max-width: 900px) and (max-height: 500px) and (pointer: coarse) {
   .matjark-mobile-cashier-appbar {
