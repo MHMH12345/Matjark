@@ -988,7 +988,7 @@ export const CashierScreen: React.FC = () => {
     <div className="matjark-pos-search-field-wrap">
       <MuiTextField
         label={isMobileLandscapePos ? "بحث عن صنف..." : "بحث فوري باسم الصنف..."}
-        type="search"
+        type="text"
         density={isMobileLandscapePos ? "compact" : "default"}
         value={searchQuery}
         onChange={(event) => setSearchQuery(event.target.value)}
@@ -1176,6 +1176,7 @@ export const CashierScreen: React.FC = () => {
     >
       <MobileNavigation
         cashierMode
+        actionsAfterTitle={isMobileLandscapePos}
         actions={
           <div
             className={`matjark-mobile-cashier-actions${isMobileLandscapePos ? ' matjark-mobile-cashier-actions--landscape' : ''}`}
