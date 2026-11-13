@@ -23,6 +23,8 @@ const CASHIER_DESTINATIONS: Array<{ id: ActiveTab; label: string; icon: React.Re
 
 export const MobileNavigation: React.FC<{ cashierMode?: boolean }> = ({ cashierMode = false }) => {
   const hostRef = useRef<HTMLDivElement>(null);
+  const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  const wasMoreOpenRef = useRef(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const { activeTab, setActiveTab, cartTotals, products } = useStore();
 
@@ -30,6 +32,17 @@ export const MobileNavigation: React.FC<{ cashierMode?: boolean }> = ({ cashierM
     () => products.filter((product) => product.stock <= (product.minStockAlert ?? 5)).length,
     [products]
   );
+
+  useEffect(() => {
+    if (moreOpen) {
+      wasMoreOpenRef.current = true;
+      return;
+    }
+    if (wasMoreOpenRef.current) {
+      wasMoreOpenRef.current = false;
+      menuTriggerRef.current?.focus();
+    }
+  }, [moreOpen]);
 
   useEffect(() => {
     if (cashierMode || !hostRef.current) return;
@@ -74,7 +87,7 @@ export const MobileNavigation: React.FC<{ cashierMode?: boolean }> = ({ cashierM
     <>
       {cashierMode ? (
         <header className="matjark-mobile-cashier-appbar" dir="rtl">
-          <button type="button" className="matjark-mobile-menu-trigger" aria-label="فتح قائمة التنقل" onClick={() => setMoreOpen(true)}>
+          <button ref={menuTriggerRef} type="button" className="matjark-mobile-menu-trigger" aria-label="فتح قائمة التنقل" onClick={() => setMoreOpen(true)}>
             <Menu size={22} />
           </button>
           <span>الكاشير</span>
