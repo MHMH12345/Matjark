@@ -1958,7 +1958,11 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 @media (max-width: 599px) {
-  .matjark-app-shell { flex-direction: column !important; }
+  .matjark-app-shell {
+    height: 100vh !important;
+    height: 100dvh !important;
+    flex-direction: column !important;
+  }
   .matjark-sidebar { display: none !important; }
   .matjark-app-main {
     width: 100%;
