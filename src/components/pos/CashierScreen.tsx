@@ -1165,7 +1165,6 @@ export const CashierScreen: React.FC = () => {
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
               startAdornment={<Search className="w-4 h-4" />}
-              endAdornment={isMobilePos ? <Camera className="w-4 h-4" /> : undefined}
               fullWidth
               className="matjark-pos-search-field"
             />
@@ -1178,7 +1177,9 @@ export const CashierScreen: React.FC = () => {
                   setScannerError('');
                   setScannerOpen(true);
                 }}
-              />
+              >
+                <Camera width={19} height={19} strokeWidth={2} />
+              </button>
             )}
           </div>
         </div>
@@ -1208,7 +1209,7 @@ export const CashierScreen: React.FC = () => {
           />
         </div>
 
-        <div className="flex-1 min-h-0 p-3 lg:p-4 overflow-y-auto">
+        <div className="matjark-pos-products-scroll flex-1 min-h-0 p-3 lg:p-4 overflow-y-auto">
           {filteredProducts.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-[var(--md-sys-color-outline)]">
               <Search className="w-12 h-12 mb-2 opacity-40" />
@@ -1245,12 +1246,14 @@ export const CashierScreen: React.FC = () => {
             }}
           >
             <span className="matjark-pos-mobile-summary-total">
-              <span className="matjark-pos-mobile-summary-label">الإجمالي النهائي</span>
+              <span className="matjark-pos-mobile-summary-label">الإجمالي</span>
               <strong>{formatCurrency(cartTotals.grandTotal)}</strong>
             </span>
             <span className="matjark-pos-mobile-summary-count">
-              {cartTotals.unitsCount} قطعة
-              <ChevronUp width={19} height={19} />
+              <ShoppingCart width={16} height={16} />
+              <span>{cartTotals.unitsCount} قطعة</span>
+              <span className="matjark-pos-mobile-summary-open-label">فتح السلة</span>
+              <ChevronUp width={17} height={17} />
             </span>
           </button>
 
