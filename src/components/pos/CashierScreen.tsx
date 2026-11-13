@@ -20,8 +20,6 @@ import {
   CreditCard,
   Banknote,
   Smartphone,
-  Pause,
-  Play,
   Check,
   Clock3,
   Camera,
@@ -45,6 +43,12 @@ const toSvg = (Icon: React.ElementType, size = 'w-4 h-4') =>
 
 const toIconSvg = (Icon: React.ElementType, size = 14) =>
   renderToStaticMarkup(<Icon width={size} height={size} strokeWidth={2} />);
+
+const materialHoldIcon = (name: 'pause' | 'play_arrow' | 'add') => (
+  <span className="material-symbols-rounded matjark-hold-material-icon" aria-hidden="true">
+    {name}
+  </span>
+);
 
 const MCard = MaterialCard as React.ComponentType<any>;
 const MBadge = MaterialBadge as React.ComponentType<any>;
@@ -914,12 +918,18 @@ export const CashierScreen: React.FC = () => {
               {(holdStorage.sales.length > 0 || holdAddReturning || heldSaleCompleted) && (
                 <MProgress
                   variant="circular"
-                  indeterminate
-                  shape="flat"
+                  shape="wavy"
                   thickness={2.5}
                   size={52}
-                  ariaLabel="نشاط الفواتير المعلقة"
-                  className="matjark-pos-hold-progress"
+                  value={heldSaleCompleted
+                    ? 100
+                    : holdAddReturning
+                      ? 0
+                      : holdStorage.progressTotal > 0
+                        ? Math.round((holdStorage.sales.length / holdStorage.progressTotal) * 100)
+                        : 100}
+                  ariaLabel="نسبة الفواتير المعلقة المتبقية"
+                  className={`matjark-pos-hold-progress${heldSaleCompleted ? ' matjark-pos-hold-progress--complete' : ''}`}
                 />
               )}
               {heldSaleCompleted ? (
@@ -934,7 +944,7 @@ export const CashierScreen: React.FC = () => {
               ) : holdStorage.sales.length > 0 || holdAddReturning ? (
                 <>
                   <MuiIconButton
-                    icon={<Play width={16} height={16} className="matjark-hold-icon" />}
+                    icon={materialHoldIcon('play_arrow')}
                     ariaLabel={heldListOpen ? "إغلاق قائمة الفواتير المعلقة" : "عرض الفواتير المعلقة"}
                     variant="filled"
                     size="extraSmall"
@@ -952,7 +962,7 @@ export const CashierScreen: React.FC = () => {
                 </>
               ) : (
                 <MuiIconButton
-                  icon={<Pause width={16} height={16} className="matjark-hold-icon" />}
+                  icon={materialHoldIcon('pause')}
                   ariaLabel="تعليق الفاتورة الحالية"
                   variant="filled"
                   size="extraSmall"
@@ -967,7 +977,7 @@ export const CashierScreen: React.FC = () => {
                 onAnimationEnd={handleHoldAddAnimationEnd}
               >
                 <MuiIconButton
-                  icon={<Plus width={17} height={17} className="matjark-hold-icon" />}
+                  icon={materialHoldIcon('add')}
                   ariaLabel="تعليق الفاتورة الحالية وإضافتها للمعلقات"
                   variant="filled"
                   size="extraSmall"
