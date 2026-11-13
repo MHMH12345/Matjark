@@ -133,7 +133,7 @@
   }
 
   body {
-    font-family: 'Cairo', sans-serif;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
     background-color: var(--md-sys-color-background);
     color: var(--md-sys-color-on-surface);
     -webkit-font-smoothing: antialiased;
@@ -142,7 +142,7 @@
 
 [class*="mtrl-"],
 [class*="mtrl-"] * {
-  font-family: 'Cairo', sans-serif !important;
+  font-family: 'IBM Plex Sans Arabic', sans-serif !important;
 }
 
 .mtrl-navigation-rail {
@@ -1770,7 +1770,7 @@ html:not(.dark) .pos-snackbar-box {
 .MuiChartsRoot text,
 .MuiChartsAxis-tickLabel,
 .MuiChartsLegend-label {
-  font-family: 'Cairo', sans-serif !important;
+  font-family: 'IBM Plex Sans Arabic', sans-serif !important;
   color: var(--md-sys-color-on-surface-variant);
 }
 
