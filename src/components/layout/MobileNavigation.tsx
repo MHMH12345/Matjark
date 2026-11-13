@@ -44,7 +44,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
     const navigation = createNavigationBar({
       ariaLabel: 'التنقل الرئيسي',
       itemLayout: 'vertical',
-      ripple: true,
+      ripple: false,
       items: [
         { id: 'inventory', label: 'المخزن', icon: iconMarkup(Package), active: activeTab === 'inventory', badge: lowStockCount || undefined },
         { id: 'invoices', label: 'الفواتير', icon: iconMarkup(FileText), active: activeTab === 'invoices' },
@@ -52,6 +52,35 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
         { id: 'more', label: 'المزيد', icon: iconMarkup(MoreHorizontal), active: activeMore },
       ],
     });
+    const handleNavigationPointerDown = (event: PointerEvent) => {
+      if (event.button !== 0 || !event.isPrimary) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const target = (event.target as Element | null)?.closest<HTMLElement>('.mtrl-navigation-bar__item');
+      if (!target || target.getAttribute('aria-disabled') === 'true') return;
+
+      const indicator = target.querySelector<HTMLElement>('.mtrl-navigation-bar__indicator');
+      if (!indicator) return;
+
+      const bounds = indicator.getBoundingClientRect();
+      const diameter = Math.max(bounds.width, bounds.height) * 2;
+      const ripple = document.createElement('span');
+      ripple.className = 'matjark-mobile-navigation-ripple';
+      ripple.setAttribute('aria-hidden', 'true');
+      ripple.style.width = `${diameter}px`;
+      ripple.style.height = `${diameter}px`;
+      ripple.style.left = `${(bounds.width - diameter) / 2}px`;
+      ripple.style.top = `${(bounds.height - diameter) / 2}px`;
+      indicator.append(ripple);
+    };
+
+    const handleNavigationAnimationEnd = (event: AnimationEvent) => {
+      const target = event.target;
+      if (target instanceof HTMLElement && target.classList.contains('matjark-mobile-navigation-ripple')) {
+        target.remove();
+      }
+    };
+
     const handleSelect = (event: { id?: string }) => {
       const id = event?.id;
       if (!id) return;
@@ -62,9 +91,14 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
       setActiveTab(id as ActiveTab);
     };
     navigation.on('select', handleSelect);
+    navigation.element.addEventListener('pointerdown', handleNavigationPointerDown);
+    navigation.element.addEventListener('animationend', handleNavigationAnimationEnd);
     hostRef.current.replaceChildren(navigation.element);
     return () => {
       navigation.off('select', handleSelect);
+      navigation.element.removeEventListener('pointerdown', handleNavigationPointerDown);
+      navigation.element.removeEventListener('animationend', handleNavigationAnimationEnd);
+      navigation.element.querySelectorAll('.matjark-mobile-navigation-ripple').forEach((ripple) => ripple.remove());
       navigation.destroy?.();
       hostRef.current?.replaceChildren();
     };
