@@ -2341,3 +2341,10 @@ html:not(.dark) .pos-snackbar-box {
     height: 100%;
   }
 }
+
+
+/* Lucide icons in the Material 3 bottom navigation must stay outline icons. */
+.matjark-mobile-navigation svg {
+  fill: none !important;
+  stroke: currentColor !important;
+}
