@@ -25,9 +25,10 @@ const CASHIER_DESTINATIONS: Array<{ id: ActiveTab; label: string; icon: React.Re
 type MobileNavigationProps = {
   cashierMode?: boolean;
   actions?: React.ReactNode;
+  actionsAfterTitle?: boolean;
 };
 
-export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode = false, actions }) => {
+export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode = false, actions, actionsAfterTitle = false }) => {
   const hostRef = useRef<HTMLDivElement>(null);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -141,8 +142,9 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
           <button ref={menuTriggerRef} type="button" className="matjark-mobile-menu-trigger" aria-label="فتح قائمة التنقل" onClick={() => setMoreOpen(true)}>
             <Menu size={22} />
           </button>
+          {actionsAfterTitle && <span className="matjark-mobile-cashier-title">الكاشير</span>}
           {actions && <div className="matjark-mobile-cashier-actions">{actions}</div>}
-          <span className="matjark-mobile-cashier-title">الكاشير</span>
+          {!actionsAfterTitle && <span className="matjark-mobile-cashier-title">الكاشير</span>}
         </header>
       ) : (
         <div ref={hostRef} className="matjark-mobile-navigation" dir="rtl" />
