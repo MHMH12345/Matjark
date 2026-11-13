@@ -126,7 +126,13 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
   useEffect(() => {
     const appbar = cashierAppbarRef.current;
     const actionsElement = cashierActionsRef.current;
-    if (!cashierMode || !actionsAfterTitle || !appbar || !actionsElement) {
+    if (
+      !cashierMode ||
+      !actionsAfterTitle ||
+      !appbar ||
+      !actionsElement ||
+      !actionsElement.classList.contains('matjark-mobile-cashier-actions--landscape')
+    ) {
       if (actionsElement) actionsElement.style.transform = '';
       return;
     }
