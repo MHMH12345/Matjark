@@ -32,10 +32,9 @@ function MainAppContent() {
   });
 
   return (
-    <div className="matjark-app-shell h-screen w-screen flex flex-row bg-[var(--md-sys-color-background)] text-[var(--md-sys-color-on-background)] font-['Cairo',sans-serif] overflow-hidden" dir="rtl">
+    <div className={"matjark-app-shell h-screen w-screen flex flex-row bg-[var(--md-sys-color-background)] text-[var(--md-sys-color-on-background)] font-['Cairo',sans-serif] overflow-hidden" + (isCashier ? " matjark-app-shell--cashier" : "")} dir="rtl">
       <Sidebar />
       <main className={"matjark-app-main flex-1 h-full min-w-0 min-h-0 overflow-y-auto p-4 sm:p-6" + (isCashier ? " matjark-app-main--cashier" : "")}>
-        {isCashier && <MobileNavigation cashierMode />}
         <div className={isCashier ? "matjark-screen-host matjark-screen-host--cashier" : "matjark-screen-host"}>
           {activeTab === 'pos' && <CashierScreen />}
           {activeTab === 'inventory' && <InventoryScreen />}
