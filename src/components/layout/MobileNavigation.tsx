@@ -9,6 +9,7 @@ const MBottomSheet = MaterialBottomSheet as React.ComponentType<any>;
 const iconMarkup = (Icon: React.ElementType) => renderToStaticMarkup(<Icon width={24} height={24} strokeWidth={2} />);
 
 const MORE_DESTINATIONS: Array<{ id: ActiveTab; label: string; icon: React.ReactNode }> = [
+  { id: 'pos', label: 'الكاشير', icon: <ShoppingCart size={20} /> },
   { id: 'customers', label: 'العملاء', icon: <Users size={20} /> },
   { id: 'reports', label: 'التقارير', icon: <BarChart3 size={20} /> },
   { id: 'settings', label: 'الإعدادات', icon: <Settings size={20} /> },
@@ -18,31 +19,24 @@ const CASHIER_DESTINATIONS: Array<{ id: ActiveTab; label: string; icon: React.Re
   { id: 'inventory', label: 'المخزن', icon: <Package size={20} /> },
   { id: 'invoices', label: 'الفواتير', icon: <FileText size={20} /> },
   { id: 'accounting', label: 'الحسابات', icon: <Wallet size={20} /> },
-  ...MORE_DESTINATIONS,
+  ...MORE_DESTINATIONS.filter((destination) => destination.id !== 'pos'),
 ];
 
-export const MobileNavigation: React.FC<{ cashierMode?: boolean }> = ({ cashierMode = false }) => {
+type MobileNavigationProps = {
+  cashierMode?: boolean;
+  actions?: React.ReactNode;
+};
+
+export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode = false, actions }) => {
   const hostRef = useRef<HTMLDivElement>(null);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
-  const wasMoreOpenRef = useRef(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const { activeTab, setActiveTab, cartTotals, products } = useStore();
+  const { activeTab, setActiveTab, products } = useStore();
 
   const lowStockCount = useMemo(
     () => products.filter((product) => product.stock <= (product.minStockAlert ?? 5)).length,
     [products]
   );
-
-  useEffect(() => {
-    if (moreOpen) {
-      wasMoreOpenRef.current = true;
-      return;
-    }
-    if (wasMoreOpenRef.current) {
-      wasMoreOpenRef.current = false;
-      menuTriggerRef.current?.focus();
-    }
-  }, [moreOpen]);
 
   useEffect(() => {
     if (cashierMode || !hostRef.current) return;
@@ -52,7 +46,6 @@ export const MobileNavigation: React.FC<{ cashierMode?: boolean }> = ({ cashierM
       itemLayout: 'vertical',
       ripple: true,
       items: [
-        { id: 'pos', label: 'الكاشير', icon: iconMarkup(ShoppingCart), active: activeTab === 'pos', badge: cartTotals.unitsCount || undefined },
         { id: 'inventory', label: 'المخزن', icon: iconMarkup(Package), active: activeTab === 'inventory', badge: lowStockCount || undefined },
         { id: 'invoices', label: 'الفواتير', icon: iconMarkup(FileText), active: activeTab === 'invoices' },
         { id: 'accounting', label: 'الحسابات', icon: iconMarkup(Wallet), active: activeTab === 'accounting' },
@@ -75,11 +68,19 @@ export const MobileNavigation: React.FC<{ cashierMode?: boolean }> = ({ cashierM
       navigation.destroy?.();
       hostRef.current?.replaceChildren();
     };
-  }, [cashierMode, activeTab, cartTotals.unitsCount, lowStockCount, setActiveTab]);
+  }, [cashierMode, activeTab, lowStockCount, setActiveTab]);
 
   const closeAndNavigate = (tab: ActiveTab) => {
+    if (menuTriggerRef.current) menuTriggerRef.current.focus();
+    else if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     setMoreOpen(false);
     setActiveTab(tab);
+  };
+
+  const closeMore = () => {
+    if (menuTriggerRef.current) menuTriggerRef.current.focus();
+    else if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    setMoreOpen(false);
   };
   const destinations = cashierMode ? CASHIER_DESTINATIONS : MORE_DESTINATIONS;
 
@@ -90,7 +91,8 @@ export const MobileNavigation: React.FC<{ cashierMode?: boolean }> = ({ cashierM
           <button ref={menuTriggerRef} type="button" className="matjark-mobile-menu-trigger" aria-label="فتح قائمة التنقل" onClick={() => setMoreOpen(true)}>
             <Menu size={22} />
           </button>
-          <span>الكاشير</span>
+          {actions && <div className="matjark-mobile-cashier-actions">{actions}</div>}
+          <span className="matjark-mobile-cashier-title">الكاشير</span>
         </header>
       ) : (
         <div ref={hostRef} className="matjark-mobile-navigation" dir="rtl" />
@@ -101,7 +103,7 @@ export const MobileNavigation: React.FC<{ cashierMode?: boolean }> = ({ cashierM
         headline={cashierMode ? 'التنقل بين الشاشات' : 'المزيد'}
         expanded={moreOpen}
         maxWidth={560}
-        onClose={() => setMoreOpen(false)}
+        onClose={closeMore}
         className="matjark-mobile-navigation-sheet"
       >
         <div className="matjark-mobile-navigation-options" dir="rtl">
@@ -112,7 +114,7 @@ export const MobileNavigation: React.FC<{ cashierMode?: boolean }> = ({ cashierM
             </button>
           ))}
           {cashierMode && (
-            <button type="button" className="matjark-mobile-navigation-option" onClick={() => setMoreOpen(false)}>
+            <button type="button" className="matjark-mobile-navigation-option" onClick={closeMore}>
               <span className="matjark-mobile-navigation-option-icon"><X size={20} /></span>
               <span>العودة للكاشير</span>
             </button>
