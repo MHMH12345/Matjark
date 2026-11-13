@@ -789,22 +789,29 @@ export const CashierScreen: React.FC = () => {
       const quantityControls = document.createElement('div');
       quantityControls.className = 'matjark-pos-quantity-controls';
       quantityControls.dir = 'ltr';
-      quantityControls.append(
-        makeActionButton(
-          Minus,
-          `إنقاص كمية ${item.product.name}`,
-          'outlined',
-          () => handleSafeUpdateQty(item.product.id, item.quantity - 1),
-          'matjark-pos-cart-minus'
-        ),
-        makeActionButton(
-          Plus,
-          `زيادة كمية ${item.product.name}`,
-          'filled',
-          () => handleSafeUpdateQty(item.product.id, item.quantity + 1),
-          'matjark-pos-cart-plus'
-        )
+      const decreaseButton = makeActionButton(
+        Minus,
+        `إنقاص كمية ${item.product.name}`,
+        'outlined',
+        () => handleSafeUpdateQty(item.product.id, item.quantity - 1),
+        'matjark-pos-cart-minus'
       );
+      const increaseButton = makeActionButton(
+        Plus,
+        `زيادة كمية ${item.product.name}`,
+        'filled',
+        () => handleSafeUpdateQty(item.product.id, item.quantity + 1),
+        'matjark-pos-cart-plus'
+      );
+
+      if (isMobileLandscapePos) {
+        const quantityValue = document.createElement('span');
+        quantityValue.className = 'matjark-pos-cart-quantity-value';
+        quantityValue.textContent = String(item.quantity);
+        quantityControls.append(decreaseButton, quantityValue, increaseButton);
+      } else {
+        quantityControls.append(decreaseButton, increaseButton);
+      }
 
       controls.append(
         makeActionButton(
@@ -820,7 +827,9 @@ export const CashierScreen: React.FC = () => {
       return {
         id: item.product.id,
         headline: item.product.name,
-        supportingText: `${formatCurrency(item.unitPrice)} × ${item.quantity} = ${formatCurrency(item.unitPrice * item.quantity)}`,
+        supportingText: isMobileLandscapePos
+          ? formatCurrency(item.unitPrice * item.quantity)
+          : `${formatCurrency(item.unitPrice)} × ${item.quantity} = ${formatCurrency(item.unitPrice * item.quantity)}`,
         trailing: { type: 'custom' as const, content: controls },
       };
     });
@@ -840,7 +849,7 @@ export const CashierScreen: React.FC = () => {
       list.destroy();
       list.element.remove();
     };
-  }, [cart, formatCurrency, handleSafeUpdateQty, removeFromCart]);
+  }, [cart, formatCurrency, handleSafeUpdateQty, removeFromCart, isMobileLandscapePos]);
 
   const filteredProducts = useMemo(() => {
     let list = products;
@@ -975,12 +984,40 @@ export const CashierScreen: React.FC = () => {
             </div>
   );
 
+  const searchField = (
+    <div className="matjark-pos-search-field-wrap">
+      <MuiTextField
+        label={isMobileLandscapePos ? "بحث عن صنف..." : "بحث فوري باسم الصنف..."}
+        type="search"
+        density={isMobileLandscapePos ? "compact" : "default"}
+        value={searchQuery}
+        onChange={(event) => setSearchQuery(event.target.value)}
+        startAdornment={<Search className="w-4 h-4" />}
+        fullWidth
+        className="matjark-pos-search-field"
+      />
+      {isMobilePos && (
+        <button
+          type="button"
+          className="matjark-pos-search-camera"
+          aria-label="مسح باركود أو QR بالكاميرا"
+          onClick={() => {
+            setScannerError('');
+            setScannerOpen(true);
+          }}
+        >
+          <Camera width={19} height={19} strokeWidth={2} />
+        </button>
+      )}
+    </div>
+  );
+
   const cartPanel = (
       <div
         className="mtrl-card matjark-pos-cart-panel w-full md:w-[340px] lg:w-[390px] h-[45%] md:h-full max-h-full min-h-0 min-w-0 flex flex-col bg-[var(--md-sys-color-surface-container)] rounded-3xl border border-[var(--md-sys-color-outline-variant)] overflow-hidden shrink-0"
         dir="rtl"
       >
-        <div className="px-3.5 py-2.5 border-b border-[var(--md-sys-color-outline-variant)]/70 flex items-center justify-between bg-[var(--md-sys-color-surface-container-low)] shrink-0">
+        <div className="matjark-pos-cart-header px-3.5 py-2.5 border-b border-[var(--md-sys-color-outline-variant)]/70 flex items-center justify-between bg-[var(--md-sys-color-surface-container-low)] shrink-0">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center">
               <ShoppingCart className="w-3.5 h-3.5" />
@@ -1066,7 +1103,7 @@ export const CashierScreen: React.FC = () => {
           />
         )}
 
-        {!heldListOpen && <div className="p-3 bg-[var(--md-sys-color-surface-container-low)] border-t border-[var(--md-sys-color-outline-variant)] space-y-2 shrink-0">
+        {!heldListOpen && <div className="matjark-pos-cart-footer p-3 bg-[var(--md-sys-color-surface-container-low)] border-t border-[var(--md-sys-color-outline-variant)] space-y-2 shrink-0">
           <div className="matjark-pos-tax-row flex items-center justify-between gap-2">
             <span className="text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)]">
               {settings.enableTax
@@ -1096,6 +1133,8 @@ export const CashierScreen: React.FC = () => {
               variant="contained"
               color="primary"
               size="medium"
+              startIcon={<CreditCard width={19} height={19} />}
+              fullWidth
               className="matjark-pos-checkout-button"
               disabled={cart.length === 0}
               onClick={openCheckoutModal}
@@ -1138,8 +1177,11 @@ export const CashierScreen: React.FC = () => {
       <MobileNavigation
         cashierMode
         actions={
-          <div className="matjark-mobile-cashier-actions" dir="rtl">
-            {!isMobileLandscapePos && holdIndicator}
+          <div
+            className={`matjark-mobile-cashier-actions${isMobileLandscapePos ? ' matjark-mobile-cashier-actions--landscape' : ''}`}
+            dir="rtl"
+          >
+            {isMobileLandscapePos ? searchField : holdIndicator}
           </div>
         }
       />
@@ -1164,42 +1206,23 @@ export const CashierScreen: React.FC = () => {
         className="mtrl-card matjark-pos-products-panel flex-1 min-h-0 min-w-0 flex flex-col bg-[var(--md-sys-color-surface)] rounded-3xl border border-[var(--md-sys-color-outline-variant)] overflow-hidden"
       >
         <div className="matjark-pos-field-grid p-3 lg:p-4 bg-[var(--md-sys-color-surface-container-low)] grid grid-cols-1 sm:grid-cols-2 gap-2.5 border-b border-[var(--md-sys-color-outline-variant)] shrink-0">
-          <MuiTextField
-            label="امسح الباركود واضغط Enter..."
-            type="text"
-            value={barcodeQuery}
-            onChange={(event) => setBarcodeQuery(event.target.value)}
-            onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-              if (event.key === 'Enter') processBarcode(barcodeQuery);
-            }}
-            startAdornment={<Barcode className="w-4 h-4" />}
-            fullWidth
-            className="matjark-pos-barcode-field"
-          />
-          <div className="matjark-pos-search-field-wrap">
-            <MuiTextField
-              label="بحث فوري باسم الصنف..."
-              type="search"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              startAdornment={<Search className="w-4 h-4" />}
-              fullWidth
-              className="matjark-pos-search-field"
-            />
-            {isMobilePos && (
-              <button
-                type="button"
-                className="matjark-pos-search-camera"
-                aria-label="مسح باركود أو QR بالكاميرا"
-                onClick={() => {
-                  setScannerError('');
-                  setScannerOpen(true);
+          {!isMobileLandscapePos && (
+            <>
+              <MuiTextField
+                label="امسح الباركود واضغط Enter..."
+                type="text"
+                value={barcodeQuery}
+                onChange={(event) => setBarcodeQuery(event.target.value)}
+                onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                  if (event.key === 'Enter') processBarcode(barcodeQuery);
                 }}
-              >
-                <Camera width={19} height={19} strokeWidth={2} />
-              </button>
-            )}
-          </div>
+                startAdornment={<Barcode className="w-4 h-4" />}
+                fullWidth
+                className="matjark-pos-barcode-field"
+              />
+              {searchField}
+            </>
+          )}
         </div>
 
         <div
