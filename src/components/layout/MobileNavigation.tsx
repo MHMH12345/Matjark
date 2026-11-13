@@ -31,6 +31,8 @@ type MobileNavigationProps = {
 export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode = false, actions, actionsAfterTitle = false }) => {
   const hostRef = useRef<HTMLDivElement>(null);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
+  const cashierAppbarRef = useRef<HTMLElement>(null);
+  const cashierActionsRef = useRef<HTMLDivElement>(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const { activeTab, setActiveTab, products } = useStore();
 
@@ -121,6 +123,37 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
     };
   }, [cashierMode, activeTab, lowStockCount, setActiveTab]);
 
+  useEffect(() => {
+    const appbar = cashierAppbarRef.current;
+    const actionsElement = cashierActionsRef.current;
+    if (!cashierMode || !actionsAfterTitle || !appbar || !actionsElement) {
+      if (actionsElement) actionsElement.style.transform = '';
+      return;
+    }
+
+    const centerSearchInAppbar = () => {
+      // Clear the previous visual offset before measuring, so each update is
+      // calculated from the real flex layout and never accumulates transforms.
+      actionsElement.style.transform = 'none';
+      const appbarBounds = appbar.getBoundingClientRect();
+      const actionsBounds = actionsElement.getBoundingClientRect();
+      const appbarCenter = appbarBounds.left + appbarBounds.width / 2;
+      const actionsCenter = actionsBounds.left + actionsBounds.width / 2;
+      const offset = appbarCenter - actionsCenter;
+      actionsElement.style.transform = `translateX(${offset}px)`;
+    };
+
+    const observer = new ResizeObserver(centerSearchInAppbar);
+    observer.observe(appbar);
+    observer.observe(actionsElement);
+    centerSearchInAppbar();
+
+    return () => {
+      observer.disconnect();
+      actionsElement.style.transform = '';
+    };
+  }, [cashierMode, actionsAfterTitle]);
+
   const closeAndNavigate = (tab: ActiveTab) => {
     if (menuTriggerRef.current) menuTriggerRef.current.focus();
     else if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
@@ -138,12 +171,12 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
   return (
     <>
       {cashierMode ? (
-        <header className="matjark-mobile-cashier-appbar" dir="rtl">
+        <header ref={cashierAppbarRef} className="matjark-mobile-cashier-appbar" dir="rtl">
           <button ref={menuTriggerRef} type="button" className="matjark-mobile-menu-trigger" aria-label="فتح قائمة التنقل" onClick={() => setMoreOpen(true)}>
             <Menu size={22} />
           </button>
           {actionsAfterTitle && <span className="matjark-mobile-cashier-title">الكاشير</span>}
-          {actions && <div className="matjark-mobile-cashier-actions">{actions}</div>}
+          {actions && <div ref={cashierActionsRef} className="matjark-mobile-cashier-actions">{actions}</div>}
           {!actionsAfterTitle && <span className="matjark-mobile-cashier-title">الكاشير</span>}
         </header>
       ) : (
