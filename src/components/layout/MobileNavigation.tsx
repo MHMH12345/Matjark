@@ -8,17 +8,30 @@ import { ActiveTab, useStore } from '../../context/StoreContext';
 const MBottomSheet = MaterialBottomSheet as React.ComponentType<any>;
 const iconMarkup = (Icon: React.ElementType) => renderToStaticMarkup(<Icon width={24} height={24} strokeWidth={2} />);
 
-const MORE_DESTINATIONS: Array<{ id: ActiveTab; label: string; icon: React.ReactNode }> = [
-  { id: 'pos', label: 'الكاشير', icon: <ShoppingCart size={20} /> },
-  { id: 'customers', label: 'العملاء', icon: <Users size={20} /> },
-  { id: 'reports', label: 'التقارير', icon: <BarChart3 size={20} /> },
-  { id: 'settings', label: 'الإعدادات', icon: <Settings size={20} /> },
+type NavigationDestination = {
+  id: ActiveTab;
+  label: string;
+  icon: React.ElementType;
+};
+
+const MORE_DESTINATIONS: NavigationDestination[] = [
+  { id: 'pos', label: 'الكاشير', icon: ShoppingCart },
+  { id: 'customers', label: 'العملاء', icon: Users },
+  { id: 'reports', label: 'التقارير', icon: BarChart3 },
+  { id: 'settings', label: 'الإعدادات', icon: Settings },
 ];
 
-const CASHIER_DESTINATIONS: Array<{ id: ActiveTab; label: string; icon: React.ReactNode }> = [
-  { id: 'inventory', label: 'المخزن', icon: <Package size={20} /> },
-  { id: 'invoices', label: 'الفواتير', icon: <FileText size={20} /> },
-  { id: 'accounting', label: 'الحسابات', icon: <Wallet size={20} /> },
+const PRIMARY_DESTINATIONS: NavigationDestination[] = [
+  { id: 'inventory', label: 'المخزن', icon: Package },
+  { id: 'invoices', label: 'الفواتير', icon: FileText },
+  { id: 'accounting', label: 'الحسابات', icon: Wallet },
+  ...MORE_DESTINATIONS,
+];
+
+const CASHIER_DESTINATIONS: NavigationDestination[] = [
+  { id: 'inventory', label: 'المخزن', icon: Package },
+  { id: 'invoices', label: 'الفواتير', icon: FileText },
+  { id: 'accounting', label: 'الحسابات', icon: Wallet },
   ...MORE_DESTINATIONS.filter((destination) => destination.id !== 'pos'),
 ];
 
@@ -34,7 +47,37 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
   const cashierAppbarRef = useRef<HTMLElement>(null);
   const cashierActionsRef = useRef<HTMLDivElement>(null);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [navigationWidth, setNavigationWidth] = useState(0);
   const { activeTab, setActiveTab, products } = useStore();
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (cashierMode || !host) {
+      setNavigationWidth(0);
+      return;
+    }
+
+    const syncNavigationWidth = () => {
+      const nextWidth = Math.round(host.getBoundingClientRect().width);
+      setNavigationWidth((currentWidth) => currentWidth === nextWidth ? currentWidth : nextWidth);
+    };
+
+    const observer = new ResizeObserver(syncNavigationWidth);
+    observer.observe(host);
+    syncNavigationWidth();
+
+    return () => observer.disconnect();
+  }, [cashierMode]);
+
+  // Phones keep the established three destinations plus More. Wider touch
+  // layouts reveal another destination for each 120px of available bar width.
+  const visibleDestinationCount = navigationWidth >= 768
+    ? Math.min(PRIMARY_DESTINATIONS.length, Math.max(3, Math.floor(navigationWidth / 120) - 1))
+    : 3;
+  const visibleDestinations = PRIMARY_DESTINATIONS.slice(0, visibleDestinationCount);
+  const overflowDestinations = PRIMARY_DESTINATIONS.slice(visibleDestinationCount);
+  const activeMore = overflowDestinations.some((destination) => destination.id === activeTab)
+    || activeTab === 'performance';
 
   const lowStockCount = useMemo(
     () => products.filter((product) => product.stock <= (product.minStockAlert ?? 5)).length,
@@ -43,17 +86,27 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
 
   useEffect(() => {
     if (cashierMode || !hostRef.current) return;
-    const activeMore = ['customers', 'reports', 'settings', 'performance'].includes(activeTab);
+    const items = visibleDestinations.map((destination) => ({
+      id: destination.id,
+      label: destination.label,
+      icon: iconMarkup(destination.icon),
+      active: activeTab === destination.id,
+      ...(destination.id === 'inventory' && lowStockCount ? { badge: lowStockCount } : {}),
+    }));
+    if (overflowDestinations.length > 0) {
+      items.push({
+        id: 'more',
+        label: 'المزيد',
+        icon: iconMarkup(MoreHorizontal),
+        active: activeMore,
+      });
+    }
+
     const navigation = createNavigationBar({
       ariaLabel: 'التنقل الرئيسي',
       itemLayout: 'vertical',
       ripple: false,
-      items: [
-        { id: 'inventory', label: 'المخزن', icon: iconMarkup(Package), active: activeTab === 'inventory', badge: lowStockCount || undefined },
-        { id: 'invoices', label: 'الفواتير', icon: iconMarkup(FileText), active: activeTab === 'invoices' },
-        { id: 'accounting', label: 'الحسابات', icon: iconMarkup(Wallet), active: activeTab === 'accounting' },
-        { id: 'more', label: 'المزيد', icon: iconMarkup(MoreHorizontal), active: activeMore },
-      ],
+      items,
     });
 
     // Keep the active indicator structurally attached to the real icon box.
@@ -121,7 +174,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
       navigation.destroy?.();
       hostRef.current?.replaceChildren();
     };
-  }, [cashierMode, activeTab, lowStockCount, setActiveTab]);
+  }, [cashierMode, activeTab, activeMore, lowStockCount, setActiveTab, visibleDestinationCount]);
 
   useEffect(() => {
     const appbar = cashierAppbarRef.current;
@@ -172,7 +225,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
     else if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     setMoreOpen(false);
   };
-  const destinations = cashierMode ? CASHIER_DESTINATIONS : MORE_DESTINATIONS;
+  const destinations = cashierMode ? CASHIER_DESTINATIONS : overflowDestinations;
 
   return (
     <>
@@ -198,12 +251,15 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
         className="matjark-mobile-navigation-sheet"
       >
         <div className="matjark-mobile-navigation-options" dir="rtl">
-          {destinations.map((destination) => (
-            <button key={destination.id} type="button" className="matjark-mobile-navigation-option" onClick={() => closeAndNavigate(destination.id)}>
-              <span className="matjark-mobile-navigation-option-icon">{destination.icon}</span>
-              <span>{destination.label}</span>
-            </button>
-          ))}
+          {destinations.map((destination) => {
+            const DestinationIcon = destination.icon;
+            return (
+              <button key={destination.id} type="button" className="matjark-mobile-navigation-option" onClick={() => closeAndNavigate(destination.id)}>
+                <span className="matjark-mobile-navigation-option-icon"><DestinationIcon size={20} /></span>
+                <span>{destination.label}</span>
+              </button>
+            );
+          })}
           {cashierMode && (
             <button type="button" className="matjark-mobile-navigation-option" onClick={closeMore}>
               <span className="matjark-mobile-navigation-option-icon"><X size={20} /></span>
