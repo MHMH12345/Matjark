@@ -1174,18 +1174,6 @@ export const CashierScreen: React.FC = () => {
       onTouchEnd={handlePosTouchEnd}
       onTouchCancel={handlePosTouchCancel}
     >
-      <MobileNavigation
-        cashierMode
-        actionsAfterTitle={isMobileLandscapePos}
-        actions={
-          <div
-            className={`matjark-mobile-cashier-actions${isMobileLandscapePos ? ' matjark-mobile-cashier-actions--landscape' : ''}`}
-            dir="rtl"
-          >
-            {isMobileLandscapePos ? searchField : holdIndicator}
-          </div>
-        }
-      />
     <div className="matjark-pos-root flex flex-col md:flex-row gap-3 lg:gap-4 h-full max-h-full w-full min-w-0 min-h-0 relative overflow-hidden" dir="rtl">
       {snackbar && (
         <MSnackbar
@@ -1203,9 +1191,22 @@ export const CashierScreen: React.FC = () => {
         />
       )}
 
-      <div
-        className="mtrl-card matjark-pos-products-panel flex-1 min-h-0 min-w-0 flex flex-col bg-[var(--md-sys-color-surface)] rounded-3xl border border-[var(--md-sys-color-outline-variant)] overflow-hidden"
-      >
+      <div className="matjark-pos-products-column">
+        <MobileNavigation
+          cashierMode
+          actionsAfterTitle={isMobileLandscapePos}
+          actions={
+            <div
+              className={`matjark-mobile-cashier-actions${isMobileLandscapePos ? ' matjark-mobile-cashier-actions--landscape' : ''}`}
+              dir="rtl"
+            >
+              {isMobileLandscapePos ? searchField : holdIndicator}
+            </div>
+          }
+        />
+        <div
+          className="mtrl-card matjark-pos-products-panel flex-1 min-h-0 min-w-0 flex flex-col bg-[var(--md-sys-color-surface)] rounded-3xl border border-[var(--md-sys-color-outline-variant)] overflow-hidden"
+        >
         <div className="matjark-pos-field-grid p-3 lg:p-4 bg-[var(--md-sys-color-surface-container-low)] grid grid-cols-1 sm:grid-cols-2 gap-2.5 border-b border-[var(--md-sys-color-outline-variant)] shrink-0">
           {!isMobileLandscapePos && (
             <>
@@ -1273,8 +1274,9 @@ export const CashierScreen: React.FC = () => {
             </div>
           )}
         </div>
+        </div>
       </div>
-{(!isMobilePos || isMobileLandscapePos) && cartPanel}
+      {(!isMobilePos || isMobileLandscapePos) && cartPanel}
 
       {isMobilePos && (
         <>
