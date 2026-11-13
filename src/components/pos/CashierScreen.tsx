@@ -24,6 +24,8 @@ import {
   Play,
   Check,
   Clock3,
+  Camera,
+  ChevronUp,
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { CartItem, PaymentMethod } from '../../types';
@@ -36,6 +38,7 @@ import { MuiSelect } from '../ui/MuiSelect';
 import { MuiDialog } from '../ui/MuiDialog';
 import { MuiButton } from '../ui/MuiButton';
 import { MuiIconButton } from '../ui/MuiIconButton';
+import { MobileNavigation } from '../layout/MobileNavigation';
 
 const toSvg = (Icon: React.ElementType, size = 'w-4 h-4') =>
   renderToStaticMarkup(<Icon className={size} />);
@@ -67,6 +70,15 @@ type HeldSaleStorage = {
 };
 
 const HELD_SALES_STORAGE_KEY = 'matjark_pos_held_sales_v1';
+
+type BarcodeDetectorResult = { rawValue?: string };
+type BarcodeDetectorInstance = {
+  detect: (source: HTMLVideoElement) => Promise<BarcodeDetectorResult[]>;
+};
+type BarcodeDetectorConstructor = {
+  new (options?: { formats?: string[] }): BarcodeDetectorInstance;
+  getSupportedFormats?: () => Promise<string[]>;
+};
 
 const loadHeldSaleStorage = (): HeldSaleStorage => {
   const empty: HeldSaleStorage = { sales: [], progressTotal: 0, nextSerial: 1, activeId: null };
@@ -177,17 +189,39 @@ export const CashierScreen: React.FC = () => {
   const [heldSaleCompleted, setHeldSaleCompleted] = useState(false);
   const [holdAddReturning, setHoldAddReturning] = useState(false);
   const [holdStateReady, setHoldStateReady] = useState(false);
+  const [isMobilePos, setIsMobilePos] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+  );
+  const [cartSheetOpen, setCartSheetOpen] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [scannerError, setScannerError] = useState('');
 
   const snackbarIdRef = useRef(0);
   const cartListHostRef = useRef<HTMLDivElement>(null);
   const quickHoldInputRef = useRef<any>(null);
   const holdCompletionTimerRef = useRef<number | null>(null);
   const holdStorageRef = useRef(holdStorage);
+  const scannerVideoRef = useRef<HTMLVideoElement>(null);
+  const swipeStartYRef = useRef<number | null>(null);
 
   const showSnackbar = useCallback((message: string) => {
     const id = ++snackbarIdRef.current;
     setSnackbar({ id, message });
   }, []);
+
+  const processBarcode = useCallback((rawCode: string) => {
+    const code = rawCode.trim();
+    if (!code) return;
+    const found = products.find((product) => product.barcode === code);
+    if (!found) {
+      showSnackbar('الباركود (' + code + ') غير مسجل في المخزن.');
+    } else if (found.stock <= 0) {
+      showSnackbar('نفذت كمية "' + found.name + '" من المخزن.');
+    } else {
+      addByBarcode(code);
+    }
+    setBarcodeQuery('');
+  }, [products, addByBarcode, showSnackbar]);
 
   const commitHoldStorage = useCallback((next: HeldSaleStorage) => {
     holdStorageRef.current = next;
@@ -250,6 +284,95 @@ export const CashierScreen: React.FC = () => {
       window.clearTimeout(holdCompletionTimerRef.current);
     }
   }, []);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const syncLayout = () => setIsMobilePos(mediaQuery.matches);
+    syncLayout();
+    mediaQuery.addEventListener('change', syncLayout);
+    return () => mediaQuery.removeEventListener('change', syncLayout);
+  }, []);
+
+  useEffect(() => {
+    if (!scannerOpen) return;
+    let active = true;
+    let stream: MediaStream | null = null;
+    let animationFrame = 0;
+    const video = scannerVideoRef.current;
+    const Detector = (window as unknown as { BarcodeDetector?: BarcodeDetectorConstructor }).BarcodeDetector;
+
+    if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
+      setScannerError('تشغيل الكاميرا يحتاج إلى فتح التطبيق عبر HTTPS أو localhost.');
+      return;
+    }
+    if (!Detector) {
+      setScannerError('المتصفح لا يدعم قراءة الباركود بالكاميرا. يمكنك إدخال الكود يدويًا هنا.');
+      return;
+    }
+    if (!video) return;
+
+    setScannerError('');
+    const startScanner = async () => {
+      try {
+        const supported = Detector.getSupportedFormats
+          ? await Detector.getSupportedFormats()
+          : [];
+        const requestedFormats = [
+          'qr_code', 'ean_13', 'ean_8', 'upc_a', 'upc_e',
+          'code_128', 'code_39', 'code_93', 'codabar', 'itf',
+        ];
+        const formats = supported.length
+          ? requestedFormats.filter((format) => supported.includes(format))
+          : requestedFormats;
+        if (formats.length === 0) {
+          setScannerError('لا توجد صيغ باركود مدعومة في هذا المتصفح. يمكنك إدخال الكود يدويًا هنا.');
+          return;
+        }
+
+        const detector = new Detector({ formats });
+        const nextStream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: { facingMode: { ideal: 'environment' } },
+        });
+        stream = nextStream;
+        if (!active) {
+          nextStream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+        video.srcObject = nextStream;
+        await video.play();
+
+        const scanFrame = async () => {
+          if (!active) return;
+          if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+            try {
+              const results = await detector.detect(video);
+              const value = results.find((result) => result.rawValue?.trim())?.rawValue?.trim();
+              if (value) {
+                processBarcode(value);
+                setScannerOpen(false);
+                return;
+              }
+            } catch {
+              // A frame can be temporarily unreadable while the camera adjusts.
+            }
+          }
+          if (active) animationFrame = window.requestAnimationFrame(() => void scanFrame());
+        };
+        void scanFrame();
+      } catch {
+        setScannerError('تعذر تشغيل الكاميرا. راجع إذن الكاميرا في المتصفح، أو أدخل الباركود يدويًا.');
+      }
+    };
+
+    void startScanner();
+    return () => {
+      active = false;
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      stream?.getTracks().forEach((track) => track.stop());
+      if (video.srcObject === stream) video.srcObject = null;
+    };
+  }, [scannerOpen, processBarcode]);
 
   const openQuickHold = useCallback((mode: 'pause' | 'plus' | 'switch' | 'new', targetId: string | null = null) => {
     setQuickHoldName('');
@@ -425,12 +548,13 @@ export const CashierScreen: React.FC = () => {
 
   const handleHoldMainClick = useCallback(() => {
     if (heldSaleCompleted || holdAddReturning) return;
+    if (isMobilePos) setCartSheetOpen(true);
     if (holdStorageRef.current.sales.length > 0) {
       setHeldListOpen((open) => !open);
       return;
     }
     if (cart.length > 0) openQuickHold('pause');
-  }, [heldSaleCompleted, holdAddReturning, cart.length, openQuickHold]);
+  }, [heldSaleCompleted, holdAddReturning, cart.length, openQuickHold, isMobilePos]);
 
   const handleHoldAddAnimationEnd = useCallback((event: React.AnimationEvent<HTMLDivElement>) => {
     if (
@@ -581,6 +705,7 @@ export const CashierScreen: React.FC = () => {
   );
 
   const openCheckoutModal = () => {
+    setCartSheetOpen(false);
     setPaidAmount(cartTotals.grandTotal);
     setSelectedPayment('cash');
     setCheckoutModalOpen(true);
@@ -617,125 +742,7 @@ export const CashierScreen: React.FC = () => {
     }
   };
 
-  return (
-    <div className="matjark-pos-root flex flex-col md:flex-row gap-3 lg:gap-4 h-full max-h-full w-full min-w-0 min-h-0 relative overflow-hidden" dir="rtl">
-      {snackbar && (
-        <MSnackbar
-          key={snackbar.id}
-          open
-          message={snackbar.message}
-          duration="short"
-          dismissible
-          position="center"
-          queueBehavior="replace"
-          onClose={() => {
-            setSnackbar((current) => current?.id === snackbar.id ? null : current);
-          }}
-          className="matjark-pos-snackbar"
-        />
-      )}
-
-      <div
-        className="mtrl-card matjark-pos-products-panel flex-1 min-h-0 min-w-0 flex flex-col bg-[var(--md-sys-color-surface)] rounded-3xl border border-[var(--md-sys-color-outline-variant)] overflow-hidden"
-      >
-        <div className="matjark-pos-field-grid p-3 lg:p-4 bg-[var(--md-sys-color-surface-container-low)] grid grid-cols-1 sm:grid-cols-2 gap-2.5 border-b border-[var(--md-sys-color-outline-variant)] shrink-0">
-          <MuiTextField
-            label="امسح الباركود واضغط Enter..."
-            type="text"
-            value={barcodeQuery}
-            onChange={(event) => setBarcodeQuery(event.target.value)}
-            onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-              if (event.key !== 'Enter') return;
-              const code = barcodeQuery.trim();
-              if (!code) return;
-
-              const found = products.find((product) => product.barcode === code);
-              if (!found) {
-                showSnackbar('الباركود (' + code + ') غير مسجل في المخزن.');
-              } else if (found.stock <= 0) {
-                showSnackbar('نفذت كمية "' + found.name + '" من المخزن.');
-              } else {
-                addByBarcode(code);
-              }
-
-              setBarcodeQuery('');
-            }}
-            startAdornment={<Barcode className="w-4 h-4" />}
-            fullWidth
-            className="matjark-pos-barcode-field"
-          />
-          <MuiTextField
-            label="بحث فوري باسم الصنف..."
-            type="search"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            startAdornment={<Search className="w-4 h-4" />}
-            fullWidth
-            className="matjark-pos-search-field"
-          />
-        </div>
-
-        <div
-          className="matjark-filter-chips-viewport px-3 lg:px-4 py-2.5 border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] shrink-0"
-          onWheel={(event) => {
-            const chipsHost = event.currentTarget.querySelector<HTMLElement>('.matjark-filter-chips--scrollable');
-            const scrollTarget = chipsHost?.shadowRoot?.querySelector<HTMLElement>('.mtrl-chips__container');
-            if (!scrollTarget || scrollTarget.scrollWidth <= scrollTarget.clientWidth + 1) return;
-            event.preventDefault();
-            const delta = event.deltaY || event.deltaX;
-            const direction = getComputedStyle(scrollTarget).direction;
-            scrollTarget.scrollBy({ left: direction === 'rtl' ? -delta : delta, behavior: 'auto' });
-          }}
-        >
-          <MuiChipGroup
-            value={selectedCategory}
-            onChange={setSelectedCategory}
-            ariaLabel="تصنيفات المنتجات"
-            scrollable
-            className="matjark-filter-chips matjark-filter-chips--scrollable"
-            options={[
-              { value: 'all', label: 'الكل' },
-              ...categories.map((category) => ({ value: category, label: category })),
-            ]}
-          />
-        </div>
-
-        <div className="flex-1 min-h-0 p-3 lg:p-4 overflow-y-auto">
-          {filteredProducts.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-[var(--md-sys-color-outline)]">
-              <Search className="w-12 h-12 mb-2 opacity-40" />
-              <p className="text-sm font-semibold">لا توجد أصناف مطابقة للبحث</p>
-            </div>
-          ) : (
-            <div className="matjark-pos-product-grid grid gap-3.5 pt-1">
-              {filteredProducts.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  availableStock={Math.max(0, p.stock - (cartQuantitiesByProduct.get(p.id) ?? 0))}
-                  onAdd={handleSafeAdd}
-                  onOutOfStockClick={(prod: any) =>
-                    showSnackbar(`نفذت كمية "${prod.name}" من المخزن ولا يمكن إضافتها.`)
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-      <div
-        className="mtrl-card matjark-pos-cart-panel w-full md:w-[340px] lg:w-[390px] h-[45%] md:h-full max-h-full min-h-0 min-w-0 flex flex-col bg-[var(--md-sys-color-surface-container)] rounded-3xl border border-[var(--md-sys-color-outline-variant)] overflow-hidden shrink-0"
-        dir="rtl"
-      >
-        <div className="px-3.5 py-2.5 border-b border-[var(--md-sys-color-outline-variant)]/70 flex items-center justify-between bg-[var(--md-sys-color-surface-container-low)] shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center">
-              <ShoppingCart className="w-3.5 h-3.5" />
-            </div>
-            <span className="text-[13px] font-bold text-[var(--md-sys-color-on-surface)]">سلة البيع</span>
-            <MBadge label={String(cartTotals.unitsCount)} variant="large" color="primary" className="matjark-pos-cart-count-badge" />
-          </div>
-          <div className="matjark-pos-cart-header-actions flex items-center gap-1.5" dir="rtl">
+  const holdIndicator = (
             <div className="matjark-pos-hold-indicator">
               {(holdStorage.sales.length > 0 || holdAddReturning || heldSaleCompleted) && (
                 <MProgress
@@ -808,7 +815,24 @@ export const CashierScreen: React.FC = () => {
                   onClick={handleHoldPlusClick}
                 />
               </div>
-            </div>            <MuiIconButton
+            </div>
+  );
+
+  const cartPanel = (
+      <div
+        className="mtrl-card matjark-pos-cart-panel w-full md:w-[340px] lg:w-[390px] h-[45%] md:h-full max-h-full min-h-0 min-w-0 flex flex-col bg-[var(--md-sys-color-surface-container)] rounded-3xl border border-[var(--md-sys-color-outline-variant)] overflow-hidden shrink-0"
+        dir="rtl"
+      >
+        <div className="px-3.5 py-2.5 border-b border-[var(--md-sys-color-outline-variant)]/70 flex items-center justify-between bg-[var(--md-sys-color-surface-container-low)] shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center">
+              <ShoppingCart className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-[13px] font-bold text-[var(--md-sys-color-on-surface)]">سلة البيع</span>
+            <MBadge label={String(cartTotals.unitsCount)} variant="large" color="primary" className="matjark-pos-cart-count-badge" />
+          </div>
+          <div className="matjark-pos-cart-header-actions flex items-center gap-1.5" dir="rtl">
+{holdIndicator}            <MuiIconButton
               icon={<Trash2 width={18} height={18} className="matjark-hold-icon" />}
               ariaLabel="تفريغ أو حذف الفاتورة الحالية"
               variant="filled"
@@ -924,6 +948,222 @@ export const CashierScreen: React.FC = () => {
           </div>
         </div>}
       </div>
+  );
+
+  const handlePosTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!isMobilePos || cartSheetOpen || event.touches.length !== 1) return;
+    const startY = event.touches[0].clientY;
+    if (startY >= window.innerHeight - 96) swipeStartYRef.current = startY;
+  };
+
+  const handlePosTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const startY = swipeStartYRef.current;
+    swipeStartYRef.current = null;
+    if (startY === null || !isMobilePos || cartSheetOpen) return;
+    const endY = event.changedTouches[0]?.clientY ?? startY;
+    if (startY - endY >= 48) setCartSheetOpen(true);
+  };
+
+  const handlePosTouchCancel = () => {
+    swipeStartYRef.current = null;
+  };
+
+  return (
+    <div
+      className="matjark-cashier-screen-layout"
+      onTouchStart={handlePosTouchStart}
+      onTouchEnd={handlePosTouchEnd}
+      onTouchCancel={handlePosTouchCancel}
+    >
+      <MobileNavigation
+        cashierMode
+        actions={
+          <div className="matjark-mobile-cashier-actions" dir="rtl">
+            <MuiIconButton
+              icon={<Camera width={20} height={20} />}
+              ariaLabel="مسح باركود أو QR بالكاميرا"
+              variant="tonal"
+              size="small"
+              className="matjark-mobile-scan-button"
+              onClick={() => {
+                setScannerError('');
+                setScannerOpen(true);
+              }}
+            />
+            {holdIndicator}
+          </div>
+        }
+      />
+    <div className="matjark-pos-root flex flex-col md:flex-row gap-3 lg:gap-4 h-full max-h-full w-full min-w-0 min-h-0 relative overflow-hidden" dir="rtl">
+      {snackbar && (
+        <MSnackbar
+          key={snackbar.id}
+          open
+          message={snackbar.message}
+          duration="short"
+          dismissible
+          position="center"
+          queueBehavior="replace"
+          onClose={() => {
+            setSnackbar((current) => current?.id === snackbar.id ? null : current);
+          }}
+          className="matjark-pos-snackbar"
+        />
+      )}
+
+      <div
+        className="mtrl-card matjark-pos-products-panel flex-1 min-h-0 min-w-0 flex flex-col bg-[var(--md-sys-color-surface)] rounded-3xl border border-[var(--md-sys-color-outline-variant)] overflow-hidden"
+      >
+        <div className="matjark-pos-field-grid p-3 lg:p-4 bg-[var(--md-sys-color-surface-container-low)] grid grid-cols-1 sm:grid-cols-2 gap-2.5 border-b border-[var(--md-sys-color-outline-variant)] shrink-0">
+          <MuiTextField
+            label="امسح الباركود واضغط Enter..."
+            type="text"
+            value={barcodeQuery}
+            onChange={(event) => setBarcodeQuery(event.target.value)}
+            onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+              if (event.key === 'Enter') processBarcode(barcodeQuery);
+            }}
+            startAdornment={<Barcode className="w-4 h-4" />}
+            fullWidth
+            className="matjark-pos-barcode-field"
+          />
+          <MuiTextField
+            label="بحث فوري باسم الصنف..."
+            type="search"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            startAdornment={<Search className="w-4 h-4" />}
+            fullWidth
+            className="matjark-pos-search-field"
+          />
+        </div>
+
+        <div
+          className="matjark-filter-chips-viewport px-3 lg:px-4 py-2.5 border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] shrink-0"
+          onWheel={(event) => {
+            const chipsHost = event.currentTarget.querySelector<HTMLElement>('.matjark-filter-chips--scrollable');
+            const scrollTarget = chipsHost?.shadowRoot?.querySelector<HTMLElement>('.mtrl-chips__container');
+            if (!scrollTarget || scrollTarget.scrollWidth <= scrollTarget.clientWidth + 1) return;
+            event.preventDefault();
+            const delta = event.deltaY || event.deltaX;
+            const direction = getComputedStyle(scrollTarget).direction;
+            scrollTarget.scrollBy({ left: direction === 'rtl' ? -delta : delta, behavior: 'auto' });
+          }}
+        >
+          <MuiChipGroup
+            value={selectedCategory}
+            onChange={setSelectedCategory}
+            ariaLabel="تصنيفات المنتجات"
+            scrollable
+            className="matjark-filter-chips matjark-filter-chips--scrollable"
+            options={[
+              { value: 'all', label: 'الكل' },
+              ...categories.map((category) => ({ value: category, label: category })),
+            ]}
+          />
+        </div>
+
+        <div className="flex-1 min-h-0 p-3 lg:p-4 overflow-y-auto">
+          {filteredProducts.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-[var(--md-sys-color-outline)]">
+              <Search className="w-12 h-12 mb-2 opacity-40" />
+              <p className="text-sm font-semibold">لا توجد أصناف مطابقة للبحث</p>
+            </div>
+          ) : (
+            <div className="matjark-pos-product-grid grid gap-3.5 pt-1">
+              {filteredProducts.map((p) => (
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  availableStock={Math.max(0, p.stock - (cartQuantitiesByProduct.get(p.id) ?? 0))}
+                  onAdd={handleSafeAdd}
+                  onOutOfStockClick={(prod: any) =>
+                    showSnackbar(`نفذت كمية "${prod.name}" من المخزن ولا يمكن إضافتها.`)
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+{!isMobilePos && cartPanel}
+
+      {isMobilePos && (
+        <>
+          <button
+            type="button"
+            className="matjark-pos-mobile-summary"
+            aria-label={`فتح سلة البيع، الإجمالي ${formatCurrency(cartTotals.grandTotal)}، عدد القطع ${cartTotals.unitsCount}`}
+            onClick={() => setCartSheetOpen(true)}
+          >
+            <span className="matjark-pos-mobile-summary-total">
+              <span className="matjark-pos-mobile-summary-label">الإجمالي النهائي</span>
+              <strong>{formatCurrency(cartTotals.grandTotal)}</strong>
+            </span>
+            <span className="matjark-pos-mobile-summary-count">
+              {cartTotals.unitsCount} قطعة
+              <ChevronUp width={19} height={19} />
+            </span>
+          </button>
+
+          <MBottomSheet
+            open={cartSheetOpen}
+            modal
+            headline={heldListOpen ? 'الفواتير المعلقة' : 'سلة البيع'}
+            expanded={cartSheetOpen}
+            maxWidth={560}
+            onClose={() => setCartSheetOpen(false)}
+            className="matjark-pos-cart-sheet"
+          >
+            {cartPanel}
+          </MBottomSheet>
+
+          <MBottomSheet
+            open={scannerOpen}
+            modal
+            headline="مسح الباركود وQR"
+            expanded={scannerOpen}
+            maxWidth={560}
+            onClose={() => setScannerOpen(false)}
+            className="matjark-pos-scanner-sheet"
+          >
+            <div className="matjark-pos-scanner-content" dir="rtl">
+              <p className="matjark-pos-scanner-hint">
+                {scannerError || 'وجّه الكاميرا إلى الباركود أو رمز QR وسيتم إضافة الصنف تلقائيًا.'}
+              </p>
+              {!scannerError && (
+                <video
+                  ref={scannerVideoRef}
+                  className="matjark-pos-scanner-video"
+                  autoPlay
+                  playsInline
+                  muted
+                />
+              )}
+              {scannerError && (
+                <MuiTextField
+                  label="إدخال الباركود يدويًا"
+                  value={barcodeQuery}
+                  onChange={(event) => setBarcodeQuery(event.target.value)}
+                  onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (event.key === 'Enter') {
+                      processBarcode(barcodeQuery);
+                      setScannerOpen(false);
+                    }
+                  }}
+                  fullWidth
+                  className="matjark-pos-search-field"
+                />
+              )}
+              <div className="matjark-pos-scanner-actions">
+                <MuiButton variant="outlined" color="primary" size="small" onClick={() => setScannerOpen(false)}>
+                  إغلاق
+                </MuiButton>
+              </div>
+            </div>
+          </MBottomSheet>
+        </>
+      )}
 
       <MuiDialog
         open={quickHoldOpen}
@@ -1052,6 +1292,7 @@ export const CashierScreen: React.FC = () => {
           </MCard>
         </MuiDialog>
       )}
+    </div>
     </div>
   );
 };
