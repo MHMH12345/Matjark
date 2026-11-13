@@ -43,40 +43,15 @@ const toSvg = (Icon: React.ElementType, size = 'w-4 h-4') =>
 const toIconSvg = (Icon: React.ElementType, size = 14) =>
   renderToStaticMarkup(<Icon width={size} height={size} strokeWidth={2} />);
 
-const materialHoldIcon = (name: 'pause' | 'play_arrow' | 'add') => {
-  const paths = {
-    pause: 'M6 19h4V5H6v14zm8-14v14h4V5h-4z',
-    play_arrow: 'M8 5v14l11-7z',
-    add: 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z',
-  } as const;
-
-  return (
-    <svg
-      className="matjark-hold-material-svg"
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d={paths[name]} fill="currentColor" />
-    </svg>
-  );
-};
-
-const materialCheckIcon = () => (
-  <svg
-    className="matjark-hold-material-svg"
-    xmlns="http://www.w3.org/2000/svg"
-    width="19"
-    height="19"
-    viewBox="0 0 24 24"
+const materialHoldIcon = (name: 'pause' | 'play_arrow' | 'add' | 'check') => (
+  <span
+    className={name === 'check'
+      ? 'matjark-hold-material-icon matjark-hold-check-symbol'
+      : 'matjark-hold-material-icon'}
     aria-hidden="true"
-    focusable="false"
   >
-    <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor" />
-  </svg>
+    {name}
+  </span>
 );
 
 const MCard = MaterialCard as React.ComponentType<any>;
@@ -986,7 +961,7 @@ export const CashierScreen: React.FC = () => {
               )}
               {heldSaleCompleted ? (
                 <MuiIconButton
-                  icon={materialCheckIcon()}
+                  icon={materialHoldIcon('check')}
                   ariaLabel="اكتملت جميع الفواتير المعلقة"
                   variant="filled"
                   size="small"
