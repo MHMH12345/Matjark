@@ -1321,14 +1321,18 @@ html:not(.dark) .pos-snackbar-box {
   --mtrl-button-shape-pressed: 999px;
 }
 
-.matjark-hold-button--pause {
-  --mtrl-sys-color-primary: #ef4444;
-  --mtrl-sys-color-on-primary: #ffffff;
+.matjark-hold-button--pause,
+.matjark-hold-button--play,
+.matjark-hold-add-button {
+  --mtrl-sys-color-primary: var(--md-sys-color-primary);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-primary);
 }
 
-.matjark-hold-button--pause::part(icon-button) {
-  background-color: #ef4444 !important;
-  color: #ffffff !important;
+.matjark-hold-button--pause::part(icon-button),
+.matjark-hold-button--play::part(icon-button),
+.matjark-hold-add-button::part(icon-button) {
+  background-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
 }
 
 .matjark-hold-button--pause:disabled,
@@ -1338,18 +1342,8 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 .matjark-hold-button--pause[disabled]::part(icon-button) {
-  background-color: #ef4444 !important;
-  color: #ffffff !important;
-}
-
-.matjark-hold-button--play {
-  --mtrl-sys-color-primary: #f59e0b;
-  --mtrl-sys-color-on-primary: #ffffff;
-}
-
-.matjark-hold-button--play::part(icon-button) {
-  background-color: #f59e0b !important;
-  color: #ffffff !important;
+  background-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
 }
 
 
@@ -1429,13 +1423,13 @@ html:not(.dark) .pos-snackbar-box {
   height: 32px !important;
   min-width: 32px !important;
   min-height: 32px !important;
-  --mtrl-sys-color-primary: #10b981;
-  --mtrl-sys-color-on-primary: #ffffff;
+  --mtrl-sys-color-primary: var(--md-sys-color-primary);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-primary);
 }
 
 .matjark-hold-add-button::part(icon-button) {
-  background-color: #10b981 !important;
-  color: #ffffff !important;
+  background-color: var(--md-sys-color-primary) !important;
+  color: var(--md-sys-color-on-primary) !important;
 }
 
 @keyframes matjark-hold-add-enter {
@@ -2097,6 +2091,14 @@ html:not(.dark) .pos-snackbar-box {
 
 .matjark-mobile-cashier-title {
   margin-inline-start: auto;
+}
+
+/* Keep the cashier title beside the existing right-side menu control on tablet portrait. */
+@media (orientation: portrait) and (min-width: 768px) and (max-width: 1100px) and (pointer: coarse) {
+  .matjark-mobile-cashier-title {
+    margin-inline-start: 0 !important;
+    flex: 0 0 auto;
+  }
 }
 
 .matjark-mobile-scan-button {
@@ -3426,6 +3428,25 @@ html:not(.dark) .pos-snackbar-box {
     margin: 0 !important;
     transform: translateX(-50%) !important;
   }
+}
+
+/* Material Symbols glyphs used by the cashier hold, resume and add actions. */
+.matjark-hold-button .matjark-hold-material-icon,
+.matjark-hold-add-button .matjark-hold-material-icon {
+  display: inline-block;
+  font-family: 'Material Symbols Rounded' !important;
+  font-size: 16px !important;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
 }
 
 /* Keep Pause and Play equally compact; the 52px activity ring stays unchanged. */
