@@ -2110,6 +2110,13 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 @media (max-width: 767px) {
+  .matjark-cashier-screen-layout > .matjark-mobile-navigation {
+    display: block;
+    flex: 0 0 calc(64px + env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+
   .matjark-cashier-screen-layout {
     height: auto;
     flex: 1 1 0%;
