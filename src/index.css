@@ -2,24 +2,24 @@
 
 @layer base {
   :root {
-    --md-sys-color-background: #f7f9fc;
+    --md-sys-color-background: #f3f1ff;
     --md-sys-color-surface: #ffffff;
     --md-sys-color-surface-container: #ffffff;
-    --md-sys-color-surface-container-low: #f8fafc;
-    --md-sys-color-surface-container-high: #eef2f7;
-    --md-sys-color-on-background: #0f172a;
-    --md-sys-color-on-surface: #0f172a;
-    --md-sys-color-on-surface-variant: #475569;
-    --md-sys-color-outline: #64748b;
-    --md-sys-color-outline-variant: #cbd5e1;
-    --md-sys-color-primary: #2563eb;
+    --md-sys-color-surface-container-low: #fbfaff;
+    --md-sys-color-surface-container-high: #f0edff;
+    --md-sys-color-on-background: #17152b;
+    --md-sys-color-on-surface: #17152b;
+    --md-sys-color-on-surface-variant: #696580;
+    --md-sys-color-outline: #817d9c;
+    --md-sys-color-outline-variant: #e0dcf4;
+    --md-sys-color-primary: #5843d8;
     --md-sys-color-on-primary: #ffffff;
-    --md-sys-color-primary-container: #dbeafe;
-    --md-sys-color-on-primary-container: #1e3a8a;
-    --md-sys-color-secondary: #4f46e5;
+    --md-sys-color-primary-container: #e9e5ff;
+    --md-sys-color-on-primary-container: #36278e;
+    --md-sys-color-secondary: #7563e8;
     --md-sys-color-on-secondary: #ffffff;
-    --md-sys-color-secondary-container: #e0e7ff;
-    --md-sys-color-on-secondary-container: #312e81;
+    --md-sys-color-secondary-container: #eeeaff;
+    --md-sys-color-on-secondary-container: #493b9c;
     --md-sys-color-success: #15803d;
     --md-sys-color-on-success: #ffffff;
     --md-sys-color-success-container: #dcfce7;
@@ -65,24 +65,24 @@
   }
 
   .dark {
-    --md-sys-color-background: #0b1120;
-    --md-sys-color-surface: #111827;
-    --md-sys-color-surface-container: #172033;
-    --md-sys-color-surface-container-low: #111827;
-    --md-sys-color-surface-container-high: #243146;
-    --md-sys-color-on-background: #e5e7eb;
-    --md-sys-color-on-surface: #e5e7eb;
-    --md-sys-color-on-surface-variant: #cbd5e1;
-    --md-sys-color-outline: #94a3b8;
-    --md-sys-color-outline-variant: #334155;
-    --md-sys-color-primary: #93c5fd;
-    --md-sys-color-on-primary: #0b1b31;
-    --md-sys-color-primary-container: #1e40af;
-    --md-sys-color-on-primary-container: #dbeafe;
-    --md-sys-color-secondary: #a5b4fc;
-    --md-sys-color-on-secondary: #1e1b4b;
-    --md-sys-color-secondary-container: #312e81;
-    --md-sys-color-on-secondary-container: #e0e7ff;
+    --md-sys-color-background: #100e1f;
+    --md-sys-color-surface: #19172a;
+    --md-sys-color-surface-container: #201d35;
+    --md-sys-color-surface-container-low: #19172a;
+    --md-sys-color-surface-container-high: #2b2744;
+    --md-sys-color-on-background: #f1efff;
+    --md-sys-color-on-surface: #f1efff;
+    --md-sys-color-on-surface-variant: #c5bfdc;
+    --md-sys-color-outline: #aaa2c7;
+    --md-sys-color-outline-variant: #4b456b;
+    --md-sys-color-primary: #b6aaff;
+    --md-sys-color-on-primary: #21175b;
+    --md-sys-color-primary-container: #40348c;
+    --md-sys-color-on-primary-container: #eeeaff;
+    --md-sys-color-secondary: #c2b8ff;
+    --md-sys-color-on-secondary: #29215f;
+    --md-sys-color-secondary-container: #373067;
+    --md-sys-color-on-secondary-container: #e9e4ff;
     --md-sys-color-success: #86efac;
     --md-sys-color-on-success: #052e16;
     --md-sys-color-success-container: #14532d;
@@ -2887,5 +2887,268 @@ html:not(.dark) .pos-snackbar-box {
 
   .matjark-pos-mobile-summary {
     display: none !important;
+  }
+}
+
+
+/* Matjark shared lilac identity and landscape cashier refinements. */
+/* Cards across all application screens share the same soft surface and outline. */
+.matjark-surface-card::part(card),
+.matjark-data-grid-shell::part(card),
+.matjark-vat-settlement::part(card) {
+  border-color: var(--md-sys-color-outline-variant) !important;
+  background: var(--md-sys-color-surface-container) !important;
+  box-shadow: 0 5px 20px color-mix(in srgb, var(--md-sys-color-primary) 7%, transparent) !important;
+}
+
+.matjark-surface-card[variant="filled"]::part(card) {
+  background: var(--md-sys-color-surface-container-low) !important;
+}
+
+/* Primary filled actions use the purple gradient from the approved cashier design. */
+.matjark-button--primary[variant="filled"]:not(.matjark-button--tonal)::part(button) {
+  background-color: var(--md-sys-color-primary) !important;
+  background-image: linear-gradient(112deg, #6652e8 0%, #5038cf 100%) !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  box-shadow: 0 5px 16px color-mix(in srgb, var(--md-sys-color-primary) 25%, transparent) !important;
+  transition: box-shadow 160ms ease, filter 160ms ease !important;
+}
+
+.matjark-button--primary[variant="filled"]:not(.matjark-button--tonal):hover::part(button) {
+  filter: brightness(1.04);
+  box-shadow: 0 7px 20px color-mix(in srgb, var(--md-sys-color-primary) 30%, transparent) !important;
+}
+
+.matjark-button--primary[variant="filled"]:not(.matjark-button--tonal):active::part(button) {
+  filter: brightness(0.98);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent) !important;
+}
+
+.matjark-button--primary[variant="filled"]:not(.matjark-button--tonal):disabled::part(button) {
+  box-shadow: none !important;
+}
+
+.matjark-button--tonal[variant="filled"]::part(button) {
+  background-color: var(--md-sys-color-secondary-container) !important;
+  background-image: none !important;
+  color: var(--md-sys-color-on-secondary-container) !important;
+  box-shadow: none !important;
+}
+
+.matjark-button[variant="outlined"]::part(button) {
+  border-color: var(--md-sys-color-outline-variant) !important;
+}
+
+.matjark-icon-button[variant="tonal"]::part(icon-button) {
+  background-color: var(--md-sys-color-secondary-container) !important;
+  color: var(--md-sys-color-on-secondary-container) !important;
+}
+
+/* The landscape search belongs beside the cashier title, not above the products. */
+@media (orientation: landscape) and (max-width: 900px) and (max-height: 500px) and (pointer: coarse) {
+  .matjark-mobile-cashier-appbar {
+    flex: 0 0 52px;
+    height: 52px;
+    min-height: 52px;
+    gap: 8px;
+    padding-inline: 8px;
+  }
+
+  .matjark-mobile-cashier-title {
+    flex: 0 0 auto;
+    margin-inline-start: 0 !important;
+    white-space: nowrap;
+  }
+
+  .matjark-mobile-cashier-actions--landscape {
+    display: flex;
+    flex: 1 1 0%;
+    width: 0;
+    min-width: 0;
+    max-width: 620px;
+  }
+
+  .matjark-mobile-cashier-actions--landscape .matjark-pos-search-field-wrap {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .matjark-mobile-cashier-actions--landscape .matjark-pos-search-camera {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    color: var(--md-sys-color-primary);
+  }
+
+  .matjark-pos-field-grid {
+    display: none !important;
+  }
+
+  /* Keep the cart column structured as a fixed header, scrolling list and fixed footer. */
+  .matjark-pos-cart-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .matjark-pos-cart-header {
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 6px 8px !important;
+    gap: 6px;
+  }
+
+  .matjark-pos-cart-header-actions {
+    gap: 4px !important;
+  }
+
+  .matjark-pos-hold-indicator {
+    transform: scale(0.82);
+    transform-origin: center;
+    margin-inline: -4px;
+  }
+
+  .matjark-pos-cart-list-host {
+    display: block;
+    flex: 1 1 0% !important;
+    min-height: 0 !important;
+    padding: 4px !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+  }
+
+  .matjark-pos-cart-list {
+    min-height: 0 !important;
+    padding: 2px !important;
+    border-radius: 12px !important;
+    --mtrl-list-segmented-gap: 3px;
+  }
+
+  .matjark-pos-cart-list .mtrl-list__item {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    min-height: 42px !important;
+    height: auto !important;
+    padding: 4px 5px !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+  }
+
+  .matjark-pos-cart-list .mtrl-list__text {
+    display: flex !important;
+    flex: 1 1 0% !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    min-width: 0 !important;
+    gap: 6px !important;
+    text-align: right !important;
+    overflow: hidden !important;
+  }
+
+  .matjark-pos-cart-list .mtrl-list__text > :first-child {
+    display: block !important;
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    font-size: 11px !important;
+    line-height: 1.35 !important;
+  }
+
+  .matjark-pos-cart-list .mtrl-list__supporting {
+    display: block !important;
+    flex: 0 0 auto !important;
+    max-width: 82px !important;
+    margin: 0 !important;
+    color: var(--md-sys-color-primary) !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+  }
+
+  .matjark-pos-cart-list .mtrl-list__trailing--custom {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  .matjark-pos-cart-controls {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+
+  .matjark-pos-quantity-controls {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+  }
+
+  .matjark-pos-cart-action {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    box-shadow: none !important;
+  }
+
+  .matjark-pos-cart-quantity-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 24px;
+    padding-inline: 3px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 7px;
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font-size: 11px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .matjark-pos-cart-footer {
+    flex: 0 0 auto;
+    padding: 8px 10px !important;
+    gap: 7px !important;
+  }
+
+  .matjark-pos-cart-footer .matjark-pos-tax-row,
+  .matjark-pos-cart-footer .matjark-pos-divider {
+    display: none !important;
+  }
+
+  .matjark-pos-cart-footer > .flex.justify-between.items-center {
+    min-height: 28px;
+  }
+
+  .matjark-pos-cart-footer > .flex.justify-between.items-center > span:first-child {
+    font-size: 12px !important;
+  }
+
+  .matjark-pos-cart-footer > .flex.justify-between.items-center > span:last-child {
+    font-size: 17px !important;
+  }
+
+  .matjark-pos-checkout-action {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .matjark-pos-checkout-button {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 42px !important;
   }
 }
