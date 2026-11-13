@@ -54,6 +54,9 @@ const MButtonGroupItem = MaterialButtonGroupItem as React.ComponentType<any>;
 const MSnackbar = MaterialSnackbar as React.ComponentType<any>;
 const MProgress = MaterialProgress as React.ComponentType<any>;
 
+const MOBILE_LANDSCAPE_QUERY = '(orientation: landscape) and (max-width: 900px) and (max-height: 500px) and (pointer: coarse)';
+const MOBILE_POS_QUERY = `(max-width: 767px), ${MOBILE_LANDSCAPE_QUERY}`;
+
 type HeldSale = {
   id: string;
   name: string;
@@ -190,7 +193,10 @@ export const CashierScreen: React.FC = () => {
   const [holdAddReturning, setHoldAddReturning] = useState(false);
   const [holdStateReady, setHoldStateReady] = useState(false);
   const [isMobilePos, setIsMobilePos] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_POS_QUERY).matches
+  );
+  const [isMobileLandscapePos, setIsMobileLandscapePos] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_LANDSCAPE_QUERY).matches
   );
   const [cartSheetOpen, setCartSheetOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
@@ -287,15 +293,27 @@ export const CashierScreen: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 767px), (orientation: landscape) and (max-width: 900px) and (max-height: 500px) and (pointer: coarse)');
-    const syncLayout = () => setIsMobilePos(mediaQuery.matches);
+    const mobileQuery = window.matchMedia(MOBILE_POS_QUERY);
+    const landscapeQuery = window.matchMedia(MOBILE_LANDSCAPE_QUERY);
+    const syncLayout = () => {
+      setIsMobilePos(mobileQuery.matches);
+      setIsMobileLandscapePos(landscapeQuery.matches);
+    };
     syncLayout();
-    mediaQuery.addEventListener('change', syncLayout);
-    return () => mediaQuery.removeEventListener('change', syncLayout);
+    mobileQuery.addEventListener('change', syncLayout);
+    landscapeQuery.addEventListener('change', syncLayout);
+    return () => {
+      mobileQuery.removeEventListener('change', syncLayout);
+      landscapeQuery.removeEventListener('change', syncLayout);
+    };
   }, []);
 
   useEffect(() => {
-    if (!cartSheetOpen || !isMobilePos) return;
+    if (isMobileLandscapePos) setCartSheetOpen(false);
+  }, [isMobileLandscapePos]);
+
+  useEffect(() => {
+    if (!cartSheetOpen || !isMobilePos || isMobileLandscapePos) return;
 
     const host = cartSheetRef.current as (HTMLElement & { shadowRoot: ShadowRoot | null }) | null;
     const sheetContainer = host?.shadowRoot?.querySelector<HTMLElement>('.mtrl-bottom-sheet__container');
@@ -426,7 +444,7 @@ export const CashierScreen: React.FC = () => {
       sheetContainer.removeEventListener('touchcancel', handleTouchCancel, true);
       resetGesture();
     };
-  }, [cartSheetOpen, isMobilePos]);
+  }, [cartSheetOpen, isMobilePos, isMobileLandscapePos]);
 
   useEffect(() => {
     if (!scannerOpen) return;
@@ -1090,7 +1108,7 @@ export const CashierScreen: React.FC = () => {
   );
 
   const handlePosTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (!isMobilePos || cartSheetOpen || event.touches.length !== 1) return;
+    if (!isMobilePos || isMobileLandscapePos || cartSheetOpen || event.touches.length !== 1) return;
     const startY = event.touches[0].clientY;
     if (startY >= window.innerHeight - 96) swipeStartYRef.current = startY;
   };
@@ -1098,7 +1116,7 @@ export const CashierScreen: React.FC = () => {
   const handlePosTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
     const startY = swipeStartYRef.current;
     swipeStartYRef.current = null;
-    if (startY === null || !isMobilePos || cartSheetOpen) return;
+    if (startY === null || !isMobilePos || isMobileLandscapePos || cartSheetOpen) return;
     const endY = event.changedTouches[0]?.clientY ?? startY;
     if (startY - endY >= 48) {
       setHeldListOpen(false);
@@ -1121,7 +1139,7 @@ export const CashierScreen: React.FC = () => {
         cashierMode
         actions={
           <div className="matjark-mobile-cashier-actions" dir="rtl">
-            {holdIndicator}
+            {!isMobileLandscapePos && holdIndicator}
           </div>
         }
       />
@@ -1232,10 +1250,12 @@ export const CashierScreen: React.FC = () => {
           )}
         </div>
       </div>
-{!isMobilePos && cartPanel}
+{(!isMobilePos || isMobileLandscapePos) && cartPanel}
 
       {isMobilePos && (
         <>
+          {!isMobileLandscapePos && (
+            <>
           <button
             type="button"
             className="matjark-pos-mobile-summary"
@@ -1269,6 +1289,10 @@ export const CashierScreen: React.FC = () => {
           >
             {cartPanel}
           </MBottomSheet>
+            </>
+          )}
+
+
 
           <MBottomSheet
             open={scannerOpen}
