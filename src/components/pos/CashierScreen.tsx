@@ -20,7 +20,6 @@ import {
   CreditCard,
   Banknote,
   Smartphone,
-  Check,
   Clock3,
   Camera,
   ChevronUp,
@@ -44,10 +43,40 @@ const toSvg = (Icon: React.ElementType, size = 'w-4 h-4') =>
 const toIconSvg = (Icon: React.ElementType, size = 14) =>
   renderToStaticMarkup(<Icon width={size} height={size} strokeWidth={2} />);
 
-const materialHoldIcon = (name: 'pause' | 'play_arrow' | 'add') => (
-  <span className="material-symbols-rounded matjark-hold-material-icon" aria-hidden="true">
-    {name}
-  </span>
+const materialHoldIcon = (name: 'pause' | 'play_arrow' | 'add') => {
+  const paths = {
+    pause: 'M6 19h4V5H6v14zm8-14v14h4V5h-4z',
+    play_arrow: 'M8 5v14l11-7z',
+    add: 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z',
+  } as const;
+
+  return (
+    <svg
+      className="matjark-hold-material-svg"
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d={paths[name]} fill="currentColor" />
+    </svg>
+  );
+};
+
+const materialCheckIcon = () => (
+  <svg
+    className="matjark-hold-material-svg"
+    xmlns="http://www.w3.org/2000/svg"
+    width="19"
+    height="19"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor" />
+  </svg>
 );
 
 const MCard = MaterialCard as React.ComponentType<any>;
@@ -73,6 +102,7 @@ type HeldSale = {
 type HeldSaleStorage = {
   sales: HeldSale[];
   progressTotal: number;
+  progressValue: number;
   nextSerial: number;
   activeId: string | null;
 };
@@ -89,7 +119,7 @@ type BarcodeDetectorConstructor = {
 };
 
 const loadHeldSaleStorage = (): HeldSaleStorage => {
-  const empty: HeldSaleStorage = { sales: [], progressTotal: 0, nextSerial: 1, activeId: null };
+  const empty: HeldSaleStorage = { sales: [], progressTotal: 0, progressValue: 0, nextSerial: 1, activeId: null };
   if (typeof window === 'undefined') return empty;
   try {
     const raw = window.localStorage.getItem(HELD_SALES_STORAGE_KEY);
@@ -104,6 +134,7 @@ const loadHeldSaleStorage = (): HeldSaleStorage => {
     return {
       sales,
       progressTotal: Math.max(sales.length, Number(parsed.progressTotal) || 0),
+      progressValue: Math.min(100, Math.max(0, Number(parsed.progressValue) || 0)),
       nextSerial: Math.max(1, Number(parsed.nextSerial) || sales.length + 1),
       activeId: typeof parsed.activeId === 'string' && sales.some((sale) => sale.id === parsed.activeId)
         ? parsed.activeId
@@ -196,6 +227,7 @@ export const CashierScreen: React.FC = () => {
   const [quickHoldTargetId, setQuickHoldTargetId] = useState<string | null>(null);
   const [heldSaleCompleted, setHeldSaleCompleted] = useState(false);
   const [holdAddReturning, setHoldAddReturning] = useState(false);
+  const [holdAddEntering, setHoldAddEntering] = useState(false);
   const [holdStateReady, setHoldStateReady] = useState(false);
   const [isMobilePos, setIsMobilePos] = useState(
     () => typeof window !== 'undefined' && window.matchMedia(MOBILE_POS_QUERY).matches
@@ -576,6 +608,7 @@ export const CashierScreen: React.FC = () => {
       nextSales = [...current.sales, heldSale];
       nextSerial = current.nextSerial + 1;
       progressTotal = current.sales.length === 0 ? 1 : Math.max(current.progressTotal, current.sales.length) + 1;
+      setHoldAddEntering(true);
     }
 
     if (holdCompletionTimerRef.current !== null) {
@@ -652,12 +685,14 @@ export const CashierScreen: React.FC = () => {
       ...current,
       sales: nextSales,
       progressTotal: nextSales.length === 0 ? 0 : current.progressTotal,
+      progressValue: nextSales.length === 0 ? 0 : current.progressValue,
       activeId: wasActive ? null : current.activeId,
     });
     if (wasActive) clearCart();
     if (nextSales.length === 0) {
       setHeldListOpen(false);
       setHoldAddReturning(false);
+      setHoldAddEntering(false);
       setHeldSaleCompleted(false);
     }
     showSnackbar('تم حذف الفاتورة المعلقة.');
@@ -667,11 +702,12 @@ export const CashierScreen: React.FC = () => {
     const current = holdStorageRef.current;
     if (current.sales.length === 0) return;
     if (!window.confirm('هل تريد حذف جميع الفواتير المعلقة؟ لا يمكن التراجع عن هذه الخطوة.')) return;
-    commitHoldStorage({ ...current, sales: [], progressTotal: 0, activeId: null });
+    commitHoldStorage({ ...current, sales: [], progressTotal: 0, progressValue: 0, activeId: null });
     if (current.activeId) clearCart();
     setHeldListOpen(false);
     setHeldSaleCompleted(false);
     setHoldAddReturning(false);
+    setHoldAddEntering(false);
     if (holdCompletionTimerRef.current !== null) {
       window.clearTimeout(holdCompletionTimerRef.current);
       holdCompletionTimerRef.current = null;
@@ -719,6 +755,10 @@ export const CashierScreen: React.FC = () => {
   }, [heldSaleCompleted, holdAddReturning, cart.length, openQuickHold, isMobilePos]);
 
   const handleHoldAddAnimationEnd = useCallback((event: React.AnimationEvent<HTMLDivElement>) => {
+    if (['matjark-hold-add-enter', 'matjark-hold-add-enter-small'].includes(event.animationName)) {
+      setHoldAddEntering(false);
+      return;
+    }
     if (
       !['matjark-hold-add-return', 'matjark-hold-add-return-small'].includes(event.animationName) ||
       !holdAddReturning
@@ -732,7 +772,7 @@ export const CashierScreen: React.FC = () => {
       setHeldSaleCompleted(false);
       const latest = holdStorageRef.current;
       if (latest.sales.length === 0) {
-        commitHoldStorage({ ...latest, progressTotal: 0, activeId: null });
+        commitHoldStorage({ ...latest, progressTotal: 0, progressValue: 0, activeId: null });
       }
       holdCompletionTimerRef.current = null;
     }, 1000);
@@ -896,7 +936,18 @@ export const CashierScreen: React.FC = () => {
       if (activeHeldId) {
         const current = holdStorageRef.current;
         const remainingSales = current.sales.filter((sale) => sale.id !== activeHeldId);
-        commitHoldStorage({ ...current, sales: remainingSales, activeId: null });
+        const nextProgressValue = remainingSales.length === 0
+          ? 100
+          : Math.min(
+              100,
+              current.progressValue + (100 - current.progressValue) / Math.max(1, current.sales.length)
+            );
+        commitHoldStorage({
+          ...current,
+          sales: remainingSales,
+          progressValue: nextProgressValue,
+          activeId: null,
+        });
         if (remainingSales.length === 0) {
           setHeldSaleCompleted(false);
           setHoldAddReturning(true);
@@ -921,20 +972,14 @@ export const CashierScreen: React.FC = () => {
                   shape="wavy"
                   thickness={2.5}
                   size={52}
-                  value={heldSaleCompleted
-                    ? 100
-                    : holdAddReturning
-                      ? 0
-                      : holdStorage.progressTotal > 0
-                        ? Math.round((holdStorage.sales.length / holdStorage.progressTotal) * 100)
-                        : 100}
-                  ariaLabel="نسبة الفواتير المعلقة المتبقية"
+                  value={holdStorage.progressValue}
+                  ariaLabel="نسبة الفواتير المعلقة المكتملة"
                   className={`matjark-pos-hold-progress${heldSaleCompleted ? ' matjark-pos-hold-progress--complete' : ''}`}
                 />
               )}
               {heldSaleCompleted ? (
                 <MuiIconButton
-                  icon={<Check width={19} height={19} className="matjark-hold-icon" />}
+                  icon={materialCheckIcon()}
                   ariaLabel="اكتملت جميع الفواتير المعلقة"
                   variant="filled"
                   size="small"
@@ -972,7 +1017,7 @@ export const CashierScreen: React.FC = () => {
                 />
               )}
               <div
-                className={`matjark-pos-hold-add${holdAddReturning ? ' matjark-pos-hold-add--returning' : holdStorage.sales.length > 0 ? ' matjark-pos-hold-add--visible' : ''}`}
+                className={`matjark-pos-hold-add${holdAddReturning ? ' matjark-pos-hold-add--returning' : holdStorage.sales.length > 0 ? ` matjark-pos-hold-add--visible${holdAddEntering ? ' matjark-pos-hold-add--entering' : ''}` : ''}`}
                 aria-hidden={holdStorage.sales.length === 0}
                 onAnimationEnd={handleHoldAddAnimationEnd}
               >
