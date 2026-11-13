@@ -1276,13 +1276,6 @@ html:not(.dark) .pos-snackbar-box {
   width: 52px !important;
   height: 52px !important;
   pointer-events: none !important;
-  --mtrl-sys-color-primary: #f59e0b;
-  --mtrl-sys-color-secondary-container: color-mix(in srgb, #f59e0b 20%, transparent);
-}
-
-.matjark-pos-hold-progress--complete {
-  --mtrl-sys-color-primary: #10b981;
-  --mtrl-sys-color-secondary-container: color-mix(in srgb, #10b981 20%, transparent);
 }
 
 .matjark-pos-hold-indicator > .matjark-hold-button {
@@ -3433,4 +3426,13 @@ html:not(.dark) .pos-snackbar-box {
     margin: 0 !important;
     transform: translateX(-50%) !important;
   }
+}
+
+/* Keep Pause and Play equally compact; the 52px activity ring stays unchanged. */
+.matjark-hold-button.matjark-hold-button--pause,
+.matjark-hold-button.matjark-hold-button--play {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
 }
