@@ -548,9 +548,13 @@ export const CashierScreen: React.FC = () => {
 
   const handleHoldMainClick = useCallback(() => {
     if (heldSaleCompleted || holdAddReturning) return;
-    if (isMobilePos) setCartSheetOpen(true);
     if (holdStorageRef.current.sales.length > 0) {
-      setHeldListOpen((open) => !open);
+      if (isMobilePos) {
+        setHeldListOpen(true);
+        setCartSheetOpen(true);
+      } else {
+        setHeldListOpen((open) => !open);
+      }
       return;
     }
     if (cart.length > 0) openQuickHold('pause');
@@ -961,7 +965,10 @@ export const CashierScreen: React.FC = () => {
     swipeStartYRef.current = null;
     if (startY === null || !isMobilePos || cartSheetOpen) return;
     const endY = event.changedTouches[0]?.clientY ?? startY;
-    if (startY - endY >= 48) setCartSheetOpen(true);
+    if (startY - endY >= 48) {
+      setHeldListOpen(false);
+      setCartSheetOpen(true);
+    }
   };
 
   const handlePosTouchCancel = () => {
@@ -1094,7 +1101,10 @@ export const CashierScreen: React.FC = () => {
             type="button"
             className="matjark-pos-mobile-summary"
             aria-label={`فتح سلة البيع، الإجمالي ${formatCurrency(cartTotals.grandTotal)}، عدد القطع ${cartTotals.unitsCount}`}
-            onClick={() => setCartSheetOpen(true)}
+            onClick={() => {
+              setHeldListOpen(false);
+              setCartSheetOpen(true);
+            }}
           >
             <span className="matjark-pos-mobile-summary-total">
               <span className="matjark-pos-mobile-summary-label">الإجمالي النهائي</span>
