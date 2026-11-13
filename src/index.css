@@ -2317,6 +2317,13 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 @media (min-width: 768px) {
+  .matjark-screen-host--cashier {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+  }
+
   .matjark-cashier-screen-layout {
     height: 100%;
   }
