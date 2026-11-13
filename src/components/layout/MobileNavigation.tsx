@@ -52,6 +52,22 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
         { id: 'more', label: 'المزيد', icon: iconMarkup(MoreHorizontal), active: activeMore },
       ],
     });
+
+    // Keep the active indicator structurally attached to the real icon box.
+    // The ripple is rendered inside this same indicator, so both follow the icon
+    // whenever the icon slot moves instead of relying on independent offsets.
+    navigation.element.querySelectorAll<HTMLElement>('.mtrl-navigation-bar__content').forEach((content) => {
+      const indicator = content.querySelector<HTMLElement>('.mtrl-navigation-bar__indicator');
+      const icon = content.querySelector<HTMLElement>('.mtrl-navigation-bar__icon');
+      const label = content.querySelector<HTMLElement>('.mtrl-navigation-bar__label');
+      if (!indicator || !icon || !label) return;
+
+      const iconSlot = document.createElement('span');
+      iconSlot.className = 'matjark-mobile-navigation-icon-slot';
+      iconSlot.append(indicator, icon);
+      content.insertBefore(iconSlot, label);
+    });
+
     const handleNavigationPointerDown = (event: PointerEvent) => {
       if (event.button !== 0 || !event.isPrimary) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
