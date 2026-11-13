@@ -86,7 +86,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
 
   useEffect(() => {
     if (cashierMode || !hostRef.current) return;
-    const items = visibleDestinations.map((destination) => ({
+    const items: Array<{ id: string; label: string; icon: string; active: boolean; badge?: number }> = visibleDestinations.map((destination) => ({
       id: destination.id,
       label: destination.label,
       icon: iconMarkup(destination.icon),
