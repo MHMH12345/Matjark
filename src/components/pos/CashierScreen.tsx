@@ -287,7 +287,7 @@ export const CashierScreen: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const mediaQuery = window.matchMedia('(max-width: 767px), (orientation: landscape) and (max-height: 500px) and (pointer: coarse)');
     const syncLayout = () => setIsMobilePos(mediaQuery.matches);
     syncLayout();
     mediaQuery.addEventListener('change', syncLayout);
@@ -1121,17 +1121,6 @@ export const CashierScreen: React.FC = () => {
         cashierMode
         actions={
           <div className="matjark-mobile-cashier-actions" dir="rtl">
-            <MuiIconButton
-              icon={<Camera width={20} height={20} />}
-              ariaLabel="مسح باركود أو QR بالكاميرا"
-              variant="tonal"
-              size="small"
-              className="matjark-mobile-scan-button"
-              onClick={() => {
-                setScannerError('');
-                setScannerOpen(true);
-              }}
-            />
             {holdIndicator}
           </div>
         }
@@ -1169,15 +1158,29 @@ export const CashierScreen: React.FC = () => {
             fullWidth
             className="matjark-pos-barcode-field"
           />
-          <MuiTextField
-            label="بحث فوري باسم الصنف..."
-            type="search"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            startAdornment={<Search className="w-4 h-4" />}
-            fullWidth
-            className="matjark-pos-search-field"
-          />
+          <div className="matjark-pos-search-field-wrap">
+            <MuiTextField
+              label="بحث فوري باسم الصنف..."
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              startAdornment={<Search className="w-4 h-4" />}
+              endAdornment={isMobilePos ? <Camera className="w-4 h-4" /> : undefined}
+              fullWidth
+              className="matjark-pos-search-field"
+            />
+            {isMobilePos && (
+              <button
+                type="button"
+                className="matjark-pos-search-camera"
+                aria-label="مسح باركود أو QR بالكاميرا"
+                onClick={() => {
+                  setScannerError('');
+                  setScannerOpen(true);
+                }}
+              />
+            )}
+          </div>
         </div>
 
         <div
