@@ -287,7 +287,7 @@ export const CashierScreen: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 767px), (orientation: landscape) and (max-height: 500px) and (pointer: coarse)');
+    const mediaQuery = window.matchMedia('(max-width: 767px), (orientation: landscape) and (max-width: 900px) and (max-height: 500px) and (pointer: coarse)');
     const syncLayout = () => setIsMobilePos(mediaQuery.matches);
     syncLayout();
     mediaQuery.addEventListener('change', syncLayout);
