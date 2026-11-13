@@ -198,6 +198,7 @@ export const CashierScreen: React.FC = () => {
 
   const snackbarIdRef = useRef(0);
   const cartListHostRef = useRef<HTMLDivElement>(null);
+  const cartSheetRef = useRef<HTMLElement | null>(null);
   const quickHoldInputRef = useRef<any>(null);
   const holdCompletionTimerRef = useRef<number | null>(null);
   const holdStorageRef = useRef(holdStorage);
@@ -292,6 +293,140 @@ export const CashierScreen: React.FC = () => {
     mediaQuery.addEventListener('change', syncLayout);
     return () => mediaQuery.removeEventListener('change', syncLayout);
   }, []);
+
+  useEffect(() => {
+    if (!cartSheetOpen || !isMobilePos) return;
+
+    const host = cartSheetRef.current as (HTMLElement & { shadowRoot: ShadowRoot | null }) | null;
+    const sheetContainer = host?.shadowRoot?.querySelector<HTMLElement>('.mtrl-bottom-sheet__container');
+    if (!sheetContainer) return;
+
+    let originY: number | null = null;
+    let lastY = 0;
+    let lastMoveAt = 0;
+    let velocity = 0;
+    let dragging = false;
+    let waitingForScrollTop = false;
+    let scrollableAncestors: HTMLElement[] = [];
+
+    const getPathElements = (event: Event): HTMLElement[] =>
+      event.composedPath().filter((node): node is HTMLElement => node instanceof HTMLElement);
+
+    const resetGesture = () => {
+      originY = null;
+      velocity = 0;
+      dragging = false;
+      waitingForScrollTop = false;
+      scrollableAncestors = [];
+      sheetContainer.style.transition = '';
+      sheetContainer.style.transform = '';
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        resetGesture();
+        return;
+      }
+
+      const path = getPathElements(event);
+      const startedOnControl = path.some((node) =>
+        node.matches('button, a, input, textarea, select, video, [role="button"], [contenteditable="true"], .mtrl-bottom-sheet__handle')
+      );
+      if (startedOnControl) {
+        resetGesture();
+        return;
+      }
+
+      const touch = event.touches[0];
+      originY = touch.clientY;
+      lastY = touch.clientY;
+      lastMoveAt = performance.now();
+      velocity = 0;
+      dragging = false;
+      scrollableAncestors = path.filter((node) => {
+        if (node === sheetContainer || node.scrollHeight <= node.clientHeight + 1) return false;
+        const overflowY = window.getComputedStyle(node).overflowY;
+        return overflowY === 'auto' || overflowY === 'scroll';
+      });
+      waitingForScrollTop = scrollableAncestors.some((node) => node.scrollTop > 1);
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (originY === null || event.touches.length !== 1) return;
+
+      const y = event.touches[0].clientY;
+      const now = performance.now();
+
+      // Let the cart and held-invoice lists scroll normally until they reach the top.
+      if (scrollableAncestors.some((node) => node.scrollTop > 1)) {
+        waitingForScrollTop = true;
+        lastY = y;
+        lastMoveAt = now;
+        velocity = 0;
+        return;
+      }
+
+      // When a scrollable region reaches its top, start measuring the sheet drag there.
+      if (waitingForScrollTop) {
+        waitingForScrollTop = false;
+        originY = y;
+        lastY = y;
+        lastMoveAt = now;
+        return;
+      }
+
+      const distance = y - originY;
+      if (distance < 8) return;
+
+      if (!dragging) {
+        dragging = true;
+        sheetContainer.style.transition = 'none';
+      }
+
+      if (event.cancelable) event.preventDefault();
+      sheetContainer.style.transform = `translateY(${Math.max(0, distance)}px)`;
+
+      const elapsed = Math.max(now - lastMoveAt, 1);
+      velocity = ((y - lastY) / elapsed) * 1000;
+      lastY = y;
+      lastMoveAt = now;
+    };
+
+    const finishGesture = (cancelled = false) => {
+      if (dragging && !cancelled) {
+        const distance = Math.max(0, lastY - (originY ?? lastY));
+        const shouldClose = distance >= 56 || velocity >= 125;
+        sheetContainer.style.transition = '';
+        sheetContainer.style.transform = '';
+        if (shouldClose) setCartSheetOpen(false);
+      } else {
+        sheetContainer.style.transition = '';
+        sheetContainer.style.transform = '';
+      }
+
+      originY = null;
+      velocity = 0;
+      dragging = false;
+      waitingForScrollTop = false;
+      scrollableAncestors = [];
+    };
+
+    const handleTouchEnd = () => finishGesture();
+    const handleTouchCancel = () => finishGesture(true);
+
+    sheetContainer.addEventListener('touchstart', handleTouchStart, { capture: true, passive: true });
+    sheetContainer.addEventListener('touchmove', handleTouchMove, { capture: true, passive: false });
+    sheetContainer.addEventListener('touchend', handleTouchEnd, { capture: true, passive: true });
+    sheetContainer.addEventListener('touchcancel', handleTouchCancel, { capture: true, passive: true });
+
+    return () => {
+      sheetContainer.removeEventListener('touchstart', handleTouchStart, true);
+      sheetContainer.removeEventListener('touchmove', handleTouchMove, true);
+      sheetContainer.removeEventListener('touchend', handleTouchEnd, true);
+      sheetContainer.removeEventListener('touchcancel', handleTouchCancel, true);
+      resetGesture();
+    };
+  }, [cartSheetOpen, isMobilePos]);
 
   useEffect(() => {
     if (!scannerOpen) return;
@@ -1117,6 +1252,7 @@ export const CashierScreen: React.FC = () => {
           </button>
 
           <MBottomSheet
+            ref={cartSheetRef}
             open={cartSheetOpen}
             modal
             headline={heldListOpen ? 'الفواتير المعلقة' : 'سلة البيع'}
