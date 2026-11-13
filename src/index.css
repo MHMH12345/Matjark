@@ -749,28 +749,6 @@ html:not(.dark) .pos-snackbar-box {
   }
 }
 
-@media (max-width: 767px) {
-  .matjark-pos-root {
-    flex-direction: column;
-  }
-
-  .matjark-pos-products-panel {
-    flex: 1 1 56%;
-    min-height: 230px !important;
-  }
-
-  .matjark-pos-cart-panel {
-    flex: 0 0 42%;
-    width: 100% !important;
-    min-width: 0;
-    min-height: 230px !important;
-  }
-
-  .matjark-pos-product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 148px), 1fr));
-  }
-}
-
 /* Category chips: hide the horizontal scrollbar but keep mouse-wheel and touch scrolling. */
 .matjark-filter-chips-viewport {
   min-width: 0;
@@ -1161,7 +1139,7 @@ html:not(.dark) .pos-snackbar-box {
   text-align: center !important;
 }
 
-/*/* Keep the POS panels inside the available viewport at browser zoom levels. */
+/* Keep the POS panels inside the available viewport at browser zoom levels. */
 .matjark-pos-root {
   min-width: 0 !important;
   min-height: 0 !important;
@@ -2031,12 +2009,17 @@ html:not(.dark) .pos-snackbar-box {
     width: 100%;
     height: calc(80px + env(safe-area-inset-bottom, 0px));
     min-height: calc(80px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
     padding-bottom: env(safe-area-inset-bottom, 0px);
     border-top: 1px solid var(--md-sys-color-outline-variant);
     background: var(--md-sys-color-surface);
     z-index: 30;
   }
-  .matjark-mobile-navigation > * { width: 100%; height: 100%; }
+  .matjark-mobile-navigation > * {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
   .matjark-page-header { align-items: flex-start; flex-direction: column; }
   .matjark-page-actions { width: 100%; flex-wrap: wrap; }
 }
