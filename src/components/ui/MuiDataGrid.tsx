@@ -3,7 +3,7 @@
  * Handles 10,000+ items at 60-120 FPS with minimal DOM footprint (only ~15-20 active rows rendered).
  */
 
-import React, { useState, useRef, useMemo, useCallback, memo } from 'react';
+import React, { useState, useRef, useMemo, useCallback, memo, useEffect } from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, X } from 'lucide-react';
 import { normalizeArabicText } from '../../utils/performance';
 import { MuiTextField } from './MuiTextField';
@@ -51,6 +51,15 @@ function MuiDataGridInner<T extends Record<string, any>>({
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [scrollTop, setScrollTop] = useState(0);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 599px)').matches);
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 599px)');
+    const update = () => setIsMobile(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -102,12 +111,13 @@ function MuiDataGridInner<T extends Record<string, any>>({
   // 3. Virtualization calculations
   const totalCount = sortedRows.length;
   const viewportHeight = typeof height === 'number' ? height : 500;
-  const totalHeight = totalCount * rowHeight;
+  const activeRowHeight = isMobile ? Math.max(112, Math.ceil(columns.length / 2) * 56 + 16) : rowHeight;
+  const totalHeight = totalCount * activeRowHeight;
 
   // Buffer of 3 rows above and below viewport
   const buffer = 4;
-  const startIndex = Math.max(0, Math.floor(scrollTop / rowHeight) - buffer);
-  const visibleItemCount = Math.ceil(viewportHeight / rowHeight) + buffer * 2;
+  const startIndex = Math.max(0, Math.floor(scrollTop / activeRowHeight) - buffer);
+  const visibleItemCount = Math.ceil(viewportHeight / activeRowHeight) + buffer * 2;
   const endIndex = Math.min(totalCount, startIndex + visibleItemCount);
 
   // Slice only the visible window of rows
@@ -115,7 +125,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
     return sortedRows.slice(startIndex, endIndex);
   }, [sortedRows, startIndex, endIndex]);
 
-  const offsetY = startIndex * rowHeight;
+  const offsetY = startIndex * activeRowHeight;
 
   // Optimized scroll handler using requestAnimationFrame
   const rafRef = useRef<number | null>(null);
@@ -175,7 +185,8 @@ function MuiDataGridInner<T extends Record<string, any>>({
       </div>
 
       {/* Header Row */}
-      <div className="flex items-center bg-[var(--md-sys-color-surface-container-high)] dark:bg-[var(--md-sys-color-surface-container-high)] border-b border-[var(--md-sys-color-outline-variant)] text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] dark:text-[var(--md-sys-color-on-surface-variant)] select-none pe-2">
+      {!isMobile && (
+        <div className="flex items-center bg-[var(--md-sys-color-surface-container-high)] dark:bg-[var(--md-sys-color-surface-container-high)] border-b border-[var(--md-sys-color-outline-variant)] text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] dark:text-[var(--md-sys-color-on-surface-variant)] select-none pe-2">
         {columns.map((col, idx) => {
           const isSorted = sortField === col.field;
           const sortable = col.sortable !== false;
@@ -211,13 +222,14 @@ function MuiDataGridInner<T extends Record<string, any>>({
           );
         })}
       </div>
+      )}
 
       {/* Virtualized Scroll Container */}
       <div
         ref={containerRef}
         onScroll={handleScroll}
         style={{ height: viewportHeight, maxHeight: viewportHeight }}
-        className="relative overflow-y-auto overflow-x-hidden divide-y divide-slate-100 dark:divide-slate-800/50"
+        className="relative overflow-y-auto overflow-x-hidden divide-y divide-slate-100 dark:divide-slate-800/50 matjark-data-grid-viewport"
       >
         {totalCount === 0 ? (
           <div className="flex flex-col items-center justify-center h-full py-12 text-[var(--md-sys-color-outline)]">
@@ -246,30 +258,43 @@ function MuiDataGridInner<T extends Record<string, any>>({
                     clickable={Boolean(onRowClick)}
                     promoteChildActions
                     onClick={() => onRowClick && onRowClick(row)}
-                    style={{ height: rowHeight }}
+                    style={{ height: activeRowHeight }}
                     className={`matjark-data-grid-row flex items-center text-xs text-[var(--md-sys-color-on-surface)] transition-colors ${
                       actualIndex % 2 === 1 ? 'matjark-data-grid-row--alternate' : ''
                     }`}
                   >
-                    {columns.map((col, cIdx) => (
-                      <div
-                        key={String(col.field) || cIdx}
-                        style={{
-                          width: col.width || 'auto',
-                          minWidth: col.minWidth || 90,
-                          flex: col.width ? 'none' : 1,
-                        }}
-                        className={`px-3 py-1 truncate flex items-center ${
-                          col.align === 'center'
-                            ? 'justify-center text-center'
-                            : col.align === 'right'
-                            ? 'justify-end text-end'
-                            : 'justify-start text-start'
-                        }`}
-                      >
-                        {col.renderCell ? col.renderCell(row, actualIndex) : String(row[col.field as string] ?? '-')}
+                    {isMobile ? (
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-0 w-full px-3 py-2" style={{ direction: 'rtl', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
+                        {columns.map((col, cIdx) => (
+                          <div key={String(col.field) || cIdx} className="min-w-0 h-14 flex flex-col justify-center gap-1 border-b border-[var(--md-sys-color-outline-variant)]/50">
+                            <span className="text-[10px] leading-4 text-[var(--md-sys-color-on-surface-variant)] truncate">{col.headerName}</span>
+                            <div className="text-xs leading-4 font-medium text-[var(--md-sys-color-on-surface)] line-clamp-2 break-words">
+                              {col.renderCell ? col.renderCell(row, actualIndex) : String(row[col.field as string] ?? '-')}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    ) : (
+                      columns.map((col, cIdx) => (
+                        <div
+                          key={String(col.field) || cIdx}
+                          style={{
+                            width: col.width || 'auto',
+                            minWidth: col.minWidth || 90,
+                            flex: col.width ? 'none' : 1,
+                          }}
+                          className={'px-3 py-1 truncate flex items-center ' + (
+                            col.align === 'center'
+                              ? 'justify-center text-center'
+                              : col.align === 'right'
+                              ? 'justify-end text-end'
+                              : 'justify-start text-start'
+                          )}
+                        >
+                          {col.renderCell ? col.renderCell(row, actualIndex) : String(row[col.field as string] ?? '-')}
+                        </div>
+                      ))
+                    )}
                   </MCard>
                 );
               })}

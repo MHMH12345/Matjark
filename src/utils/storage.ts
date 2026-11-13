@@ -4,6 +4,7 @@
  */
 
 import { Customer, Expense, Invoice, Product, StoreSettings, Supplier } from '../types';
+import { DEFAULT_SECURITY_POLICY } from './permissions';
 
 export interface AppDatabase {
   products: Product[];
@@ -52,6 +53,7 @@ const ensureDatabaseSequences = (db: AppDatabase): AppDatabase => ({
 });
 
 export const INITIAL_SETTINGS: StoreSettings = {
+  security: DEFAULT_SECURITY_POLICY,
   storeName: 'سوبر ماركت البركة',
   storeNameEn: 'El-Baraka Supermarket',
   taxNumber: '412-895-321', // رقم التسجيل الضريبي / البطاقة الضريبية
@@ -432,7 +434,7 @@ export function loadDatabase(): AppDatabase {
       suppliers: INITIAL_SUPPLIERS,
       expenses: INITIAL_EXPENSES,
       settings: INITIAL_SETTINGS,
-      version: 2,
+      version: 3,
     });
   }
 
@@ -446,14 +448,14 @@ export function loadDatabase(): AppDatabase {
         suppliers: INITIAL_SUPPLIERS,
         expenses: INITIAL_EXPENSES,
         settings: INITIAL_SETTINGS,
-        version: 2,
+        version: 3,
       });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
       return db;
     }
 
     const parsed = JSON.parse(raw) as AppDatabase;
-    return ensureDatabaseSequences({
+    const migrated = ensureDatabaseSequences({
       products: Array.isArray(parsed.products) && parsed.products.length > 0 ? parsed.products : INITIAL_PRODUCTS,
       invoices: Array.isArray(parsed.invoices) ? parsed.invoices : INITIAL_INVOICES,
       customers: Array.isArray(parsed.customers) ? parsed.customers : INITIAL_CUSTOMERS,
@@ -462,6 +464,7 @@ export function loadDatabase(): AppDatabase {
       settings: {
         ...INITIAL_SETTINGS,
         ...(parsed.settings || {}),
+        security: { ...DEFAULT_SECURITY_POLICY, ...(parsed.settings?.security || {}) },
         // Older databases predate the inclusive-price option; migrate them to the agreed POS model.
         enableTax: parsed.settings?.pricesIncludeTax === undefined
           ? true
@@ -470,10 +473,14 @@ export function loadDatabase(): AppDatabase {
         currency: 'ج.م',
         currencyEn: 'EGP',
       },
-      version: 2,
+      version: 3,
       nextInvoiceSequence: parsed.nextInvoiceSequence,
       nextExpenseSequence: parsed.nextExpenseSequence,
     });
+    if ((parsed.version ?? 1) < 3) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+    }
+    return migrated;
   } catch (err) {
     console.error('Failed to parse database from localStorage:', err);
     return ensureDatabaseSequences({
@@ -483,7 +490,7 @@ export function loadDatabase(): AppDatabase {
       suppliers: INITIAL_SUPPLIERS,
       expenses: INITIAL_EXPENSES,
       settings: INITIAL_SETTINGS,
-      version: 2,
+      version: 3,
     });
   }
 }

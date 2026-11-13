@@ -8,6 +8,8 @@ import {
   Product,
   StoreSettings,
   Supplier,
+  User,
+  PermissionKey,
 } from '../types';
 import { soundService } from '../utils/audio';
 import { generateBenchmarkProducts } from '../utils/performance';
@@ -25,6 +27,9 @@ import {
 } from '../utils/storage';
 import { generateZatcaTlvBase64 } from '../utils/zatcaQr';
 import { calculateLineAccounting, formatEgp, CurrencyFormatOptions, roundToTwoDecimals } from '../utils/currency';
+import { DEFAULT_SECURITY_POLICY } from '../utils/permissions';
+import { useAuth } from './AuthContext';
+import type { PermissionDecision } from '../utils/permissions';
 
 export type ActiveTab =
   | 'pos'
@@ -52,6 +57,8 @@ interface CartTotals {
 }
 
 interface StoreContextType {
+  currentUser: User;
+  can: (permission: PermissionKey) => PermissionDecision;
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
   theme: 'light' | 'dark';
@@ -86,6 +93,7 @@ interface StoreContextType {
     customerName?: string;
     customerTaxNumber?: string;
     notes?: string;
+    userId?: string;
   }) => Invoice | null;
   addProduct: (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => Product;
   updateProduct: (id: string, updates: Partial<Product>) => void;
@@ -129,6 +137,7 @@ const normalizeRestoredDatabase = (source: AppDatabase): AppDatabase => {
     settings: {
       ...INITIAL_SETTINGS,
       ...(source.settings || {}),
+      security: { ...DEFAULT_SECURITY_POLICY, ...(source.settings?.security || {}) },
       enableTax: hasSavedPriceMode
         ? (source.settings.enableTax ?? INITIAL_SETTINGS.enableTax)
         : true,
@@ -137,6 +146,7 @@ const normalizeRestoredDatabase = (source: AppDatabase): AppDatabase => {
   };
 };
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { currentUser, can } = useAuth();
   const [db, setDb] = useState<AppDatabase>(() => loadDatabase());
   const [activeTab, setActiveTab] = useState<ActiveTab>('pos');
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -360,6 +370,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       customerName?: string;
       customerTaxNumber?: string;
       notes?: string;
+      userId?: string;
     }): Invoice | null => {
       if (cart.length === 0) {
         showToast('السلة فارغة!', 'error');
@@ -465,7 +476,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         customerId: params.customerId,
         customerName: params.customerName || 'عميل نقدي',
         customerTaxNumber: params.customerTaxNumber,
-        cashierName: 'الكاشير الرئيسي',
+        userId: params.userId ?? currentUser.id,
+        cashierName: currentUser.displayName,
         status: 'completed',
         isTaxEnabled: isCartTaxEnabled,
         pricesIncludeTax: db.settings.pricesIncludeTax ?? true,
@@ -492,7 +504,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       showToast('تم إصدار الفاتورة ' + invNumber + ' بنجاح', 'success');
       return newInvoice;
     },
-    [cart, cartTotals, db, isCartTaxEnabled, showToast]
+    [cart, cartTotals, db, isCartTaxEnabled, currentUser.id, currentUser.displayName, showToast]
   );
   const addProduct = useCallback(
     (productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Product => {
@@ -762,7 +774,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const value = useMemo(
     () => ({
-      activeTab, setActiveTab, theme, toggleTheme, snackbars, showToast, dismissToast, formatCurrency,
+      currentUser, can, activeTab, setActiveTab, theme, toggleTheme, snackbars, showToast, dismissToast, formatCurrency,
       products: db.products, categories, barcodeIndex, invoices: db.invoices, customers: db.customers,
       suppliers: db.suppliers, expenses: db.expenses, settings: db.settings, isCartTaxEnabled,
       setIsCartTaxEnabled, cart, cartTotals, addToCart, addByBarcode, updateCartQuantity,
@@ -772,7 +784,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       resetToSampleData, restoreFromDatabase, backupToGoogleDrive, restoreFromGoogleDrive,
     }),
     [
-      activeTab, theme, toggleTheme, snackbars, showToast, dismissToast, formatCurrency, db,
+      currentUser, can, activeTab, theme, toggleTheme, snackbars, showToast, dismissToast, formatCurrency, db,
       categories, barcodeIndex, isCartTaxEnabled, cart, cartTotals, addToCart, addByBarcode,
       updateCartQuantity, updateCartDiscount, removeFromCart, clearCart, replaceCart, checkoutInvoice,
       addProduct, updateProduct, deleteProduct, bulkAddProducts, refundInvoice, addExpense,

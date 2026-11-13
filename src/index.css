@@ -2055,3 +2055,8 @@ html:not(.dark) .pos-snackbar-box {
   .matjark-app-main { padding: 24px !important; }
 }
 
+.matjark-button--tonal {
+  --mtrl-sys-color-primary: var(--md-sys-color-primary-container);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-primary-container);
+}
+

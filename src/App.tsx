@@ -15,6 +15,7 @@ import { SettingsScreen } from './components/settings/SettingsScreen';
 import { PerformanceBenchmarkModal } from './components/performance/PerformanceBenchmarkModal';
 import { MuiSnackbar } from './components/ui/MuiSnackbar';
 import { StoreProvider, useStore } from './context/StoreContext';
+import { AuthProvider } from './context/AuthContext';
 import { perfTracker } from './utils/performance';
 
 function MainAppContent() {
@@ -54,8 +55,10 @@ function MainAppContent() {
 
 export default function App() {
   return (
-    <StoreProvider>
-      <MainAppContent />
-    </StoreProvider>
+    <AuthProvider>
+      <StoreProvider>
+        <MainAppContent />
+      </StoreProvider>
+    </AuthProvider>
   );
 }
