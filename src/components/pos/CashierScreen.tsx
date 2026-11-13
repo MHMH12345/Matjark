@@ -55,7 +55,8 @@ const MSnackbar = MaterialSnackbar as React.ComponentType<any>;
 const MProgress = MaterialProgress as React.ComponentType<any>;
 
 const MOBILE_LANDSCAPE_QUERY = '(orientation: landscape) and (max-width: 900px) and (max-height: 500px) and (pointer: coarse)';
-const MOBILE_POS_QUERY = `(max-width: 767px), ${MOBILE_LANDSCAPE_QUERY}`;
+const TABLET_PORTRAIT_QUERY = '(orientation: portrait) and (min-width: 768px) and (max-width: 1100px) and (pointer: coarse)';
+const MOBILE_POS_QUERY = `(max-width: 767px), ${MOBILE_LANDSCAPE_QUERY}, ${TABLET_PORTRAIT_QUERY}`;
 
 type HeldSale = {
   id: string;
@@ -957,7 +958,7 @@ export const CashierScreen: React.FC = () => {
                 </>
               ) : (
                 <MuiIconButton
-                  icon={<Pause width={18} height={18} className="matjark-hold-icon" />}
+                  icon={<Pause width={16} height={16} className="matjark-hold-icon matjark-hold-icon--pause" />}
                   ariaLabel="تعليق الفاتورة الحالية"
                   variant="filled"
                   size="small"
