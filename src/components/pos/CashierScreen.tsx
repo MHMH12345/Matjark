@@ -1195,7 +1195,7 @@ export const CashierScreen: React.FC = () => {
       <div className="matjark-pos-products-column">
         <MobileNavigation
           cashierMode
-          actionsAfterTitle={isMobileLandscapePos}
+          actionsAfterTitle
           actions={
             <div
               className={`matjark-mobile-cashier-actions${isMobileLandscapePos ? ' matjark-mobile-cashier-actions--landscape' : ''}`}
