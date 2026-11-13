@@ -131,10 +131,17 @@ const loadHeldSaleStorage = (): HeldSaleStorage => {
           typeof sale.createdAt === 'number' && Array.isArray(sale.items)
         ))
       : [];
+    const progressTotal = Math.max(sales.length, Number(parsed.progressTotal) || 0);
+    const savedProgressValue = Number(parsed.progressValue);
+    const progressValue = Number.isFinite(savedProgressValue)
+      ? Math.min(100, Math.max(0, savedProgressValue))
+      : progressTotal > 0
+        ? Math.min(100, Math.max(0, ((progressTotal - sales.length) / progressTotal) * 100))
+        : 0;
     return {
       sales,
-      progressTotal: Math.max(sales.length, Number(parsed.progressTotal) || 0),
-      progressValue: Math.min(100, Math.max(0, Number(parsed.progressValue) || 0)),
+      progressTotal,
+      progressValue,
       nextSerial: Math.max(1, Number(parsed.nextSerial) || sales.length + 1),
       activeId: typeof parsed.activeId === 'string' && sales.some((sale) => sale.id === parsed.activeId)
         ? parsed.activeId
