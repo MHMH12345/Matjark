@@ -2681,3 +2681,164 @@ html:not(.dark) .pos-snackbar-box {
     opacity: 0;
   }
 }
+
+
+/* Landscape phone cashier: reserve real vertical space for the product list. */
+@media (orientation: landscape) and (max-width: 900px) and (max-height: 500px) and (pointer: coarse) {
+  .matjark-app-main--cashier {
+    height: auto !important;
+    flex: 1 1 0%;
+    min-height: 0;
+  }
+
+  .matjark-screen-host--cashier {
+    height: auto !important;
+    flex: 1 1 0%;
+    min-height: 0;
+  }
+
+  .matjark-cashier-screen-layout {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    height: auto !important;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .matjark-mobile-cashier-appbar {
+    flex: 0 0 44px;
+    height: 44px;
+    min-height: 44px;
+    gap: 6px;
+    padding-inline: 8px;
+    font-size: 14px;
+  }
+
+  .matjark-mobile-menu-trigger {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+  }
+
+  .matjark-pos-root {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column !important;
+    width: 100%;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    gap: 0 !important;
+    overflow: hidden;
+  }
+
+  .matjark-pos-products-panel {
+    display: flex !important;
+    flex: 1 1 0% !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .matjark-pos-field-grid {
+    flex: 0 0 auto;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
+    padding: 4px 8px !important;
+  }
+
+  .matjark-pos-search-field-wrap,
+  .matjark-pos-search-field {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .matjark-pos-search-camera {
+    left: 4px;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    color: var(--md-sys-color-primary);
+  }
+
+  .matjark-filter-chips-viewport {
+    flex: 0 0 auto;
+    padding: 3px 8px !important;
+  }
+
+  .matjark-pos-products-scroll {
+    display: block;
+    flex: 1 1 0% !important;
+    min-height: 112px !important;
+    padding: 6px !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+  }
+
+  .matjark-pos-product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 132px), 1fr)) !important;
+    gap: 8px !important;
+    padding-top: 0 !important;
+  }
+
+  .matjark-pos-product-tile {
+    gap: 3px;
+  }
+
+  .matjark-pos-product-media {
+    height: 76px;
+  }
+
+  .matjark-pos-product-name {
+    min-height: 1.9rem;
+    max-height: 1.9rem;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .matjark-pos-mobile-summary {
+    display: flex;
+    flex: 0 0 50px !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    height: 50px !important;
+    min-height: 50px !important;
+    padding: 4px 10px !important;
+    box-sizing: border-box;
+  }
+
+  .matjark-pos-mobile-summary-total {
+    flex: 1 1 auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .matjark-pos-mobile-summary-label {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .matjark-pos-mobile-summary-total strong {
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  .matjark-pos-mobile-summary-count {
+    flex: 0 0 auto;
+    min-height: 34px;
+    gap: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .matjark-pos-mobile-summary-open-label {
+    font-weight: 800;
+  }
+}
