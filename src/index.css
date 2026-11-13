@@ -2350,10 +2350,10 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 
-/* Keep the M3 active indicator and touch ripple on the exact icon centre. */
+/* Center each navigation item and anchor its indicator to the actual icon box. */
 @media (max-width: 767px) {
   .matjark-mobile-navigation .mtrl-navigation-bar__item {
-    align-items: stretch;
+    align-items: center;
   }
 
   .matjark-mobile-navigation .mtrl-navigation-bar__content {
@@ -2363,11 +2363,26 @@ html:not(.dark) .pos-snackbar-box {
     align-items: center;
   }
 
+  .matjark-mobile-navigation .matjark-mobile-navigation-icon-slot {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    margin-block-start: 4px;
+  }
+
+  .matjark-mobile-navigation .mtrl-navigation-bar__icon {
+    margin-block-start: 0 !important;
+  }
+
   .matjark-mobile-navigation .mtrl-navigation-bar__indicator {
+    top: 50% !important;
     left: 50% !important;
     right: auto !important;
-    margin-left: 0 !important;
-    transform: translateX(-50%) !important;
+    margin: 0 !important;
+    transform: translate(-50%, -50%) !important;
   }
 }
 
