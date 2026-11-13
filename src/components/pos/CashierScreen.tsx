@@ -1175,8 +1175,6 @@ export const CashierScreen: React.FC = () => {
         </>
       )}
 
-      {isMobilePos && <MobileNavigation cashierBottomMode />}
-
       <MuiDialog
         open={quickHoldOpen}
         title="تعليق الفاتورة"
