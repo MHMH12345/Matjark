@@ -2060,6 +2060,33 @@ html:not(.dark) .pos-snackbar-box {
   min-height: 0;
 }
 
+.matjark-pos-search-field-wrap {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.matjark-pos-search-camera {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  left: 4px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.matjark-pos-search-camera:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 1px;
+}
+
 .matjark-mobile-cashier-actions {
   display: inline-flex;
   align-items: center;
@@ -2399,6 +2426,250 @@ html:not(.dark) .pos-snackbar-box {
   background: var(--md-sys-color-on-secondary-container);
   animation: matjark-mobile-navigation-ripple 560ms cubic-bezier(0.2, 0, 0, 1) forwards;
 }
+
+/* Treat short, touch-enabled landscape screens as phones, even when width exceeds 767px. */
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  .matjark-app-shell {
+    height: 100vh !important;
+    height: 100dvh !important;
+    flex-direction: column !important;
+  }
+
+  .matjark-sidebar {
+    display: none !important;
+  }
+
+  .matjark-app-main {
+    width: 100%;
+    height: auto !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 12px !important;
+    overflow-y: auto;
+  }
+
+  .matjark-app-shell--cashier {
+    flex-direction: column !important;
+  }
+
+  .matjark-app-shell--cashier .matjark-sidebar {
+    display: none !important;
+  }
+
+  .matjark-app-main--cashier {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    height: 100% !important;
+    min-height: 0;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
+  .matjark-screen-host--cashier {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    padding: 0 !important;
+  }
+
+  .matjark-cashier-screen-layout {
+    height: auto;
+    flex: 1 1 0%;
+    min-height: 0;
+  }
+
+  .matjark-mobile-cashier-appbar {
+    display: flex !important;
+    flex: 0 0 56px;
+    align-items: center;
+    gap: 8px;
+    height: 56px;
+    min-height: 56px;
+    padding-inline: 8px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .matjark-mobile-cashier-actions {
+    gap: 2px;
+  }
+
+  .matjark-pos-root {
+    flex: 1 1 auto;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    overflow: hidden;
+  }
+
+  .matjark-pos-products-panel {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    border-radius: 0 !important;
+    border-inline: 0 !important;
+  }
+
+  .matjark-pos-field-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 8px !important;
+  }
+
+  .matjark-pos-barcode-field {
+    display: none !important;
+  }
+
+  .matjark-pos-search-field-wrap,
+  .matjark-pos-search-field {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .matjark-pos-product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 148px), 1fr));
+  }
+
+  .matjark-pos-mobile-summary {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    height: calc(72px + env(safe-area-inset-bottom, 0px));
+    min-height: calc(72px + env(safe-area-inset-bottom, 0px));
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    border: 0;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-on-surface);
+    text-align: start;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+
+  .matjark-pos-mobile-summary-total {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .matjark-pos-mobile-summary-label {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .matjark-pos-mobile-summary-total strong {
+    color: var(--md-sys-color-primary);
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .matjark-pos-mobile-summary-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .matjark-pos-cart-sheet::part(header),
+  .matjark-pos-scanner-sheet::part(header) {
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .matjark-pos-cart-sheet .matjark-pos-cart-panel {
+    display: flex !important;
+    width: 100% !important;
+    height: min(76dvh, 700px) !important;
+    max-height: min(76dvh, 700px) !important;
+    min-height: 0 !important;
+    flex: 1 1 auto !important;
+    border: 0 !important;
+    border-radius: 20px 20px 0 0 !important;
+  }
+
+  .matjark-pos-cart-sheet .matjark-pos-cart-header-actions .matjark-pos-hold-indicator {
+    display: none !important;
+  }
+
+  .matjark-pos-cart-sheet .matjark-pos-cart-list-host,
+  .matjark-pos-cart-sheet .matjark-pos-held-list {
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+  }
+
+  .matjark-mobile-navigation {
+    display: block !important;
+    width: 100%;
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    min-height: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .matjark-mobile-navigation > * {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .matjark-mobile-navigation .mtrl-navigation-bar__item {
+    align-items: center;
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  .matjark-mobile-navigation .mtrl-navigation-bar__content {
+    width: 100%;
+    max-width: none;
+    height: 64px;
+    align-items: center;
+  }
+
+  .matjark-mobile-navigation .matjark-mobile-navigation-icon-slot {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    margin-block-start: 4px;
+  }
+
+  .matjark-mobile-navigation .mtrl-navigation-bar__icon {
+    margin-block-start: 0 !important;
+  }
+
+  .matjark-mobile-navigation .mtrl-navigation-bar__indicator {
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    margin: 0 !important;
+    transform: translate(-50%, -50%) !important;
+  }
+}
+
 
 @keyframes matjark-mobile-navigation-ripple {
   from {
