@@ -1251,6 +1251,7 @@ html:not(.dark) .pos-snackbar-box {
 
 .matjark-pos-cart-header-actions {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 6px;
   min-width: 0;
@@ -1275,6 +1276,8 @@ html:not(.dark) .pos-snackbar-box {
   display: block !important;
   width: 52px !important;
   height: 52px !important;
+  transform: rotate(-90deg) !important;
+  transform-origin: center center !important;
   pointer-events: none !important;
 }
 
@@ -1407,6 +1410,10 @@ html:not(.dark) .pos-snackbar-box {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+  transform: translate(0, -50%) rotate(360deg);
+}
+
+.matjark-pos-hold-add--entering {
   animation: matjark-hold-add-enter 650ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
 }
 
@@ -1547,7 +1554,7 @@ html:not(.dark) .pos-snackbar-box {
     transform: translate(-46px, -50%) rotate(0deg);
   }
 
-  .matjark-pos-hold-add--visible {
+  .matjark-pos-hold-add--entering {
     animation-name: matjark-hold-add-enter-small;
   }
 
@@ -3430,23 +3437,11 @@ html:not(.dark) .pos-snackbar-box {
   }
 }
 
-/* Material Symbols glyphs used by the cashier hold, resume and add actions. */
-.matjark-hold-button .matjark-hold-material-icon,
-.matjark-hold-add-button .matjark-hold-material-icon {
-  display: inline-block;
-  font-family: 'Material Symbols Rounded' !important;
-  font-size: 16px !important;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  white-space: nowrap;
-  direction: ltr;
-  -webkit-font-smoothing: antialiased;
-  font-feature-settings: 'liga';
-  -webkit-font-feature-settings: 'liga';
-  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 20;
+/* Material Symbols SVGs keep their geometry fixed while the page and fonts load. */
+.matjark-hold-material-svg {
+  display: block;
+  flex: 0 0 auto;
+  pointer-events: none;
 }
 
 /* Keep Pause and Play equally compact; the 52px activity ring stays unchanged. */
@@ -3456,4 +3451,5 @@ html:not(.dark) .pos-snackbar-box {
   height: 32px !important;
   min-width: 32px !important;
   min-height: 32px !important;
+  flex: 0 0 32px !important;
 }
