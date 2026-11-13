@@ -914,18 +914,12 @@ export const CashierScreen: React.FC = () => {
               {(holdStorage.sales.length > 0 || holdAddReturning || heldSaleCompleted) && (
                 <MProgress
                   variant="circular"
-                  shape="wavy"
+                  indeterminate
+                  shape="flat"
                   thickness={2.5}
                   size={52}
-                  value={heldSaleCompleted
-                    ? 100
-                    : holdAddReturning
-                      ? 0
-                      : holdStorage.progressTotal > 0
-                        ? Math.round((holdStorage.sales.length / holdStorage.progressTotal) * 100)
-                        : 100}
-                  ariaLabel="نسبة الفواتير المعلقة المتبقية"
-                  className={`matjark-pos-hold-progress${heldSaleCompleted ? ' matjark-pos-hold-progress--complete' : ''}`}
+                  ariaLabel="نشاط الفواتير المعلقة"
+                  className="matjark-pos-hold-progress"
                 />
               )}
               {heldSaleCompleted ? (
@@ -940,10 +934,10 @@ export const CashierScreen: React.FC = () => {
               ) : holdStorage.sales.length > 0 || holdAddReturning ? (
                 <>
                   <MuiIconButton
-                    icon={<Play width={18} height={18} className="matjark-hold-icon" />}
+                    icon={<Play width={16} height={16} className="matjark-hold-icon" />}
                     ariaLabel={heldListOpen ? "إغلاق قائمة الفواتير المعلقة" : "عرض الفواتير المعلقة"}
                     variant="filled"
-                    size="small"
+                    size="extraSmall"
                     className="matjark-hold-button matjark-hold-button--play"
                     onClick={handleHoldMainClick}
                   />
@@ -958,10 +952,10 @@ export const CashierScreen: React.FC = () => {
                 </>
               ) : (
                 <MuiIconButton
-                  icon={<Pause width={16} height={16} className="matjark-hold-icon matjark-hold-icon--pause" />}
+                  icon={<Pause width={16} height={16} className="matjark-hold-icon" />}
                   ariaLabel="تعليق الفاتورة الحالية"
                   variant="filled"
-                  size="small"
+                  size="extraSmall"
                   className="matjark-hold-button matjark-hold-button--pause"
                   disabled={cart.length === 0}
                   onClick={handleHoldMainClick}
