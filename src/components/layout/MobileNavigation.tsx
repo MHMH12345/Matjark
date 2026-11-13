@@ -24,10 +24,15 @@ const CASHIER_DESTINATIONS: Array<{ id: ActiveTab; label: string; icon: React.Re
 
 type MobileNavigationProps = {
   cashierMode?: boolean;
+  cashierBottomMode?: boolean;
   actions?: React.ReactNode;
 };
 
-export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode = false, actions }) => {
+export const MobileNavigation: React.FC<MobileNavigationProps> = ({
+  cashierMode = false,
+  cashierBottomMode = false,
+  actions,
+}) => {
   const hostRef = useRef<HTMLDivElement>(null);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -39,7 +44,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
   );
 
   useEffect(() => {
-    if (cashierMode || !hostRef.current) return;
+    if ((cashierMode && !cashierBottomMode) || !hostRef.current) return;
     const activeMore = ['customers', 'reports', 'settings', 'performance'].includes(activeTab);
     const navigation = createNavigationBar({
       ariaLabel: 'التنقل الرئيسي',
@@ -68,7 +73,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
       navigation.destroy?.();
       hostRef.current?.replaceChildren();
     };
-  }, [cashierMode, activeTab, lowStockCount, setActiveTab]);
+  }, [cashierMode, cashierBottomMode, activeTab, lowStockCount, setActiveTab]);
 
   const closeAndNavigate = (tab: ActiveTab) => {
     if (menuTriggerRef.current) menuTriggerRef.current.focus();
@@ -82,7 +87,8 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
     else if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     setMoreOpen(false);
   };
-  const destinations = cashierMode ? CASHIER_DESTINATIONS : MORE_DESTINATIONS;
+  const isCashierNavigation = cashierMode || cashierBottomMode;
+  const destinations = isCashierNavigation ? CASHIER_DESTINATIONS : MORE_DESTINATIONS;
 
   return (
     <>
@@ -100,7 +106,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
       <MBottomSheet
         open={moreOpen}
         modal
-        headline={cashierMode ? 'التنقل بين الشاشات' : 'المزيد'}
+        headline={isCashierNavigation ? 'التنقل بين الشاشات' : 'المزيد'}
         expanded={moreOpen}
         maxWidth={560}
         onClose={closeMore}
@@ -113,7 +119,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({ cashierMode 
               <span>{destination.label}</span>
             </button>
           ))}
-          {cashierMode && (
+          {isCashierNavigation && (
             <button type="button" className="matjark-mobile-navigation-option" onClick={closeMore}>
               <span className="matjark-mobile-navigation-option-icon"><X size={20} /></span>
               <span>العودة للكاشير</span>
