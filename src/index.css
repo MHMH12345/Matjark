@@ -2860,7 +2860,7 @@ html:not(.dark) .pos-snackbar-box {
   }
 
   .matjark-pos-root {
-    flex-direction: row-reverse !important;
+    flex-direction: row !important;
     align-items: stretch;
     gap: 8px !important;
     direction: rtl;
