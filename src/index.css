@@ -1161,7 +1161,7 @@ html:not(.dark) .pos-snackbar-box {
   min-height: 0 !important;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767px), (orientation: portrait) and (min-width: 768px) and (max-width: 1100px) and (pointer: coarse) {
   .matjark-pos-root {
     height: 100% !important;
     min-height: 0 !important;
@@ -2148,7 +2148,7 @@ html:not(.dark) .pos-snackbar-box {
   justify-content: flex-end;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767px), (orientation: portrait) and (min-width: 768px) and (max-width: 1100px) and (pointer: coarse) {
   .matjark-cashier-screen-layout > .matjark-mobile-navigation {
     display: block;
     flex: 0 0 calc(64px + env(safe-area-inset-bottom, 0px));
@@ -2345,7 +2345,7 @@ html:not(.dark) .pos-snackbar-box {
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 767px), (orientation: portrait) and (min-width: 768px) and (max-width: 1100px) and (pointer: coarse) {
   .matjark-app-shell:not(.matjark-app-shell--cashier) {
     flex-direction: column !important;
   }
@@ -2364,7 +2364,7 @@ html:not(.dark) .pos-snackbar-box {
   }
 
   .matjark-app-shell:not(.matjark-app-shell--cashier) .matjark-mobile-navigation {
-    display: block;
+    display: block !important;
   }
 }
 
@@ -2390,7 +2390,7 @@ html:not(.dark) .pos-snackbar-box {
 
 
 /* Center each navigation item and anchor its indicator to the actual icon box. */
-@media (max-width: 767px) {
+@media (max-width: 767px), (orientation: portrait) and (min-width: 768px) and (max-width: 1100px) and (pointer: coarse) {
   .matjark-mobile-navigation .mtrl-navigation-bar__item {
     align-items: center;
   }
@@ -3414,7 +3414,7 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 /* Center the bottom-navigation icons on the bar's vertical midpoint. */
-@media (max-width: 767px), (orientation: landscape) and (max-width: 900px) and (max-height: 500px) and (pointer: coarse) {
+@media (max-width: 767px), (orientation: portrait) and (min-width: 768px) and (max-width: 1100px) and (pointer: coarse), (orientation: landscape) and (max-width: 900px) and (max-height: 500px) and (pointer: coarse) {
   .matjark-mobile-navigation .mtrl-navigation-bar__content {
     position: relative !important;
   }
