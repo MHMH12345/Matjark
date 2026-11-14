@@ -1245,6 +1245,27 @@ html:not(.dark) .pos-snackbar-box {
   min-width: 0;
 }
 
+/* Keep the checkout button enlarged and its icon/label centered in every layout. */
+.matjark-pos-checkout-button {
+  display: flex !important;
+  flex: 1 1 100% !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 42px !important;
+  box-sizing: border-box !important;
+}
+
+.matjark-pos-checkout-button::part(button) {
+  display: flex !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  height: 42px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+}
+
 
 
 /* Smart Hold POS controls: Material IconButtons with an anchored wheel-style add action. */
@@ -3283,25 +3304,6 @@ html:not(.dark) .pos-snackbar-box {
     min-width: 0 !important;
   }
 
-  .matjark-pos-checkout-button {
-    display: flex !important;
-    flex: 1 1 100% !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    height: 42px !important;
-    box-sizing: border-box !important;
-  }
-
-  .matjark-pos-checkout-button::part(button) {
-    display: flex !important;
-    width: 100% !important;
-    min-width: 100% !important;
-    height: 42px !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-sizing: border-box !important;
-    text-align: center !important;
-  }
 }
 
 
