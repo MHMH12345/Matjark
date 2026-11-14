@@ -2,21 +2,51 @@
  * متجرك Matjark - Main Application Shell (React 19 & Material 3)
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
 import { MobileNavigation } from './components/layout/MobileNavigation';
 import { CashierScreen } from './components/pos/CashierScreen';
-import { InventoryScreen } from './components/inventory/InventoryScreen';
-import { InvoicesScreen } from './components/invoices/InvoicesScreen';
-import { AccountingScreen } from './components/accounting/AccountingScreen';
-import { ReportsScreen } from './components/reports/ReportsScreen';
-import { CustomersScreen } from './components/customers/CustomersScreen';
-import { SettingsScreen } from './components/settings/SettingsScreen';
-import { PerformanceBenchmarkModal } from './components/performance/PerformanceBenchmarkModal';
 import { MuiSnackbar } from './components/ui/MuiSnackbar';
 import { StoreProvider, useStore } from './context/StoreContext';
 import { AuthProvider } from './context/AuthContext';
 import { perfTracker } from './utils/performance';
+
+const InventoryScreen = lazy(() =>
+  import('./components/inventory/InventoryScreen').then((module) => ({ default: module.InventoryScreen }))
+);
+const InvoicesScreen = lazy(() =>
+  import('./components/invoices/InvoicesScreen').then((module) => ({ default: module.InvoicesScreen }))
+);
+const AccountingScreen = lazy(() =>
+  import('./components/accounting/AccountingScreen').then((module) => ({ default: module.AccountingScreen }))
+);
+const ReportsScreen = lazy(() =>
+  import('./components/reports/ReportsScreen').then((module) => ({ default: module.ReportsScreen }))
+);
+const CustomersScreen = lazy(() =>
+  import('./components/customers/CustomersScreen').then((module) => ({ default: module.CustomersScreen }))
+);
+const SettingsScreen = lazy(() =>
+  import('./components/settings/SettingsScreen').then((module) => ({ default: module.SettingsScreen }))
+);
+const PerformanceBenchmarkModal = lazy(() =>
+  import('./components/performance/PerformanceBenchmarkModal').then((module) => ({
+    default: module.PerformanceBenchmarkModal,
+  }))
+);
+
+function ScreenLoading() {
+  return (
+    <div
+      className="min-h-[180px] w-full flex items-center justify-center text-sm text-[var(--md-sys-color-on-surface-variant)]"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
+      جارٍ تحميل الشاشة...
+    </div>
+  );
+}
 
 function MainAppContent() {
   const { activeTab, snackbars, dismissToast } = useStore();
@@ -37,16 +67,22 @@ function MainAppContent() {
       <main className={"matjark-app-main flex-1 h-full min-w-0 min-h-0 overflow-y-auto p-4 sm:p-6" + (isCashier ? " matjark-app-main--cashier" : "")}>
         <div className={isCashier ? "matjark-screen-host matjark-screen-host--cashier" : "matjark-screen-host"}>
           {activeTab === 'pos' && <CashierScreen />}
-          {activeTab === 'inventory' && <InventoryScreen />}
-          {activeTab === 'invoices' && <InvoicesScreen />}
-          {activeTab === 'accounting' && <AccountingScreen />}
-          {activeTab === 'reports' && <ReportsScreen />}
-          {activeTab === 'customers' && <CustomersScreen />}
-          {activeTab === 'settings' && <SettingsScreen />}
+          <Suspense fallback={<ScreenLoading />}>
+            {activeTab === 'inventory' && <InventoryScreen />}
+            {activeTab === 'invoices' && <InvoicesScreen />}
+            {activeTab === 'accounting' && <AccountingScreen />}
+            {activeTab === 'reports' && <ReportsScreen />}
+            {activeTab === 'customers' && <CustomersScreen />}
+            {activeTab === 'settings' && <SettingsScreen />}
+          </Suspense>
         </div>
       </main>
       {!isCashier && <MobileNavigation />}
-      <PerformanceBenchmarkModal open={perfModalOpen} onClose={() => setPerfModalOpen(false)} />
+      {perfModalOpen && (
+        <Suspense fallback={null}>
+          <PerformanceBenchmarkModal open={perfModalOpen} onClose={() => setPerfModalOpen(false)} />
+        </Suspense>
+      )}
       <MuiSnackbar messages={snackbars} onDismiss={dismissToast} />
     </div>
   );
