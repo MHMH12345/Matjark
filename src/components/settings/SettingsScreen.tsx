@@ -134,8 +134,6 @@ export const SettingsScreen: React.FC = () => {
 
   useEffect(() => subscribeBackupRuntimeStatus(setBackupStatus), []);
 
-  useEffect(() => { void refreshLocalBackups(); }, [refreshLocalBackups]);
-
   const refreshDriveStatus = useCallback(async () => {
     try {
       const status = await getGoogleDriveStatus();
@@ -173,6 +171,8 @@ export const SettingsScreen: React.FC = () => {
       setLoadingLocalList(false);
     }
   }, [showToast]);
+
+  useEffect(() => { void refreshLocalBackups(); }, [refreshLocalBackups]);
 
   const refreshCloudBackups = useCallback(async () => {
     if (!driveStatus?.connected || !navigator.onLine) return;
