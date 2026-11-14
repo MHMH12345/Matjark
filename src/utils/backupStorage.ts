@@ -66,6 +66,7 @@ const BACKUP_DB_VERSION = 1;
 const STATE_STORE = 'state';
 const CLOUD_QUEUE_STORE = 'cloud_queue';
 const DIRECTORY_HANDLE_KEY = 'local-backup-directory';
+const DIRECTORY_LABEL_KEY = 'local-backup-directory-label';
 const LAST_LOCAL_BACKUP_KEY = 'last-local-backup-at';
 const LAST_LOCAL_FILE_KEY = 'last-local-backup-file';
 const LAST_CLOUD_CAPTURE_KEY = 'last-cloud-capture-at';
@@ -161,7 +162,9 @@ export async function chooseLocalBackupDirectory(): Promise<string> {
     throw new Error('لم يتم منح البرنامج صلاحية الكتابة داخل مجلد النسخ الاحتياطي.');
   }
   await writeState(DIRECTORY_HANDLE_KEY, backupDirectory);
-  return `${selectedDirectory.name}/Matjark Backups`;
+  const label = `${selectedDirectory.name}/Matjark Backups`;
+  await writeState(DIRECTORY_LABEL_KEY, label);
+  return label;
 }
 
 export async function requestLocalBackupPermission(): Promise<boolean> {
@@ -177,9 +180,12 @@ export async function getLocalBackupFolderInfo(): Promise<{
 }> {
   const handle = await getStoredDirectoryHandle();
   if (!handle) return { folderName: '', permission: 'missing' };
-  const permission = await handle.queryPermission?.({ mode: 'readwrite' });
+  const [permission, label] = await Promise.all([
+    handle.queryPermission?.({ mode: 'readwrite' }),
+    readState<string>(DIRECTORY_LABEL_KEY),
+  ]);
   return {
-    folderName: handle.name,
+    folderName: label || handle.name,
     permission: permission ?? 'prompt',
   };
 }
