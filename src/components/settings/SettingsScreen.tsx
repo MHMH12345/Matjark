@@ -134,6 +134,8 @@ export const SettingsScreen: React.FC = () => {
 
   useEffect(() => subscribeBackupRuntimeStatus(setBackupStatus), []);
 
+  useEffect(() => { void refreshLocalBackups(); }, [refreshLocalBackups]);
+
   const refreshDriveStatus = useCallback(async () => {
     try {
       const status = await getGoogleDriveStatus();
