@@ -25,6 +25,7 @@ interface DriveFile {
 
 const app = express();
 const port = Number(process.env.API_PORT || 3001);
+const host = process.env.API_HOST || '127.0.0.1';
 const appOrigin = (process.env.MATJARK_APP_ORIGIN || 'http://localhost:3000').replace(/\/$/, '');
 const dataDirectory = path.resolve(process.env.MATJARK_DATA_DIR || '.matjark-data');
 const credentialsPath = path.join(dataDirectory, 'google-drive-credentials.enc');
@@ -100,6 +101,22 @@ async function saveCredentials(credentials: StoredDriveCredentials): Promise<voi
   const temporaryPath = credentialsPath + '.tmp';
   await writeFile(temporaryPath, encryptCredentials(credentials), { mode: 0o600 });
   await rename(temporaryPath, credentialsPath);
+}
+
+function requireSameOrigin(request: express.Request, response: express.Response, next: express.NextFunction): void {
+  const origin = request.get('origin');
+  let expectedOrigin: string;
+  try {
+    expectedOrigin = new URL(appOrigin).origin;
+  } catch {
+    response.status(500).json({ error: 'قيمة MATJARK_APP_ORIGIN غير صالحة.' });
+    return;
+  }
+  if (origin !== expectedOrigin) {
+    response.status(403).json({ error: 'تم رفض الطلب لعدم تطابق مصدره مع التطبيق.' });
+    return;
+  }
+  next();
 }
 
 function readCookie(request: express.Request, cookieName: string): string | undefined {
@@ -489,7 +506,7 @@ app.get('/api/drive/oauth/callback', async (request, response) => {
   }
 });
 
-app.post('/api/drive/disconnect', async (_request, response) => {
+app.post('/api/drive/disconnect', requireSameOrigin, async (_request, response) => {
   try {
     const credentials = await readCredentials();
     if (credentials?.refreshToken) {
@@ -520,7 +537,7 @@ app.get('/api/drive/backups', async (_request, response) => {
   }
 });
 
-app.post('/api/drive/backups', async (request, response) => {
+app.post('/api/drive/backups', requireSameOrigin, async (request, response) => {
   try {
     if (!isConfigured()) {
       response.status(503).json({ error: 'إعداد Google Drive غير مكتمل على الخادم.' });
@@ -553,6 +570,6 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.listen(port, () => {
-  console.log('Matjark API listening on port ' + port);
+app.listen(port, host, () => {
+  console.log('Matjark API listening on http://' + host + ':' + port);
 });
