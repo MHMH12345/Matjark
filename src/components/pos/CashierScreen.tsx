@@ -170,7 +170,7 @@ const ProductCard = React.memo(({ product, availableStock, onAdd, onOutOfStockCl
 
   const media = (
     <div className="matjark-pos-product-media" dir="rtl">
-      <img src={hasRealImage ? product.imageUrl : fallbackSvg} alt={product.name} />
+      <img src={hasRealImage ? product.imageUrl : fallbackSvg} alt={product.name} loading="lazy" decoding="async" />
       <MBadge
         label={String(availableStock)}
         variant="large"
