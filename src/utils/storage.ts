@@ -72,6 +72,10 @@ export const INITIAL_SETTINGS: StoreSettings = {
   enableAudioBeep: true,
   lowStockThreshold: 10,
   theme: 'light',
+  localBackupEnabled: false,
+  localBackupIntervalMinutes: 60,
+  googleDriveAutoSyncEnabled: false,
+  googleDriveSyncIntervalMinutes: 60,
   googleDriveConnected: false,
 };
 
