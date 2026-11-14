@@ -126,10 +126,14 @@ export const SettingsScreen: React.FC = () => {
   const [loadingLocalList, setLoadingLocalList] = useState(false);
   const [loadingCloudList, setLoadingCloudList] = useState(false);
   const [working, setWorking] = useState(false);
+  const [localIntervalInput, setLocalIntervalInput] = useState(String(settings.localBackupIntervalMinutes || 60));
+  const [cloudIntervalInput, setCloudIntervalInput] = useState(String(settings.googleDriveSyncIntervalMinutes || 60));
   const backupInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setFormState({ ...settings });
+    setLocalIntervalInput(String(settings.localBackupIntervalMinutes || 60));
+    setCloudIntervalInput(String(settings.googleDriveSyncIntervalMinutes || 60));
   }, [settings]);
 
   useEffect(() => subscribeBackupRuntimeStatus(setBackupStatus), []);
@@ -500,7 +504,7 @@ export const SettingsScreen: React.FC = () => {
           </div>
           <div className="matjark-settings-grid matjark-settings-grid--two">
             <label className={labelClass}>معدل إنشاء النسخ المحلية
-              <input className={inputClass} type="number" min="1" max="1440" step="1" value={settings.localBackupIntervalMinutes || 60} onChange={(event) => updateSettings({ localBackupIntervalMinutes: Math.min(1440, Math.max(1, Number(event.target.value) || 1)) })} />
+              <input className={inputClass} type="number" min="1" max="1440" step="1" value={localIntervalInput} onChange={(event) => setLocalIntervalInput(event.target.value)} onBlur={() => updateSettings({ localBackupIntervalMinutes: Math.min(1440, Math.max(1, Number(localIntervalInput) || 60)) })} />
               <small>بالدقائق؛ 60 = ساعة، 180 = 3 ساعات، 300 = 5 ساعات.</small>
             </label>
             <div className="matjark-settings-info-field"><span>آخر نسخة محلية ناجحة</span><strong>{formatDateTime(backupStatus.lastLocalBackupAt)}</strong></div>
@@ -561,7 +565,7 @@ export const SettingsScreen: React.FC = () => {
           </div>
           <div className="matjark-settings-grid matjark-settings-grid--two">
             <label className={labelClass}>معدل تحديث نسخة اليوم على Google Drive
-              <input className={inputClass} type="number" min="1" max="1440" step="1" value={settings.googleDriveSyncIntervalMinutes || 60} onChange={(event) => updateSettings({ googleDriveSyncIntervalMinutes: Math.min(1440, Math.max(1, Number(event.target.value) || 1)) })} />
+              <input className={inputClass} type="number" min="1" max="1440" step="1" value={cloudIntervalInput} onChange={(event) => setCloudIntervalInput(event.target.value)} onBlur={() => updateSettings({ googleDriveSyncIntervalMinutes: Math.min(1440, Math.max(1, Number(cloudIntervalInput) || 60)) })} />
               <small>بالدقائق؛ 60 = ساعة، 180 = 3 ساعات، 300 = 5 ساعات.</small>
             </label>
             <div className="matjark-settings-info-field"><span>آخر رفع ناجح</span><strong>{formatDateTime(backupStatus.lastCloudBackupAt || driveStatus?.lastUploadAt)}</strong></div>
