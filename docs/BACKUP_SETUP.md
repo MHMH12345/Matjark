@@ -27,11 +27,11 @@ The Drive integration uses a Node/Express backend so Google refresh tokens are n
 2. Configure the OAuth consent screen and add the Google account that will be used for development as a test user if the app is still in testing.
 3. Create an OAuth client of type **Web application**.
 4. Add this authorized redirect URI exactly:
-   `http://localhost:3001/api/drive/oauth/callback`
+   `https://localhost:3000/api/drive/oauth/callback` (Vite forwards this `/api` route to the local backend on port 3001.)
 5. Copy `.env.example` to `.env` in the project root.
 6. Fill in `GOOGLE_DRIVE_CLIENT_ID` and `GOOGLE_DRIVE_CLIENT_SECRET`.
 7. Keep the local development values:
-   - `GOOGLE_DRIVE_REDIRECT_URI=http://localhost:3001/api/drive/oauth/callback`
+   - `GOOGLE_DRIVE_REDIRECT_URI=https://localhost:3000/api/drive/oauth/callback`
    - `MATJARK_APP_ORIGIN=https://localhost:3000`
 8. Generate the token encryption key with:
    `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
