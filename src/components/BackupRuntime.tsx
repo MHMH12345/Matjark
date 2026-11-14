@@ -23,6 +23,9 @@ import {
   uploadDailyBackupToGoogleDrive,
 } from '../utils/googleDriveBackup';
 import { publishBackupRuntimeStatus } from '../utils/backupStatus';
+import { MuiButton } from './ui/MuiButton';
+import { MuiCard } from './ui/MuiCard';
+import { MuiDialog } from './ui/MuiDialog';
 
 export const BackupRuntime: React.FC = () => {
   const { settings, databaseSnapshot, showToast } = useStore();
@@ -243,31 +246,54 @@ export const BackupRuntime: React.FC = () => {
     cleanupPrompt,
   ]);
 
-  return cleanupPrompt ? (
-    <div className="matjark-backup-confirm-overlay" role="presentation">
-      <section className="matjark-backup-confirm" role="dialog" aria-modal="true" aria-labelledby="backup-cleanup-title" dir="rtl">
-        <div className="matjark-backup-confirm__icon">
-          <span aria-hidden="true">!</span>
-        </div>
-        <h2 id="backup-cleanup-title">مراجعة مساحة النسخ الاحتياطي المحلي</h2>
-        <p>
-          يوجد أرشيف للشهر السابق. هل تريد حذف النسخ المحلية لهذا الشهر لتوفير مساحة، أم الاحتفاظ بها؟
-        </p>
-        <div className="matjark-backup-confirm__details">
-          <div><span>الشهر</span><strong>{cleanupPrompt.yearMonth}</strong></div>
-          <div><span>عدد النسخ</span><strong>{cleanupPrompt.fileCount.toLocaleString('ar-EG')}</strong></div>
-          <div><span>الحجم الإجمالي</span><strong>{formatBackupBytes(cleanupPrompt.totalBytes)}</strong></div>
-        </div>
-        <div className="matjark-backup-confirm__actions">
-          <button type="button" className="matjark-backup-button matjark-backup-button--danger" disabled={cleanupBusy} onClick={() => void handleCleanupDecision('delete')}>
+  return (
+    <MuiDialog
+      open={Boolean(cleanupPrompt)}
+      onClose={() => {
+        if (!cleanupBusy && cleanupPrompt) void handleCleanupDecision('keep');
+      }}
+      title="مراجعة مساحة النسخ الاحتياطي المحلي"
+      maxWidth="sm"
+      actions={
+        <>
+          <MuiButton
+            type="button"
+            variant="tonal"
+            color="error"
+            size="small"
+            disabled={cleanupBusy || !cleanupPrompt}
+            onClick={() => void handleCleanupDecision('delete')}
+          >
             حذف أرشيف الشهر
-          </button>
-          <button type="button" className="matjark-backup-button matjark-backup-button--outlined" disabled={cleanupBusy} onClick={() => void handleCleanupDecision('keep')}>
+          </MuiButton>
+          <MuiButton
+            type="button"
+            variant="outlined"
+            color="primary"
+            size="small"
+            disabled={cleanupBusy || !cleanupPrompt}
+            onClick={() => void handleCleanupDecision('keep')}
+          >
             الاحتفاظ بالنسخ
-          </button>
+          </MuiButton>
+        </>
+      }
+    >
+      {cleanupPrompt && (
+        <div className="matjark-backup-cleanup-content" dir="rtl">
+          <p>
+            يوجد أرشيف للشهر السابق. هل تريد حذف النسخ المحلية لهذا الشهر لتوفير مساحة، أم الاحتفاظ بها؟
+          </p>
+          <MuiCard variant="filled" className="matjark-backup-cleanup-details">
+            <div className="matjark-backup-confirm__details">
+              <div><span>الشهر</span><strong>{cleanupPrompt.yearMonth}</strong></div>
+              <div><span>عدد النسخ</span><strong>{cleanupPrompt.fileCount.toLocaleString('ar-EG')}</strong></div>
+              <div><span>الحجم الإجمالي</span><strong>{formatBackupBytes(cleanupPrompt.totalBytes)}</strong></div>
+            </div>
+          </MuiCard>
+          <small>لن يحذف البرنامج أي نسخة قبل اختيارك. ويمكنك الاحتفاظ بالأرشيف دون تحديد مدة حذف تلقائية.</small>
         </div>
-        <small>لن يحذف البرنامج أي نسخة قبل اختيارك. ويمكنك الاحتفاظ بالأرشيف دون تحديد مدة حذف تلقائية.</small>
-      </section>
-    </div>
-  ) : null;
+      )}
+    </MuiDialog>
+  );
 };
