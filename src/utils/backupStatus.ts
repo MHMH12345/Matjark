@@ -40,5 +40,5 @@ export function subscribeBackupRuntimeStatus(
 ): () => void {
   listeners.add(listener);
   listener(currentStatus);
-  return () => listeners.delete(listener);
+  return () => { listeners.delete(listener); };
 }
