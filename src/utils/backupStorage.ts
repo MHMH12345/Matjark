@@ -162,6 +162,8 @@ export async function chooseLocalBackupDirectory(): Promise<string> {
     throw new Error('لم يتم منح البرنامج صلاحية الكتابة داخل مجلد النسخ الاحتياطي.');
   }
   await writeState(DIRECTORY_HANDLE_KEY, backupDirectory);
+  await writeState(LAST_LOCAL_BACKUP_KEY, null);
+  await writeState(LAST_LOCAL_FILE_KEY, null);
   const label = `${selectedDirectory.name}/Matjark Backups`;
   await writeState(DIRECTORY_LABEL_KEY, label);
   return label;
