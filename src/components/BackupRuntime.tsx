@@ -111,36 +111,43 @@ export const BackupRuntime: React.FC = () => {
         }
 
         if (settings.googleDriveAutoSyncEnabled) {
+          let pending = await getCloudPendingBackups();
           try {
-            const driveStatus = await getGoogleDriveStatus();
-            if (!driveStatus.configured) {
-              publishBackupRuntimeStatus({ cloudState: 'not-configured' });
-            } else if (!driveStatus.connected) {
-              publishBackupRuntimeStatus({ cloudState: 'disconnected' });
+            const lastCaptureAt = await getLastCloudCaptureAt();
+            const intervalMs = Math.max(1, settings.googleDriveSyncIntervalMinutes || 60) * 60_000;
+            const lastDateKey = lastCaptureAt ? getLocalDateKey(new Date(lastCaptureAt)) : null;
+            const captureDue = !lastCaptureAt || now - lastCaptureAt >= intervalMs;
+            const dayChanged = Boolean(lastDateKey && lastDateKey !== dateKey);
+
+            // Keep one coalesced pending snapshot per calendar day, even when the API or Internet is unavailable.
+            if (captureDue || dayChanged) {
+              const envelope = await createBackupEnvelope(databaseRef.current, dateKey);
+              await saveCloudPendingBackup(envelope);
+              await setLastCloudCaptureAt(now);
+              pending = await getCloudPendingBackups();
+            }
+
+            if (!navigator.onLine) {
+              publishBackupRuntimeStatus({
+                cloudState: 'offline',
+                pendingCloudCount: pending.length,
+                lastCloudBackupAt: await getLastCloudUploadAt(),
+              });
             } else {
-              const lastCaptureAt = await getLastCloudCaptureAt();
-              const intervalMs = Math.max(1, settings.googleDriveSyncIntervalMinutes || 60) * 60_000;
-              const lastDateKey = lastCaptureAt ? getLocalDateKey(new Date(lastCaptureAt)) : null;
-              const captureDue = !lastCaptureAt || now - lastCaptureAt >= intervalMs;
-              const dayChanged = Boolean(lastDateKey && lastDateKey !== dateKey);
-
-              // The previous date is already represented by its last captured or queued daily snapshot.
-              // Never label today's live database with yesterday's date after the app was closed overnight.
-              if (captureDue || dayChanged) {
-                const envelope = await createBackupEnvelope(databaseRef.current, dateKey);
-                await saveCloudPendingBackup(envelope);
-                await setLastCloudCaptureAt(now);
-              }
-
-              if (!navigator.onLine) {
-                const pending = await getCloudPendingBackups();
+              const driveStatus = await getGoogleDriveStatus();
+              if (!driveStatus.configured) {
                 publishBackupRuntimeStatus({
-                  cloudState: 'offline',
+                  cloudState: 'not-configured',
+                  pendingCloudCount: pending.length,
+                  lastCloudBackupAt: await getLastCloudUploadAt(),
+                });
+              } else if (!driveStatus.connected) {
+                publishBackupRuntimeStatus({
+                  cloudState: 'disconnected',
                   pendingCloudCount: pending.length,
                   lastCloudBackupAt: await getLastCloudUploadAt(),
                 });
               } else {
-                const pending = await getCloudPendingBackups();
                 if (pending.length) {
                   publishBackupRuntimeStatus({ cloudState: 'syncing', pendingCloudCount: pending.length });
                   for (const item of pending) {
@@ -161,10 +168,11 @@ export const BackupRuntime: React.FC = () => {
             }
           } catch (error) {
             latestError = error instanceof Error ? error.message : 'فشلت المزامنة مع Google Drive.';
-            const pending = await getCloudPendingBackups().catch(() => []);
+            pending = await getCloudPendingBackups().catch(() => []);
             publishBackupRuntimeStatus({
               cloudState: navigator.onLine ? 'error' : 'offline',
               pendingCloudCount: pending.length,
+              lastCloudBackupAt: await getLastCloudUploadAt().catch(() => null),
               lastError: latestError,
             });
           }
