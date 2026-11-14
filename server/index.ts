@@ -32,6 +32,8 @@ const tokenCookieName = 'matjark_drive_oauth_state';
 const DRIVE_API = 'https://www.googleapis.com/drive/v3';
 const DRIVE_UPLOAD_API = 'https://www.googleapis.com/upload/drive/v3';
 const FOLDER_MIME = 'application/vnd.google-apps.folder';
+let cachedAccessToken = '';
+let cachedAccessTokenExpiresAt = 0;
 
 app.use(express.json({ limit: '100mb' }));
 
@@ -45,7 +47,7 @@ function getDriveConfig() {
     clientId,
     clientSecret,
     redirectUri,
-    configured: Boolean(clientId && clientSecret && encryptionSecret),
+    configured: Boolean(clientId && clientSecret && encryptionSecret && /^[0-9a-fA-F]{64}$/.test(encryptionSecret)),
   };
 }
 
@@ -143,6 +145,7 @@ async function exchangeAuthorizationCode(code: string): Promise<{
 }
 
 async function getAccessToken(): Promise<string> {
+  if (cachedAccessToken && Date.now() < cachedAccessTokenExpiresAt - 60_000) return cachedAccessToken;
   const config = getDriveConfig();
   if (!config.clientId || !config.clientSecret) throw new Error('إعدادات Google Drive على الخادم غير مكتملة.');
   const credentials = await readCredentials();
@@ -164,9 +167,13 @@ async function getAccessToken(): Promise<string> {
     error?: string;
   };
   if (!response.ok || !result.access_token) {
+    cachedAccessToken = '';
+    cachedAccessTokenExpiresAt = 0;
     throw new Error(result.error_description || result.error || 'انتهت صلاحية اتصال Google. أعد ربط الحساب.');
   }
-  return result.access_token;
+  cachedAccessToken = result.access_token;
+  cachedAccessTokenExpiresAt = Date.now() + (Number(result.expires_in || 3600) * 1000);
+  return cachedAccessToken;
 }
 
 async function driveRequest<T>(
@@ -196,17 +203,24 @@ async function driveRequest<T>(
 }
 
 async function listDriveFiles(token: string, query: string): Promise<DriveFile[]> {
-  const params = new URLSearchParams({
-    q: query,
-    pageSize: '1000',
-    fields: 'files(id,name,mimeType,modifiedTime,size,appProperties),nextPageToken',
-    spaces: 'drive',
-  });
-  const result = await driveRequest<{ files?: DriveFile[] }>(
-    token,
-    DRIVE_API + '/files?' + params.toString()
-  );
-  return result.files || [];
+  const files: DriveFile[] = [];
+  let pageToken: string | undefined;
+  do {
+    const params = new URLSearchParams({
+      q: query,
+      pageSize: '1000',
+      fields: 'files(id,name,mimeType,modifiedTime,size,appProperties),nextPageToken',
+      spaces: 'drive',
+    });
+    if (pageToken) params.set('pageToken', pageToken);
+    const result = await driveRequest<{ files?: DriveFile[]; nextPageToken?: string }>(
+      token,
+      DRIVE_API + '/files?' + params.toString()
+    );
+    files.push(...(result.files || []));
+    pageToken = result.nextPageToken;
+  } while (pageToken);
+  return files;
 }
 
 async function getOrCreateFolder(
@@ -485,6 +499,8 @@ app.post('/api/drive/disconnect', async (_request, response) => {
       }).catch(() => undefined);
     }
     await unlink(credentialsPath).catch(() => undefined);
+    cachedAccessToken = '';
+    cachedAccessTokenExpiresAt = 0;
     response.json({ disconnected: true });
   } catch (error) {
     response.status(500).json({ error: error instanceof Error ? error.message : 'تعذر فصل حساب Google.' });
