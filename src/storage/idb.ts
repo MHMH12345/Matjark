@@ -73,3 +73,15 @@ export function addAuditEntry(entry: AuditLogEntry): Promise<void> {
     transaction.onerror = () => reject(request.error ?? transaction.error ?? new Error('Audit append failed.'));
   }));
 }
+
+export function replaceAuditEntries(entries: AuditLogEntry[]): Promise<void> {
+  return openAuditDatabase().then((database) => new Promise((resolve, reject) => {
+    const transaction = database.transaction(AUDIT_STORE_NAME, 'readwrite');
+    const store = transaction.objectStore(AUDIT_STORE_NAME);
+    store.clear();
+    entries.forEach((entry) => store.put(entry));
+    transaction.oncomplete = () => resolve();
+    transaction.onabort = () => reject(transaction.error ?? new Error('Audit restore aborted.'));
+    transaction.onerror = () => reject(transaction.error ?? new Error('Audit restore failed.'));
+  }));
+}
