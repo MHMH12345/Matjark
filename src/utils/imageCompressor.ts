@@ -1,6 +1,6 @@
 /**
  * High-performance client-side image compression & thumbnail generation.
- * Reduces 5MB+ phone photos to ~30KB WebP thumbnails in <30ms, preventing storage bloat and GC pauses.
+ * Resizes and compresses product photos, returning Blob URLs instead of Base64 strings.
  */
 
 export async function compressProductImage(file: File, maxDimension = 480, quality = 0.8): Promise<string> {
@@ -14,8 +14,8 @@ export async function compressProductImage(file: File, maxDimension = 480, quali
     const img = new Image();
     const objectUrl = URL.createObjectURL(file);
 
-    img.onload = () => {
-      // Clean up object URL immediately to prevent memory leak
+    img.onload = async () => {
+      // Clean up the source file URL as soon as decoding has completed.
       URL.revokeObjectURL(objectUrl);
 
       let width = img.naturalWidth || img.width;
@@ -41,33 +41,38 @@ export async function compressProductImage(file: File, maxDimension = 480, quali
         return;
       }
 
-      // Fill white background for transparent images converted to jpeg/webp
+      // Fill white background for transparent images converted to jpeg/webp.
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, width, height);
-
-      // High quality smoothing
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(img, 0, 0, width, height);
 
-      // Prefer image/webp for best size/quality ratio, fallback to image/jpeg
+      const toBlob = (mimeType: string) => new Promise<Blob | null>((resolveBlob) => {
+        canvas.toBlob(resolveBlob, mimeType, quality);
+      });
+
       try {
-        const webpData = canvas.toDataURL('image/webp', quality);
-        if (webpData.startsWith('data:image/webp')) {
-          // Free canvas memory
-          canvas.width = 0;
-          canvas.height = 0;
-          resolve(webpData);
+        let compressedBlob = await toBlob('image/webp');
+        if (!compressedBlob || compressedBlob.type !== 'image/webp') {
+          compressedBlob = await toBlob('image/jpeg');
+        }
+
+        canvas.width = 0;
+        canvas.height = 0;
+
+        if (!compressedBlob) {
+          reject(new Error('تعذر ضغط الصورة'));
           return;
         }
-      } catch {
-        // Fallback
-      }
 
-      const jpegData = canvas.toDataURL('image/jpeg', quality);
-      canvas.width = 0;
-      canvas.height = 0;
-      resolve(jpegData);
+        // Keep the image as a Blob URL; IndexedDB stores the Blob separately from store records.
+        resolve(URL.createObjectURL(compressedBlob));
+      } catch (error) {
+        canvas.width = 0;
+        canvas.height = 0;
+        reject(error instanceof Error ? error : new Error('فشل ضغط الصورة'));
+      }
     };
 
     img.onerror = () => {
