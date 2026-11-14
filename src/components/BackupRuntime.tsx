@@ -35,6 +35,35 @@ export const BackupRuntime: React.FC = () => {
     databaseRef.current = databaseSnapshot;
   }, [databaseSnapshot]);
 
+  useEffect(() => {
+    let active = true;
+    Promise.all([
+      getLocalBackupFolderInfo(),
+      getLocalBackupLastRun(),
+      getLastCloudUploadAt(),
+      getCloudPendingBackups(),
+    ]).then(([folder, localRun, cloudUploadAt, pending]) => {
+      if (!active) return;
+      publishBackupRuntimeStatus({
+        localState: settings.localBackupEnabled
+          ? (folder.permission === 'granted' ? 'ready' : folder.permission === 'missing' ? 'unconfigured' : 'permission-required')
+          : 'disabled',
+        localFolderName: folder.folderName,
+        lastLocalBackupAt: localRun.lastAt,
+        lastLocalBackupName: localRun.lastFile,
+        lastCloudBackupAt: cloudUploadAt,
+        pendingCloudCount: pending.length,
+        cloudState: settings.googleDriveAutoSyncEnabled ? 'not-configured' : 'disabled',
+      });
+    }).catch((error) => {
+      if (!active) return;
+      publishBackupRuntimeStatus({
+        lastError: error instanceof Error ? error.message : 'تعذر تحميل حالة النسخ الاحتياطي.',
+      });
+    });
+    return () => { active = false; };
+  }, [settings.localBackupEnabled, settings.googleDriveAutoSyncEnabled]);
+
   const handleCleanupDecision = useCallback(async (decision: 'delete' | 'keep') => {
     if (!cleanupPrompt || cleanupBusy) return;
     setCleanupBusy(true);
@@ -56,6 +85,11 @@ export const BackupRuntime: React.FC = () => {
 
   useEffect(() => {
     let stopped = false;
+
+    if (!settings.localBackupEnabled && !settings.googleDriveAutoSyncEnabled) {
+      publishBackupRuntimeStatus({ localState: 'disabled', cloudState: 'disabled' });
+      return () => { stopped = true; };
+    }
 
     const runScheduler = async () => {
       if (stopped || busyRef.current) return;
