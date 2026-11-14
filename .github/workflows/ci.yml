@@ -9,6 +9,10 @@ on:
       - 'src/**'
       - 'tsconfig.json'
       - 'vite.config.ts'
+      - 'server/**'
+      - 'scripts/**'
+      - '.env.example'
+      - '.gitignore'
       - '.github/workflows/ci.yml'
   workflow_dispatch:
 
