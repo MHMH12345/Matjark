@@ -10,6 +10,7 @@ import { MuiSnackbar } from './components/ui/MuiSnackbar';
 import { StoreProvider, useStore } from './context/StoreContext';
 import { AuthProvider } from './context/AuthContext';
 import { perfTracker } from './utils/performance';
+import { BackupRuntime } from './components/BackupRuntime';
 
 const InventoryScreen = lazy(() =>
   import('./components/inventory/InventoryScreen').then((module) => ({ default: module.InventoryScreen }))
@@ -84,6 +85,7 @@ function MainAppContent() {
         </Suspense>
       )}
       <MuiSnackbar messages={snackbars} onDismiss={dismissToast} />
+      <BackupRuntime />
     </div>
   );
 }
