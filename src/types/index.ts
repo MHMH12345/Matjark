@@ -155,9 +155,39 @@ export interface Role {
   key: RoleKey;
   label: string;
   isSystem: boolean;
-  permissions: PermissionKey[];
+  approvalTier: 0 | 1 | 2 | 3;
+}
+
+export type PermissionEffect = 'allow' | 'override' | 'deny';
+
+export interface OverrideCeiling {
+  maxAmount?: ScaledMoney;
+  maxPercentBp?: BasisPoints;
+}
+
+export interface Permission {
+  key: PermissionKey;
+  label: string;
+  group: string;
+  sensitive: boolean;
+}
+
+export interface RolePermission {
+  roleKey: RoleKey;
+  permission: PermissionKey;
+  effect: PermissionEffect;
+  ceiling?: OverrideCeiling;
+}
+
+export interface UserPermissionOverride {
+  id: string;
+  userId: string;
+  permission: PermissionKey;
+  effect: PermissionEffect;
+  grantedBy: string;
+  reason: string;
+  expiresAt?: number;
   createdAt: number;
-  updatedAt: number;
 }
 
 export interface User {
@@ -167,28 +197,107 @@ export interface User {
   roleKey: RoleKey;
   pinHash: string;
   pinSalt: string;
+  passwordHash?: string;
+  passwordSalt?: string;
   isActive: boolean;
+  lastLoginAt?: number;
   createdAt: number;
   createdBy: string;
+  archivedAt?: number;
 }
 
-export interface OverrideCeiling {
-  maxAmount: ScaledMoney;
-  maxDiscountPercent: number;
+export type ShiftStatus = 'open' | 'closing' | 'closed';
+
+export interface Shift {
+  id: string;
+  shiftNumber: number;
+  drawerId: string;
+  deviceId: string;
+  status: ShiftStatus;
+  openedBy: string;
+  openedAt: number;
+  openingBalance: ScaledMoney;
+  closedBy?: string;
+  closedOnBehalfOf?: string;
+  closedAt?: number;
+  countedCash?: ScaledMoney;
+  expectedCash?: ScaledMoney;
+  variance?: ScaledMoney;
+  varianceNote?: string;
+  recountCount: number;
+  revision: number;
+  overrideCountByUser: Record<string, number>;
 }
 
-export interface SecurityPolicySettings {
-  cartRemoveGraceSeconds: number;
-  blindCloseStrict: boolean;
-  varianceToleranceCents: ScaledMoney;
-  drawerFreeLimit: ScaledMoney;
-  drawerFreeShiftTotal: ScaledMoney;
-  overrideWarnPerShift: number;
-  overrideHardCapPerShift: number;
-  minShelfLifeDaysForRestock: number;
-  auditRetentionYears: number;
-  ceilings: Record<string, Record<'supervisor' | 'manager', OverrideCeiling>>;
+export type DrawerMovementKind =
+  | 'opening' | 'cash_sale' | 'cash_refund' | 'expense'
+  | 'cash_out' | 'cash_in' | 'safe_drop'
+  | 'shift_variance' | 'post_close_adjustment' | 'closing';
+
+export interface CashDrawerMovement {
+  id: string;
+  seq: number;
+  shiftId: string;
+  kind: DrawerMovementKind;
+  amount: ScaledMoney;
+  reasonCode?: string;
+  note?: string;
+  refType?: 'invoice' | 'credit_note' | 'expense' | 'purchase';
+  refId?: string;
+  userId: string;
+  approvedBy?: string;
+  overrideGrantId?: string;
+  createdAt: number;
 }
+
+export interface PurchaseInvoiceLine {
+  id: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+  bonusQuantity?: number;
+  unitCost: ScaledMoney;
+  taxRateBp: BasisPoints;
+  batchNumber?: string;
+  expiryDate?: string;
+}
+
+export interface PurchaseInvoice {
+  id: string;
+  number: string;
+  supplierId: string;
+  supplierInvoiceNumber?: string;
+  date: number;
+  lines: PurchaseInvoiceLine[];
+  subtotal: ScaledMoney;
+  taxTotal: ScaledMoney;
+  total: ScaledMoney;
+  paid: ScaledMoney;
+  paymentMethod: PaymentMethod;
+  status: 'draft' | 'posted' | 'reversed';
+  reversalOf?: string;
+  shiftId?: string;
+  postedBy: string;
+  createdAt: number;
+}
+
+export interface ProductBatch {
+  id: string;
+  productId: string;
+  batchNumber: string;
+  receivedAt: number;
+  expiryDate?: string;
+  quantityReceived: number;
+  quantityRemaining: number;
+  unitCost: ScaledMoney;
+  sourceType: 'purchase' | 'opening' | 'credit_note' | 'adjustment';
+  sourceId?: string;
+  status: 'active' | 'quarantine' | 'expired' | 'depleted';
+}
+
+export type AuditCategory =
+  | 'auth' | 'override' | 'sale' | 'refund' | 'void' | 'drawer' | 'shift'
+  | 'inventory' | 'purchase' | 'settings' | 'security' | 'backup' | 'tax';
 
 export interface AuditLogEntry {
   id: string;
@@ -200,39 +309,53 @@ export interface AuditLogEntry {
   deviceId: string;
   sessionId: string;
   actionKey: string;
-  category: string;
+  category: AuditCategory;
   severity: 'info' | 'warning' | 'critical';
-  result: 'success' | 'failure' | 'denied';
-  appVersion: string;
+  result: 'success' | 'denied' | 'failed' | 'cancelled';
   targetType?: string;
   targetId?: string;
-  details?: Record<string, unknown>;
+  shiftId?: string;
+  before?: Record<string, unknown>;
+  after?: Record<string, unknown>;
+  reason?: string;
+  approvedBy?: string;
+  selfApproved?: boolean;
+  overrideGrantId?: string;
+  appVersion: string;
   prevHash: string;
   hash: string;
 }
 
-export interface Shift {
-  id: string;
-  openedAt: number;
-  openedBy: string;
-  openingFloat: ScaledMoney;
-  closedAt?: number;
-  closedBy?: string;
-  expectedCash?: ScaledMoney;
-  countedCash?: ScaledMoney;
-  variance?: ScaledMoney;
-  status: 'open' | 'closed' | 'reopened';
+export interface OverrideSummaryRow {
+  label: string;
+  value: string;
 }
 
-export interface ProductBatch {
+export interface OverrideRequest {
   id: string;
-  productId: string;
-  batchNumber?: string;
-  receivedAt: number;
-  expiresAt?: number;
-  quantityReceived: number;
-  quantityRemaining: number;
-  unitCost: ScaledMoney;
+  actionKey: PermissionKey;
+  requesterId: string;
+  targetType: string;
+  targetId?: string;
+  summary: OverrideSummaryRow[];
+  status: 'pending' | 'granted' | 'denied' | 'cancelled' | 'expired';
+  approverId?: string;
+  selfApproved: boolean;
+  attempts: number;
+  createdAt: number;
+  resolvedAt?: number;
+  grantId?: string;
+}
+
+export interface OverrideGrant {
+  id: string;
+  requestId: string;
+  approverId: string;
+  actionKey: PermissionKey;
+  targetId?: string;
+  issuedAt: number;
+  expiresAt: number;
+  consumedAt?: number;
 }
 
 export interface CreditNoteLine {
@@ -276,3 +399,17 @@ export interface InvoiceLedgerFields {
   paymentReversalRef?: string;
   etaSubmitted?: boolean;
 }
+
+export interface SecurityPolicySettings {
+  cartRemoveGraceSeconds: number;
+  blindCloseStrict: boolean;
+  varianceToleranceCents: ScaledMoney;
+  drawerFreeLimit: ScaledMoney;
+  drawerFreeShiftTotal: ScaledMoney;
+  overrideWarnPerShift: number;
+  overrideHardCapPerShift: number;
+  minShelfLifeDaysForRestock: number;
+  auditRetentionYears: number;
+  ceilings: Record<string, Record<'supervisor' | 'manager', OverrideCeiling>>;
+}
+
