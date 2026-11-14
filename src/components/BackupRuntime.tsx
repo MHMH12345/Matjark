@@ -10,7 +10,6 @@ import {
   getLocalDateKey,
   getPreviousMonthCleanupSummary,
   removeCloudPendingBackup,
-  requestLocalBackupPermission,
   resolvePreviousMonthCleanup,
   saveCloudPendingBackup,
   setLastCloudCaptureAt,
@@ -125,10 +124,8 @@ export const BackupRuntime: React.FC = () => {
               const captureDue = !lastCaptureAt || now - lastCaptureAt >= intervalMs;
               const dayChanged = Boolean(lastDateKey && lastDateKey !== dateKey);
 
-              if (dayChanged && lastDateKey) {
-                const finalizedDay = await createBackupEnvelope(databaseRef.current, lastDateKey);
-                await saveCloudPendingBackup(finalizedDay);
-              }
+              // The previous date is already represented by its last captured or queued daily snapshot.
+              // Never label today's live database with yesterday's date after the app was closed overnight.
               if (captureDue || dayChanged) {
                 const envelope = await createBackupEnvelope(databaseRef.current, dateKey);
                 await saveCloudPendingBackup(envelope);
