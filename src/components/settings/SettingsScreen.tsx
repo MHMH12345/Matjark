@@ -50,17 +50,22 @@ export const SettingsScreen: React.FC = () => {
     updateSettings(formState);
   };
 
-  const handleExportBackup = () => {
-    exportDatabaseBackup({
-      products,
-      invoices,
-      customers,
-      suppliers,
-      expenses,
-      settings: formState,
-      version: 2,
-    });
-    showToast('تم تصدير النسخة الاحتياطية بنجاح إلى ملف JSON', 'success');
+  const handleExportBackup = async () => {
+    try {
+      await exportDatabaseBackup({
+        products,
+        invoices,
+        customers,
+        suppliers,
+        expenses,
+        settings: formState,
+        version: 3,
+      });
+      showToast('تم تصدير النسخة الاحتياطية بنجاح إلى ملف JSON', 'success');
+    } catch (error) {
+      console.error('Matjark backup export failed:', error);
+      showToast('تعذر إنشاء النسخة الاحتياطية', 'error');
+    }
   };
 
   const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
