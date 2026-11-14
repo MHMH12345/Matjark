@@ -21,7 +21,9 @@ import {
   INITIAL_PRODUCTS,
   INITIAL_SETTINGS,
   INITIAL_SUPPLIERS,
-  loadDatabase,
+  createDatabaseBackupSnapshot,
+  createInitialDatabase,
+  loadDatabaseAsync,
   saveDatabaseDebounced,
   saveDatabaseImmediate,
 } from '../utils/storage';
@@ -147,8 +149,27 @@ const normalizeRestoredDatabase = (source: AppDatabase): AppDatabase => {
 };
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentUser, can } = useAuth();
-  const [db, setDb] = useState<AppDatabase>(() => loadDatabase());
+  const [db, setDb] = useState<AppDatabase>(() => createInitialDatabase());
+  const [isDatabaseReady, setIsDatabaseReady] = useState(false);
   const [activeTab, setActiveTab] = useState<ActiveTab>('pos');
+
+  useEffect(() => {
+    let isActive = true;
+    void loadDatabaseAsync()
+      .then((loadedDatabase) => {
+        if (!isActive) return;
+        setDb(loadedDatabase);
+        setIsDatabaseReady(true);
+      })
+      .catch((error) => {
+        console.error('Matjark database initialization failed:', error);
+        if (isActive) setIsDatabaseReady(true);
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [snackbars, setSnackbars] = useState<SnackbarMessage[]>([]);
 
@@ -725,7 +746,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const backupToGoogleDrive = useCallback(async (): Promise<boolean> => {
     try {
-      const payload = JSON.stringify(db, null, 2);
+      const backupSnapshot = await createDatabaseBackupSnapshot(db);
+      const payload = JSON.stringify(backupSnapshot, null, 2);
       if (typeof window !== 'undefined') localStorage.setItem(GOOGLE_DRIVE_STORAGE_KEY, payload);
       const now = Date.now();
       setDb((prev) => {
@@ -794,7 +816,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     ]
   );
 
-  return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
+  return (
+    <StoreContext.Provider value={value}>
+      {isDatabaseReady ? children : (
+        <div
+          className="min-h-screen w-screen flex items-center justify-center text-sm text-[var(--md-sys-color-on-surface-variant)]"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+          dir="rtl"
+        >
+          جارٍ تحميل بيانات المتجر...
+        </div>
+      )}
+    </StoreContext.Provider>
+  );
 };
 
 export const useStore = (): StoreContextType => {
