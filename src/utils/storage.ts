@@ -423,117 +423,360 @@ export const INITIAL_INVOICES: Invoice[] = [
   },
 ];
 
+const APP_DATABASE_NAME = 'matjark_app_database';
+const APP_DATABASE_VERSION = 1;
+const APP_DATABASE_STORE = 'app_state';
+const PRODUCT_IMAGES_STORE = 'product_images';
+
+type StoredProductImage = {
+  productId: string;
+  blob: Blob;
+};
+
+type PreparedDatabase = {
+  storedDatabase: AppDatabase;
+  runtimeDatabase: AppDatabase;
+  imageWrites: StoredProductImage[];
+  managedImageIds: Set<string>;
+};
+
 let saveDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+let appDatabasePromise: Promise<IDBDatabase> | null = null;
+let storageBackend: 'indexeddb' | 'localstorage' = 'indexeddb';
+let pendingDatabaseSave: Promise<void> = Promise.resolve();
+const managedProductImages = new Map<string, { sourceUrl: string; objectUrl: string }>();
 
-export function loadDatabase(): AppDatabase {
-  if (typeof window === 'undefined') {
-    return ensureDatabaseSequences({
-      products: INITIAL_PRODUCTS,
-      invoices: INITIAL_INVOICES,
-      customers: INITIAL_CUSTOMERS,
-      suppliers: INITIAL_SUPPLIERS,
-      expenses: INITIAL_EXPENSES,
-      settings: INITIAL_SETTINGS,
-      version: 3,
-    });
+export function createInitialDatabase(): AppDatabase {
+  return ensureDatabaseSequences({
+    products: INITIAL_PRODUCTS,
+    invoices: INITIAL_INVOICES,
+    customers: INITIAL_CUSTOMERS,
+    suppliers: INITIAL_SUPPLIERS,
+    expenses: INITIAL_EXPENSES,
+    settings: INITIAL_SETTINGS,
+    version: 3,
+  });
+}
+
+function openAppDatabase(): Promise<IDBDatabase> {
+  if (typeof indexedDB === 'undefined') {
+    return Promise.reject(new Error('IndexedDB is not available in this browser.'));
   }
+  if (appDatabasePromise) return appDatabasePromise;
 
+  appDatabasePromise = new Promise((resolve, reject) => {
+    const request = indexedDB.open(APP_DATABASE_NAME, APP_DATABASE_VERSION);
+    request.onupgradeneeded = () => {
+      const database = request.result;
+      if (!database.objectStoreNames.contains(APP_DATABASE_STORE)) {
+        database.createObjectStore(APP_DATABASE_STORE);
+      }
+      if (!database.objectStoreNames.contains(PRODUCT_IMAGES_STORE)) {
+        database.createObjectStore(PRODUCT_IMAGES_STORE, { keyPath: 'productId' });
+      }
+    };
+    request.onsuccess = () => {
+      const database = request.result;
+      database.onversionchange = () => database.close();
+      resolve(database);
+    };
+    request.onerror = () => {
+      appDatabasePromise = null;
+      reject(request.error ?? new Error('Unable to open the application database.'));
+    };
+    request.onblocked = () => {
+      appDatabasePromise = null;
+      reject(new Error('Application database upgrade is blocked by another tab.'));
+    };
+  });
+
+  return appDatabasePromise;
+}
+
+function requestResult<T>(request: IDBRequest<T>): Promise<T> {
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error ?? new Error('IndexedDB request failed.'));
+  });
+}
+
+function transactionResult(transaction: IDBTransaction): Promise<void> {
+  return new Promise((resolve, reject) => {
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error ?? new Error('IndexedDB transaction failed.'));
+    transaction.onabort = () => reject(transaction.error ?? new Error('IndexedDB transaction was aborted.'));
+  });
+}
+
+function normalizeDatabase(source: Partial<AppDatabase> | null | undefined): AppDatabase {
+  const parsed = source ?? {};
+  const settings = parsed.settings ?? INITIAL_SETTINGS;
+  return ensureDatabaseSequences({
+    products: Array.isArray(parsed.products) && parsed.products.length > 0 ? parsed.products : INITIAL_PRODUCTS,
+    invoices: Array.isArray(parsed.invoices) ? parsed.invoices : INITIAL_INVOICES,
+    customers: Array.isArray(parsed.customers) ? parsed.customers : INITIAL_CUSTOMERS,
+    suppliers: Array.isArray(parsed.suppliers) ? parsed.suppliers : INITIAL_SUPPLIERS,
+    expenses: Array.isArray(parsed.expenses) ? parsed.expenses : INITIAL_EXPENSES,
+    settings: {
+      ...INITIAL_SETTINGS,
+      ...settings,
+      security: { ...DEFAULT_SECURITY_POLICY, ...(settings.security || {}) },
+      enableTax: settings.pricesIncludeTax === undefined
+        ? true
+        : (settings.enableTax ?? INITIAL_SETTINGS.enableTax),
+      pricesIncludeTax: true,
+      currency: 'ج.م',
+      currencyEn: 'EGP',
+    },
+    version: 3,
+    nextInvoiceSequence: parsed.nextInvoiceSequence,
+    nextExpenseSequence: parsed.nextExpenseSequence,
+  });
+}
+
+function readLegacyDatabase(): AppDatabase {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      const db = ensureDatabaseSequences({
-        products: INITIAL_PRODUCTS,
-        invoices: INITIAL_INVOICES,
-        customers: INITIAL_CUSTOMERS,
-        suppliers: INITIAL_SUPPLIERS,
-        expenses: INITIAL_EXPENSES,
-        settings: INITIAL_SETTINGS,
-        version: 3,
-      });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-      return db;
-    }
-
-    const parsed = JSON.parse(raw) as AppDatabase;
-    const migrated = ensureDatabaseSequences({
-      products: Array.isArray(parsed.products) && parsed.products.length > 0 ? parsed.products : INITIAL_PRODUCTS,
-      invoices: Array.isArray(parsed.invoices) ? parsed.invoices : INITIAL_INVOICES,
-      customers: Array.isArray(parsed.customers) ? parsed.customers : INITIAL_CUSTOMERS,
-      suppliers: Array.isArray(parsed.suppliers) ? parsed.suppliers : INITIAL_SUPPLIERS,
-      expenses: Array.isArray(parsed.expenses) ? parsed.expenses : INITIAL_EXPENSES,
-      settings: {
-        ...INITIAL_SETTINGS,
-        ...(parsed.settings || {}),
-        security: { ...DEFAULT_SECURITY_POLICY, ...(parsed.settings?.security || {}) },
-        // Older databases predate the inclusive-price option; migrate them to the agreed POS model.
-        enableTax: parsed.settings?.pricesIncludeTax === undefined
-          ? true
-          : (parsed.settings.enableTax ?? INITIAL_SETTINGS.enableTax),
-        pricesIncludeTax: true,
-        currency: 'ج.م',
-        currencyEn: 'EGP',
-      },
-      version: 3,
-      nextInvoiceSequence: parsed.nextInvoiceSequence,
-      nextExpenseSequence: parsed.nextExpenseSequence,
-    });
-    if ((parsed.version ?? 1) < 3) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-    }
-    return migrated;
-  } catch (err) {
-    console.error('Failed to parse database from localStorage:', err);
-    return ensureDatabaseSequences({
-      products: INITIAL_PRODUCTS,
-      invoices: INITIAL_INVOICES,
-      customers: INITIAL_CUSTOMERS,
-      suppliers: INITIAL_SUPPLIERS,
-      expenses: INITIAL_EXPENSES,
-      settings: INITIAL_SETTINGS,
-      version: 3,
-    });
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    return raw ? normalizeDatabase(JSON.parse(raw) as AppDatabase) : createInitialDatabase();
+  } catch (error) {
+    console.error('Failed to read the legacy Matjark database:', error);
+    return createInitialDatabase();
   }
 }
 
-export function saveDatabaseDebounced(db: AppDatabase): void {
-  if (typeof window === 'undefined') return;
+function createManagedObjectUrl(productId: string, sourceUrl: string, blob: Blob): string {
+  const previous = managedProductImages.get(productId);
+  if (previous && previous.objectUrl !== sourceUrl) {
+    URL.revokeObjectURL(previous.objectUrl);
+  }
+  const objectUrl = URL.createObjectURL(blob);
+  managedProductImages.set(productId, { sourceUrl, objectUrl });
+  return objectUrl;
+}
 
-  if (saveDebounceTimer) {
-    clearTimeout(saveDebounceTimer);
+async function prepareDatabaseForStorage(database: AppDatabase): Promise<PreparedDatabase> {
+  const imageWrites: StoredProductImage[] = [];
+  const managedImageIds = new Set<string>();
+  const storedProducts: Product[] = [];
+  const runtimeProducts: Product[] = [];
+  const liveProductIds = new Set(database.products.map((product) => product.id));
+
+  for (const product of database.products) {
+    const imageUrl = product.imageUrl;
+    const previous = managedProductImages.get(product.id);
+
+    if (imageUrl && (imageUrl.startsWith('data:') || imageUrl.startsWith('blob:'))) {
+      managedImageIds.add(product.id);
+      if (previous?.sourceUrl === imageUrl) {
+        const storedProduct = { ...product };
+        delete storedProduct.imageUrl;
+        storedProducts.push(storedProduct);
+        runtimeProducts.push({ ...product, imageUrl: previous.objectUrl });
+        continue;
+      }
+
+      try {
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error('Unable to read the product image.');
+        const blob = await response.blob();
+        const objectUrl = createManagedObjectUrl(product.id, imageUrl, blob);
+        imageWrites.push({ productId: product.id, blob });
+        const storedProduct = { ...product };
+        delete storedProduct.imageUrl;
+        storedProducts.push(storedProduct);
+        runtimeProducts.push({ ...product, imageUrl: objectUrl });
+        continue;
+      } catch (error) {
+        console.warn('Product image could not be moved to image storage:', product.id, error);
+      }
+    }
+
+    if (previous) {
+      URL.revokeObjectURL(previous.objectUrl);
+      managedProductImages.delete(product.id);
+    }
+    storedProducts.push(product);
+    runtimeProducts.push(product);
   }
 
-  saveDebounceTimer = setTimeout(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-    } catch (e) {
-      console.warn('Storage quota warning or write failure:', e);
+  for (const [productId, image] of managedProductImages) {
+    if (!liveProductIds.has(productId)) {
+      URL.revokeObjectURL(image.objectUrl);
+      managedProductImages.delete(productId);
     }
+  }
+
+  return {
+    storedDatabase: { ...database, products: storedProducts },
+    runtimeDatabase: { ...database, products: runtimeProducts },
+    imageWrites,
+    managedImageIds,
+  };
+}
+
+async function writeDatabaseToIndexedDB(database: AppDatabase): Promise<AppDatabase> {
+  const prepared = await prepareDatabaseForStorage(database);
+  const appDatabase = await openAppDatabase();
+  const transaction = appDatabase.transaction(
+    [APP_DATABASE_STORE, PRODUCT_IMAGES_STORE],
+    'readwrite'
+  );
+  const done = transactionResult(transaction);
+  const appStore = transaction.objectStore(APP_DATABASE_STORE);
+  const imagesStore = transaction.objectStore(PRODUCT_IMAGES_STORE);
+
+  appStore.put(prepared.storedDatabase, 'current');
+  prepared.imageWrites.forEach((image) => imagesStore.put(image));
+
+  const existingImageKeysRequest = imagesStore.getAllKeys();
+  existingImageKeysRequest.onsuccess = () => {
+    for (const key of existingImageKeysRequest.result) {
+      if (typeof key === 'string' && !prepared.managedImageIds.has(key)) {
+        imagesStore.delete(key);
+      }
+    }
+  };
+
+  await done;
+  return prepared.runtimeDatabase;
+}
+
+function hydrateDatabaseImages(database: AppDatabase, images: StoredProductImage[]): AppDatabase {
+  const imagesByProductId = new Map(images.map((image) => [image.productId, image.blob]));
+  return {
+    ...database,
+    products: database.products.map((product) => {
+      const blob = imagesByProductId.get(product.id);
+      if (!blob) return product;
+      const objectUrl = URL.createObjectURL(blob);
+      managedProductImages.set(product.id, { sourceUrl: objectUrl, objectUrl });
+      return { ...product, imageUrl: objectUrl };
+    }),
+  };
+}
+
+export async function loadDatabaseAsync(): Promise<AppDatabase> {
+  if (typeof window === 'undefined') return createInitialDatabase();
+
+  try {
+    const database = await openAppDatabase();
+    const transaction = database.transaction(
+      [APP_DATABASE_STORE, PRODUCT_IMAGES_STORE],
+      'readonly'
+    );
+    const done = transactionResult(transaction);
+    const storedRequest = requestResult<AppDatabase | undefined>(
+      transaction.objectStore(APP_DATABASE_STORE).get('current')
+    );
+    const imagesRequest = requestResult<StoredProductImage[]>(
+      transaction.objectStore(PRODUCT_IMAGES_STORE).getAll()
+    );
+    const [storedDatabase, images] = await Promise.all([storedRequest, imagesRequest]);
+    await done;
+    storageBackend = 'indexeddb';
+
+    if (storedDatabase) {
+      const normalized = normalizeDatabase(storedDatabase);
+      const hydrated = hydrateDatabaseImages(normalized, images);
+      const hasLegacyInlineImages = hydrated.products.some(
+        (product) => product.imageUrl?.startsWith('data:')
+      );
+      return hasLegacyInlineImages
+        ? writeDatabaseToIndexedDB(hydrated)
+        : hydrated;
+    }
+
+    // One-time migration: keep the old LocalStorage copy until the IndexedDB write succeeds.
+    const legacy = readLegacyDatabase();
+    const migrated = await writeDatabaseToIndexedDB(legacy);
+    window.localStorage.removeItem(STORAGE_KEY);
+    return migrated;
+  } catch (error) {
+    // Older or restricted browsers can continue using the legacy storage path.
+    console.warn('IndexedDB is unavailable; using the legacy LocalStorage database.', error);
+    storageBackend = 'localstorage';
+    const legacy = readLegacyDatabase();
+    if (!window.localStorage.getItem(STORAGE_KEY)) {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(legacy));
+      } catch (storageError) {
+        console.error('Unable to initialize LocalStorage fallback:', storageError);
+      }
+    }
+    return legacy;
+  }
+}
+
+async function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error ?? new Error('Unable to read image data.'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+export async function createDatabaseBackupSnapshot(database: AppDatabase): Promise<AppDatabase> {
+  const products = await Promise.all(database.products.map(async (product) => {
+    const imageUrl = product.imageUrl;
+    if (!imageUrl || !imageUrl.startsWith('blob:')) return product;
+    try {
+      const response = await fetch(imageUrl);
+      if (!response.ok) return product;
+      return { ...product, imageUrl: await blobToDataUrl(await response.blob()) };
+    } catch (error) {
+      console.warn('Unable to include a product image in the backup:', product.id, error);
+      return product;
+    }
+  }));
+  return { ...database, products };
+}
+
+function enqueueDatabaseSave(database: AppDatabase): void {
+  pendingDatabaseSave = pendingDatabaseSave
+    .catch(() => undefined)
+    .then(async () => {
+      if (storageBackend === 'indexeddb') {
+        await writeDatabaseToIndexedDB(database);
+        return;
+      }
+      const snapshot = await createDatabaseBackupSnapshot(database);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+    });
+  pendingDatabaseSave.catch((error) => {
+    console.error('Matjark database save failed:', error);
+  });
+}
+
+export function saveDatabaseDebounced(database: AppDatabase): void {
+  if (typeof window === 'undefined') return;
+  if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+  saveDebounceTimer = setTimeout(() => {
+    saveDebounceTimer = null;
+    enqueueDatabaseSave(database);
   }, 300);
 }
 
-export function saveDatabaseImmediate(db: AppDatabase): void {
+export function saveDatabaseImmediate(database: AppDatabase): void {
   if (typeof window === 'undefined') return;
   if (saveDebounceTimer) {
     clearTimeout(saveDebounceTimer);
     saveDebounceTimer = null;
   }
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-  } catch (e) {
-    console.error('Critical save failed:', e);
-  }
+  enqueueDatabaseSave(database);
 }
 
-export function exportDatabaseBackup(db: AppDatabase): void {
-  const jsonStr = JSON.stringify(db, null, 2);
+export async function exportDatabaseBackup(database: AppDatabase): Promise<void> {
+  const snapshot = await createDatabaseBackupSnapshot(database);
+  const jsonStr = JSON.stringify(snapshot, null, 2);
   const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   const dateStr = new Date().toISOString().slice(0, 10);
   link.href = url;
-  link.download = `matjark_backup_${dateStr}.json`;
+  link.download = 'matjark_backup_' + dateStr + '.json';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
