@@ -37,7 +37,8 @@
     "esbuild": "^0.28.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.21.0",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "@vitejs/plugin-basic-ssl": "^2.3.0"
   },
   "overrides": {
     "esbuild": "^0.28.0"
