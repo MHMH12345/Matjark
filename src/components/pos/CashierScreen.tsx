@@ -118,6 +118,16 @@ type BarcodeDetectorConstructor = {
   getSupportedFormats?: () => Promise<string[]>;
 };
 
+type BarcodeKeyboardCapture = {
+  value: string;
+  startedAt: number;
+  lastAt: number;
+  input: HTMLInputElement | HTMLTextAreaElement | null;
+  originalValue: string;
+  selectionStart: number;
+  selectionEnd: number;
+};
+
 const loadHeldSaleStorage = (): HeldSaleStorage => {
   const empty: HeldSaleStorage = { sales: [], progressTotal: 0, progressValue: 0, nextSerial: 1, activeId: null };
   if (typeof window === 'undefined') return empty;
@@ -273,6 +283,102 @@ export const CashierScreen: React.FC = () => {
     }
     setBarcodeQuery('');
   }, [products, addByBarcode, showSnackbar]);
+
+  // USB/Bluetooth barcode readers act like keyboards and usually finish with Enter or Tab.
+  // Capture only fast, scanner-like key bursts so ordinary typing remains unaffected.
+  useEffect(() => {
+    let capture: BarcodeKeyboardCapture | null = null;
+    const maxInterKeyDelay = 70;
+    const minBarcodeLength = 4;
+    const maxScanDuration = 1500;
+
+    const restoreInputValue = (scan: BarcodeKeyboardCapture) => {
+      const input = scan.input;
+      if (!input || !input.isConnected) return;
+
+      const expectedValue =
+        scan.originalValue.slice(0, scan.selectionStart) +
+        scan.value +
+        scan.originalValue.slice(scan.selectionEnd);
+      if (input.value !== expectedValue) return;
+
+      const prototype = input instanceof HTMLTextAreaElement
+        ? HTMLTextAreaElement.prototype
+        : HTMLInputElement.prototype;
+      const valueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set;
+      if (valueSetter) valueSetter.call(input, scan.originalValue);
+      else input.value = scan.originalValue;
+
+      try {
+        input.setSelectionRange(scan.selectionStart, scan.selectionEnd);
+      } catch {
+        // Number inputs do not support selection ranges.
+      }
+      input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    };
+
+    const handleScannerKeyDown = (event: KeyboardEvent) => {
+      if (event.isComposing || event.ctrlKey || event.altKey || event.metaKey) {
+        capture = null;
+        return;
+      }
+
+      if (event.key === 'Enter' || event.key === 'Tab') {
+        const completedScan = capture;
+        capture = null;
+        if (!completedScan) return;
+
+        const code = completedScan.value.trim();
+        const duration = performance.now() - completedScan.startedAt;
+        if (code.length < minBarcodeLength || duration > maxScanDuration) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        restoreInputValue(completedScan);
+        processBarcode(code);
+        return;
+      }
+
+      if (event.key === 'Shift' || event.key === 'CapsLock') return;
+      if (event.key.length !== 1 || event.repeat) {
+        capture = null;
+        return;
+      }
+
+      const now = performance.now();
+      const eventPath = event.composedPath();
+      const input = eventPath.find((target): target is HTMLInputElement | HTMLTextAreaElement =>
+        target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement
+      ) ?? null;
+
+      if (input?.type === 'password' || input?.readOnly || input?.disabled) {
+        capture = null;
+        return;
+      }
+
+      if (capture && now - capture.lastAt <= maxInterKeyDelay) {
+        capture.value += event.key;
+        capture.lastAt = now;
+        return;
+      }
+
+      const selectionStart = input?.selectionStart ?? input?.value.length ?? 0;
+      const selectionEnd = input?.selectionEnd ?? selectionStart;
+      capture = {
+        value: event.key,
+        startedAt: now,
+        lastAt: now,
+        input,
+        originalValue: input?.value ?? '',
+        selectionStart,
+        selectionEnd,
+      };
+    };
+
+    document.addEventListener('keydown', handleScannerKeyDown, true);
+    return () => document.removeEventListener('keydown', handleScannerKeyDown, true);
+  }, [processBarcode]);
 
   const commitHoldStorage = useCallback((next: HeldSaleStorage) => {
     holdStorageRef.current = next;
