@@ -568,7 +568,7 @@ async function prepareDatabaseForStorage(database: AppDatabase): Promise<Prepare
 
     if (imageUrl && (imageUrl.startsWith('data:') || imageUrl.startsWith('blob:'))) {
       managedImageIds.add(product.id);
-      if (previous?.sourceUrl === imageUrl) {
+      if (previous && (previous.sourceUrl === imageUrl || previous.objectUrl === imageUrl)) {
         const storedProduct = { ...product };
         delete storedProduct.imageUrl;
         storedProducts.push(storedProduct);
