@@ -77,6 +77,7 @@ interface StoreContextType {
   suppliers: Supplier[];
   expenses: Expense[];
   settings: StoreSettings;
+  databaseSnapshot: AppDatabase;
   isCartTaxEnabled: boolean;
   setIsCartTaxEnabled: (enabled: boolean) => void;
   cart: CartItem[];
@@ -112,8 +113,6 @@ interface StoreContextType {
   loadBenchmarkStressTest: (count?: number) => void;
   resetToSampleData: () => void;
   restoreFromDatabase: (db: AppDatabase) => void;
-  backupToGoogleDrive: () => Promise<boolean>;
-  restoreFromGoogleDrive: () => Promise<boolean>;
 }
 
 const StoreContext = createContext<StoreContextType | null>(null);
@@ -761,8 +760,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       updateCartQuantity, updateCartDiscount, removeFromCart, clearCart, replaceCart, checkoutInvoice,
       addProduct, updateProduct, deleteProduct, bulkAddProducts, refundInvoice, addExpense,
       deleteExpense, addCustomer, updateCustomer, addSupplier, updateSupplier, updateSettings,
-      loadBenchmarkStressTest, resetToSampleData, restoreFromDatabase, backupToGoogleDrive,
-      restoreFromGoogleDrive,
+      loadBenchmarkStressTest, resetToSampleData, restoreFromDatabase,
     ]
   );
 
