@@ -43,16 +43,42 @@ const toSvg = (Icon: React.ElementType, size = 'w-4 h-4') =>
 const toIconSvg = (Icon: React.ElementType, size = 14) =>
   renderToStaticMarkup(<Icon width={size} height={size} strokeWidth={2} />);
 
-const materialHoldIcon = (name: 'pause' | 'play_arrow' | 'add' | 'check') => (
-  <span
-    className={name === 'check'
-      ? 'matjark-hold-material-icon matjark-hold-check-symbol'
-      : 'matjark-hold-material-icon'}
-    aria-hidden="true"
-  >
-    {name}
-  </span>
-);
+const materialHoldIcon = (name: 'pause' | 'play_arrow' | 'add' | 'check') => {
+  const isCheck = name === 'check';
+  const iconSize = isCheck ? 22 : 20;
+
+  return (
+    <span
+      className={isCheck
+        ? 'matjark-hold-material-icon matjark-hold-check-symbol'
+        : 'matjark-hold-material-icon'}
+      aria-hidden="true"
+      style={{
+        display: 'inline-flex',
+        flex: `0 0 ${iconSize + 2}px`,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: `${iconSize + 2}px`,
+        height: `${iconSize + 2}px`,
+        overflow: 'hidden',
+        fontFamily: '"Material Symbols Rounded"',
+        fontSize: `${iconSize}px`,
+        fontStyle: 'normal',
+        fontWeight: 500,
+        lineHeight: 1,
+        letterSpacing: 'normal',
+        textTransform: 'none',
+        whiteSpace: 'nowrap',
+        direction: 'ltr',
+        WebkitFontSmoothing: 'antialiased',
+        fontFeatureSettings: '"liga" 1',
+        fontVariationSettings: '"FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24',
+      }}
+    >
+      {name}
+    </span>
+  );
+};
 
 const MCard = MaterialCard as React.ComponentType<any>;
 const MBadge = MaterialBadge as React.ComponentType<any>;
