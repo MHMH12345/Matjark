@@ -495,7 +495,7 @@ export const SettingsScreen: React.FC = () => {
 
           <div className="matjark-settings-toggle"><MuiSwitch checked={formState.enableAudioBeep} onChange={(event) => setFormState({ ...formState, enableAudioBeep: event.target.checked })} label="التنبيه الصوتي عند مسح الباركود" /></div>
           <div className="matjark-settings-actions">
-            <MuiButton type="submit" variant="filled" color="primary" size="small" startIcon={<Save size={17} />} className="matjark-settings-button">حفظ إعدادات المتجر</MuiButton>
+            <MuiButton type="submit" variant="contained" color="primary" size="small" startIcon={<Save size={17} />} className="matjark-settings-button">حفظ إعدادات المتجر</MuiButton>
           </div>
           </MuiCard>
         </form>
@@ -530,7 +530,7 @@ export const SettingsScreen: React.FC = () => {
             <div className="matjark-settings-info-field"><span>آخر نسخة محلية ناجحة</span><strong>{formatDateTime(backupStatus.lastLocalBackupAt)}</strong></div>
           </div>
           <div className="matjark-settings-actions">
-            <MuiButton type="button" variant="filled" color="primary" size="small" startIcon={<Folder size={17} />} onClick={() => void handleLocalDirectory()} className="matjark-settings-button">اختيار مكان الحفظ</MuiButton>
+            <MuiButton type="button" variant="contained" color="primary" size="small" startIcon={<Folder size={17} />} onClick={() => void handleLocalDirectory()} className="matjark-settings-button">اختيار مكان الحفظ</MuiButton>
             {backupStatus.localState === 'permission-required' && (
               <MuiButton type="button" variant="outlined" color="primary" size="small" startIcon={<LockKeyhole size={17} />} onClick={() => void handleLocalPermission()} className="matjark-settings-button">السماح باستمرار النسخ</MuiButton>
             )}
@@ -583,7 +583,7 @@ export const SettingsScreen: React.FC = () => {
           <div className="matjark-settings-actions">
             <div className="matjark-settings-toggle"><MuiSwitch checked={cloudEnabled} onChange={(event) => updateSettings({ googleDriveAutoSyncEnabled: event.target.checked })} label="تفعيل المزامنة السحابية التلقائية" /></div>
             {!driveStatus?.connected ? (
-              <MuiButton type="button" variant="filled" color="primary" size="small" startIcon={<Cloud size={17} />} onClick={handleConnectDrive} disabled={!driveStatus?.configured} className="matjark-settings-button">ربط حساب Google</MuiButton>
+              <MuiButton type="button" variant="contained" color="primary" size="small" startIcon={<Cloud size={17} />} onClick={handleConnectDrive} disabled={!driveStatus?.configured} className="matjark-settings-button">ربط حساب Google</MuiButton>
             ) : (
               <MuiButton type="button" variant="outlined" color="primary" size="small" startIcon={<CloudOff size={17} />} onClick={handleDisconnectDrive} disabled={working} className="matjark-settings-button">فصل الحساب</MuiButton>
             )}
@@ -621,7 +621,7 @@ export const SettingsScreen: React.FC = () => {
         </div>
         <MuiCard className="matjark-settings-card" variant="outlined">
           <div className="matjark-settings-actions">
-            <MuiButton type="button" variant="filled" color="primary" size="small" startIcon={<Download size={17} />} onClick={() => void handleExportBackup()} disabled={working} className="matjark-settings-button">تنزيل نسخة احتياطية</MuiButton>
+            <MuiButton type="button" variant="contained" color="primary" size="small" startIcon={<Download size={17} />} onClick={() => void handleExportBackup()} disabled={working} className="matjark-settings-button">تنزيل نسخة احتياطية</MuiButton>
             <MuiButton type="button" variant="outlined" color="primary" size="small" startIcon={<Upload size={17} />} onClick={() => backupInputRef.current?.click()} disabled={working} className="matjark-settings-button">استيراد نسخة محفوظة</MuiButton>
             <input ref={backupInputRef} className="matjark-settings-hidden-input" type="file" accept=".json,application/json" onChange={(event) => void handleImportFile(event)} />
           </div>
@@ -641,7 +641,7 @@ export const SettingsScreen: React.FC = () => {
         actions={
           <>
             <MuiButton type="button" variant="text" color="primary" size="small" onClick={() => setConfirmation(null)}>إلغاء</MuiButton>
-            <MuiButton type="button" variant={confirmation?.tone === 'error' ? 'tonal' : 'filled'} color={confirmation?.tone === 'error' ? 'error' : 'primary'} size="small" onClick={() => void runConfirmation()}>{confirmation?.confirmLabel || 'تأكيد'}</MuiButton>
+            <MuiButton type="button" variant={confirmation?.tone === 'error' ? 'tonal' : 'contained'} color={confirmation?.tone === 'error' ? 'error' : 'primary'} size="small" onClick={() => void runConfirmation()}>{confirmation?.confirmLabel || 'تأكيد'}</MuiButton>
           </>
         }
       >
