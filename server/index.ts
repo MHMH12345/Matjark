@@ -163,6 +163,7 @@ async function getAccessToken(): Promise<string> {
   });
   const result = await response.json() as {
     access_token?: string;
+    expires_in?: number;
     error_description?: string;
     error?: string;
   };
