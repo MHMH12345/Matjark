@@ -4155,3 +4155,43 @@ html:not(.dark) .pos-snackbar-box {
     padding: 13px !important;
   }
 }
+
+
+/* Monthly backup review uses the Material 3 Dialog and Card components. */
+.matjark-backup-cleanup-content {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.matjark-backup-cleanup-content > p,
+.matjark-backup-cleanup-content > small {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.matjark-backup-cleanup-details {
+  width: 100%;
+  max-width: 100%;
+}
+
+.matjark-backup-cleanup-details::part(content) {
+  padding: 12px !important;
+}
+
+.matjark-backup-cleanup-details .matjark-backup-confirm__details {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+@media (max-width: 700px) {
+  .matjark-backup-cleanup-details .matjark-backup-confirm__details {
+    grid-template-columns: 1fr;
+  }
+}
