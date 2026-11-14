@@ -1,5 +1,5 @@
 import type { AuditLogEntry } from '../types';
-import { addAuditEntry, readAuditEntries, readLatestAuditEntry } from '../storage/idb';
+import { addAuditEntry, readAuditEntries, readLatestAuditEntry, replaceAuditEntries } from '../storage/idb';
 
 export type AuditEntryInput = Omit<AuditLogEntry, 'id' | 'seq' | 'createdAt' | 'prevHash' | 'hash'> & {
   createdAt?: number;
@@ -38,7 +38,6 @@ function makeId(): string {
 }
 
 export async function appendAuditEntry(input: AuditEntryInput): Promise<AuditLogEntry> {
-  // A duplicate sequence means another tab appended between the read and add; retry from the latest row.
   for (let attempt = 0; attempt < 8; attempt += 1) {
     const previous = await readLatestAuditEntry();
     const prevHash = previous?.hash ?? GENESIS_HASH;
@@ -62,12 +61,14 @@ export async function appendAuditEntry(input: AuditEntryInput): Promise<AuditLog
   throw new Error('Unable to append an audit entry after concurrent writes.');
 }
 
-export async function verifyAuditChain(): Promise<{ valid: boolean; checked: number; error?: string }> {
-  const entries = await readAuditEntries();
+export async function verifyAuditEntries(
+  entries: AuditLogEntry[]
+): Promise<{ valid: boolean; checked: number; error?: string }> {
+  const orderedEntries = entries.slice().sort((a, b) => a.seq - b.seq);
   let previousHash = GENESIS_HASH;
   let expectedSeq = 1;
 
-  for (const entry of entries) {
+  for (const entry of orderedEntries) {
     if (entry.seq !== expectedSeq) {
       return { valid: false, checked: expectedSeq - 1, error: 'تسلسل السجل يحتوي على فجوة عند رقم ' + expectedSeq };
     }
@@ -82,9 +83,21 @@ export async function verifyAuditChain(): Promise<{ valid: boolean; checked: num
     previousHash = hash;
     expectedSeq += 1;
   }
-  return { valid: true, checked: entries.length };
+  return { valid: true, checked: orderedEntries.length };
+}
+
+export async function verifyAuditChain(): Promise<{ valid: boolean; checked: number; error?: string }> {
+  return verifyAuditEntries(await readAuditEntries());
 }
 
 export async function getAuditLog(): Promise<AuditLogEntry[]> {
   return readAuditEntries();
+}
+
+export async function restoreAuditLog(entries: AuditLogEntry[]): Promise<void> {
+  const validation = await verifyAuditEntries(entries);
+  if (!validation.valid) {
+    throw new Error(validation.error ?? 'سلسلة سجل التدقيق داخل النسخة الاحتياطية غير سليمة.');
+  }
+  await replaceAuditEntries(entries.slice().sort((a, b) => a.seq - b.seq));
 }
