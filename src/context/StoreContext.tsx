@@ -744,66 +744,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     [showToast]
   );
 
-  const backupToGoogleDrive = useCallback(async (): Promise<boolean> => {
-    try {
-      const backupSnapshot = await createDatabaseBackupSnapshot(db);
-      const payload = JSON.stringify(backupSnapshot, null, 2);
-      if (typeof window !== 'undefined') localStorage.setItem(GOOGLE_DRIVE_STORAGE_KEY, payload);
-      const now = Date.now();
-      setDb((prev) => {
-        const next = {
-          ...prev,
-          settings: { ...prev.settings, googleDriveConnected: true, lastGoogleDriveBackup: now },
-        };
-        saveDatabaseImmediate(next);
-        return next;
-      });
-      soundService.playSuccess();
-      showToast('تم حفظ النسخة الاحتياطية على Google Drive', 'success');
-      return true;
-    } catch (e) {
-      soundService.playError();
-      showToast('فشل الحفظ على Google Drive', 'error');
-      return false;
-    }
-  }, [db, showToast]);
-
-  const restoreFromGoogleDrive = useCallback(async (): Promise<boolean> => {
-    try {
-      if (typeof window === 'undefined') return false;
-      const raw = localStorage.getItem(GOOGLE_DRIVE_STORAGE_KEY);
-      if (!raw) {
-        showToast('لا توجد نسخة محفوظة على Google Drive', 'warning');
-        return false;
-      }
-      const parsed = JSON.parse(raw);
-      if (!parsed.products || !Array.isArray(parsed.products)) {
-        showToast('بيانات Google Drive غير صالحة', 'error');
-        return false;
-      }
-      const restoredDb = normalizeRestoredDatabase(parsed as AppDatabase);
-      setDb(restoredDb);
-      saveDatabaseImmediate(restoredDb);
-      setCart([]);
-      setIsCartTaxEnabled(restoredDb.settings.enableTax);
-      showToast('تمت الاستعادة من Google Drive بنجاح!', 'success');
-      return true;
-    } catch (e) {
-      showToast('خطأ أثناء الاستعادة من Google Drive', 'error');
-      return false;
-    }
-  }, [showToast]);
-
   const value = useMemo(
     () => ({
       currentUser, can, activeTab, setActiveTab, theme, toggleTheme, snackbars, showToast, dismissToast, formatCurrency,
       products: db.products, categories, barcodeIndex, invoices: db.invoices, customers: db.customers,
-      suppliers: db.suppliers, expenses: db.expenses, settings: db.settings, isCartTaxEnabled,
+      suppliers: db.suppliers, expenses: db.expenses, settings: db.settings, databaseSnapshot: db, isCartTaxEnabled,
       setIsCartTaxEnabled, cart, cartTotals, addToCart, addByBarcode, updateCartQuantity,
       updateCartDiscount, removeFromCart, clearCart, replaceCart, checkoutInvoice, addProduct, updateProduct,
       deleteProduct, bulkAddProducts, refundInvoice, addExpense, deleteExpense, addCustomer,
       updateCustomer, addSupplier, updateSupplier, updateSettings, loadBenchmarkStressTest,
-      resetToSampleData, restoreFromDatabase, backupToGoogleDrive, restoreFromGoogleDrive,
+      resetToSampleData, restoreFromDatabase,
     }),
     [
       currentUser, can, activeTab, theme, toggleTheme, snackbars, showToast, dismissToast, formatCurrency, db,
