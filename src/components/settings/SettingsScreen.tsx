@@ -2,13 +2,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   AlertCircle,
   Archive,
-  Check,
-  CheckCircle2,
-  Clock3,
   Cloud,
   CloudOff,
   Download,
-  FileClock,
   Folder,
   HardDrive,
   History,
@@ -24,8 +20,6 @@ import {
   Store,
   Upload,
   Volume2,
-  Wifi,
-  WifiOff,
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { exportDatabaseBackup } from '../../utils/storage';
@@ -57,19 +51,12 @@ import {
 import {
   isMatjarkBackupEnvelope,
   createBackupEnvelope,
+  removeCloudPendingBackup,
+  saveCloudPendingBackup,
+  setLastCloudUploadAt,
 } from '../../utils/backupStorage';
 import { restoreAuditLog } from '../../utils/audit';
 import type { StoreSettings } from '../../types';
-
-const intervalOptions = [
-  { value: 1, label: 'كل دقيقة' },
-  { value: 5, label: 'كل 5 دقائق' },
-  { value: 15, label: 'كل 15 دقيقة' },
-  { value: 30, label: 'كل 30 دقيقة' },
-  { value: 60, label: 'كل ساعة' },
-  { value: 180, label: 'كل 3 ساعات' },
-  { value: 300, label: 'كل 5 ساعات' },
-];
 
 const inputClass = 'matjark-settings-input';
 const labelClass = 'matjark-settings-label';
@@ -80,11 +67,6 @@ function formatDateTime(timestamp: number | null | undefined): string {
     dateStyle: 'medium',
     timeStyle: 'short',
   });
-}
-
-function intervalLabel(minutes: number | undefined): string {
-  return intervalOptions.find((item) => item.value === minutes)?.label
-    ?? (minutes ? `كل ${minutes} دقيقة` : 'كل ساعة');
 }
 
 function statusPresentation(status: BackupRuntimeStatus) {
@@ -327,7 +309,10 @@ export const SettingsScreen: React.FC = () => {
     setWorking(true);
     try {
       const envelope = await createBackupEnvelope(databaseSnapshot);
+      await saveCloudPendingBackup(envelope);
       await uploadDailyBackupToGoogleDrive(envelope);
+      await removeCloudPendingBackup(envelope.dateKey);
+      await setLastCloudUploadAt(Date.now());
       await refreshDriveStatus();
       await refreshCloudBackups();
       showToast('تم تحديث نسخة اليوم على Google Drive.', 'success');
@@ -513,9 +498,8 @@ export const SettingsScreen: React.FC = () => {
           </div>
           <div className="matjark-settings-grid matjark-settings-grid--two">
             <label className={labelClass}>معدل إنشاء النسخ المحلية
-              <select className={inputClass} value={settings.localBackupIntervalMinutes || 60} onChange={(event) => updateSettings({ localBackupIntervalMinutes: Number(event.target.value) })}>
-                {intervalOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-              </select>
+              <input className={inputClass} type="number" min="1" max="1440" step="1" value={settings.localBackupIntervalMinutes || 60} onChange={(event) => updateSettings({ localBackupIntervalMinutes: Math.min(1440, Math.max(1, Number(event.target.value) || 1)) })} />
+              <small>بالدقائق؛ 60 = ساعة، 180 = 3 ساعات، 300 = 5 ساعات.</small>
             </label>
             <div className="matjark-settings-info-field"><span>آخر نسخة محلية ناجحة</span><strong>{formatDateTime(backupStatus.lastLocalBackupAt)}</strong></div>
           </div>
@@ -575,9 +559,8 @@ export const SettingsScreen: React.FC = () => {
           </div>
           <div className="matjark-settings-grid matjark-settings-grid--two">
             <label className={labelClass}>معدل تحديث نسخة اليوم على Google Drive
-              <select className={inputClass} value={settings.googleDriveSyncIntervalMinutes || 60} onChange={(event) => updateSettings({ googleDriveSyncIntervalMinutes: Number(event.target.value) })}>
-                {intervalOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-              </select>
+              <input className={inputClass} type="number" min="1" max="1440" step="1" value={settings.googleDriveSyncIntervalMinutes || 60} onChange={(event) => updateSettings({ googleDriveSyncIntervalMinutes: Math.min(1440, Math.max(1, Number(event.target.value) || 1)) })} />
+              <small>بالدقائق؛ 60 = ساعة، 180 = 3 ساعات، 300 = 5 ساعات.</small>
             </label>
             <div className="matjark-settings-info-field"><span>آخر رفع ناجح</span><strong>{formatDateTime(backupStatus.lastCloudBackupAt || driveStatus?.lastUploadAt)}</strong></div>
           </div>
