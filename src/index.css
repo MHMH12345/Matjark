@@ -3661,11 +3661,8 @@ html:not(.dark) .pos-snackbar-box {
   cursor: pointer;
 }
 
-.matjark-settings-toggle input {
-  accent-color: var(--md-sys-color-primary);
-  width: 17px;
-  height: 17px;
-  margin: 0;
+.matjark-settings-toggle .matjark-switch {
+  max-width: 100%;
 }
 
 .matjark-settings-note {
@@ -3683,45 +3680,9 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 .matjark-settings-button {
-  min-height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 9px 15px;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: background .16s ease, border-color .16s ease, transform .16s ease, opacity .16s ease;
-}
-
-.matjark-settings-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.matjark-settings-button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
-
-.matjark-settings-button--primary {
-  color: var(--md-sys-color-on-primary);
-  background: var(--md-sys-color-primary);
-}
-
-.matjark-settings-button--outlined {
-  color: var(--md-sys-color-primary);
-  background: transparent;
-  border-color: var(--md-sys-color-outline);
-}
-
-.matjark-settings-button--danger {
-  color: var(--md-sys-color-error);
-  background: var(--md-sys-color-error-container);
-  border-color: color-mix(in srgb, var(--md-sys-color-error) 22%, transparent);
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .matjark-settings-status-row,
@@ -3733,48 +3694,6 @@ html:not(.dark) .pos-snackbar-box {
   gap: 9px;
   font-size: 12px;
   font-weight: 800;
-}
-
-.matjark-settings-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 800;
-}
-
-.matjark-settings-status > span {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.matjark-settings-status.is-success {
-  color: var(--md-sys-color-success);
-  background: var(--md-sys-color-success-container);
-}
-
-.matjark-settings-status.is-warning {
-  color: var(--md-sys-color-warning);
-  background: var(--md-sys-color-warning-container);
-}
-
-.matjark-settings-status.is-danger {
-  color: var(--md-sys-color-error);
-  background: var(--md-sys-color-error-container);
-}
-
-.matjark-settings-status.is-muted {
-  color: var(--md-sys-color-on-surface-variant);
-  background: var(--md-sys-color-surface-container-high);
-}
-
-.matjark-settings-status.is-info {
-  color: var(--md-sys-color-primary);
-  background: var(--md-sys-color-primary-container);
 }
 
 .matjark-settings-folder {
@@ -3859,9 +3778,9 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 .matjark-settings-divider {
+  display: block;
   width: 100%;
-  height: 1px;
-  background: var(--md-sys-color-outline-variant);
+  margin-block: 4px;
 }
 
 .matjark-settings-link-button {
@@ -4122,5 +4041,117 @@ html:not(.dark) .pos-snackbar-box {
   .matjark-settings-button,
   .matjark-settings-input {
     transition: none;
+  }
+}
+
+
+/* Settings use the actual Material 3 React components from material/react. */
+.matjark-settings-card {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 20px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.matjark-settings-card::part(card) {
+  width: 100% !important;
+  min-width: 0 !important;
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  border-radius: 20px !important;
+  background: var(--md-sys-color-surface-container) !important;
+  color: var(--md-sys-color-on-surface) !important;
+  box-shadow: none !important;
+}
+
+.matjark-settings-card::part(content) {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 17px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: clamp(14px, 2.3vw, 23px) !important;
+  box-sizing: border-box !important;
+}
+
+.matjark-settings-subcard {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 15px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.matjark-settings-subcard::part(card) {
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  border-radius: 15px !important;
+  background: var(--md-sys-color-surface-container-low) !important;
+  box-shadow: none !important;
+}
+
+.matjark-settings-subcard::part(content) {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  padding: 15px !important;
+  box-sizing: border-box !important;
+}
+
+.matjark-settings-label .matjark-text-field,
+.matjark-settings-label .matjark-select {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+.matjark-settings-select {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.matjark-settings-toggle {
+  width: 100%;
+  min-height: 42px;
+}
+
+.matjark-settings-toggle .matjark-switch {
+  max-width: 100%;
+}
+
+.matjark-settings-status-chip {
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+}
+
+.matjark-settings-button {
+  max-width: 100%;
+}
+
+.matjark-settings-divider {
+  --mtrl-color-outline-variant: var(--md-sys-color-outline-variant);
+}
+
+.matjark-settings-dialog-message {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+@media (max-width: 700px) {
+  .matjark-settings-card::part(content) {
+    gap: 14px !important;
+    padding: 14px !important;
+  }
+
+  .matjark-settings-subcard::part(content) {
+    padding: 13px !important;
   }
 }
