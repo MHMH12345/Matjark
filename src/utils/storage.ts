@@ -549,7 +549,8 @@ function createManagedObjectUrl(productId: string, sourceUrl: string, blob: Blob
   if (previous && previous.objectUrl !== sourceUrl) {
     URL.revokeObjectURL(previous.objectUrl);
   }
-  const objectUrl = URL.createObjectURL(blob);
+  // A new upload already has a Blob URL; reuse it instead of creating a second URL.
+  const objectUrl = sourceUrl.startsWith('blob:') ? sourceUrl : URL.createObjectURL(blob);
   managedProductImages.set(productId, { sourceUrl, objectUrl });
   return objectUrl;
 }
