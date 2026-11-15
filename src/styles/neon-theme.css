@@ -1850,3 +1850,281 @@ body {
     min-height: 49px;
   }
 }
+
+
+/* Static neon artwork: saturated color and crisp borders do the visual work.
+   Avoid blur filters, animated shadows and per-card glow layers. */
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  min-width: 320px;
+  min-height: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+body,
+.dark body {
+  background: #050316 !important;
+}
+
+.matjark-app-shell {
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 0;
+  background:
+    linear-gradient(115deg, #07051f 0%, #080a2b 52%, #07051e 100%) !important;
+}
+
+.matjark-app-shell::before {
+  display: none !important;
+}
+
+.matjark-app-content--cashier {
+  padding: 0 16px 14px !important;
+}
+
+.matjark-pos-root {
+  gap: 12px !important;
+}
+
+.matjark-pos-products-panel {
+  border: 1px solid #4938eb !important;
+  background: #080a2b !important;
+  box-shadow: none !important;
+}
+
+.matjark-pos-cart-panel {
+  border: 1px solid #c52cff !important;
+  background: linear-gradient(165deg, #10083a 0%, #08092d 100%) !important;
+  box-shadow: none !important;
+}
+
+.matjark-pos-cart-header {
+  min-height: 76px;
+  padding: 10px 16px !important;
+  border-bottom: 1px solid rgba(204, 61, 255, .58) !important;
+  background: linear-gradient(100deg, #230b58 0%, #13083d 55%, #10103d 100%) !important;
+}
+
+.matjark-cart-header-emblem {
+  display: grid;
+  flex: 0 0 58px;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border: 1px solid #ff6be9;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f000dd 0%, #9a13ff 55%, #253fff 100%);
+  color: #ffffff;
+}
+
+.matjark-cart-header-emblem svg {
+  display: block;
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.matjark-pos-cart-header .text-\\[13px\\] {
+  color: #ffffff !important;
+  font-size: 23px !important;
+  font-weight: 800 !important;
+}
+
+.matjark-pos-cart-count-badge {
+  --mtrl-sys-color-primary: #ff35d3;
+}
+
+.matjark-pos-cart-header-actions {
+  gap: 9px !important;
+}
+
+.matjark-pos-cart-header-actions .matjark-icon-button::part(button) {
+  width: 54px !important;
+  height: 54px !important;
+  min-width: 54px !important;
+  min-height: 54px !important;
+  border: 1px solid rgba(176, 109, 255, .72) !important;
+  border-radius: 50% !important;
+  background: linear-gradient(145deg, #24105e, #10123e) !important;
+  color: #eee8ff !important;
+  box-shadow: none !important;
+}
+
+.matjark-pos-cart-header-actions .matjark-icon-button--clear::part(button),
+.matjark-pos-cart-header-actions .matjark-hold-button--clear::part(button) {
+  border-color: #d93cae !important;
+  background: linear-gradient(145deg, #59145b, #291044) !important;
+  color: #ffd4f6 !important;
+}
+
+.matjark-cart-empty {
+  gap: 12px;
+  padding: 22px;
+  color: #d8caff;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(105, 44, 230, .15), transparent 62%),
+    linear-gradient(180deg, #10083b, #0a092f);
+}
+
+.matjark-cart-empty-art {
+  display: grid;
+  place-items: center;
+  width: 136px;
+  height: 112px;
+}
+
+.matjark-cart-empty-art svg {
+  display: block;
+  width: 136px;
+  height: 112px;
+}
+
+.matjark-cart-empty__text {
+  margin: 0;
+  color: #cbbce9;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.matjark-pos-cart-list-host,
+.matjark-pos-held-list {
+  background: #0b092f !important;
+}
+
+.matjark-pos-cart-footer {
+  border-top: 1px solid rgba(194, 67, 255, .52) !important;
+  background: linear-gradient(120deg, #1b084b, #0b113d) !important;
+}
+
+.matjark-pos-products-panel {
+  border-radius: 18px !important;
+}
+
+.matjark-pos-field-grid,
+.matjark-filter-chips-viewport {
+  border-color: rgba(107, 75, 255, .52) !important;
+  background: linear-gradient(100deg, #0c0a38 0%, #08113e 100%) !important;
+}
+
+.matjark-pos-product-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 13px !important;
+  padding: 12px !important;
+}
+
+.matjark-pos-product-media {
+  height: auto !important;
+  aspect-ratio: 1.36 / 1;
+  border-bottom: 1px solid rgba(255, 92, 231, .5) !important;
+  background: #09104a !important;
+}
+
+.matjark-pos-product-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: none !important;
+  filter: none !important;
+}
+
+.matjark-pos-product-card::part(card) {
+  border: 1px solid #5e38f3 !important;
+  border-radius: 16px !important;
+  background: #100b45 !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+.matjark-pos-product-card:hover::part(card) {
+  border-color: #ee55df !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.matjark-pos-product-name {
+  min-height: 2.8em;
+  max-height: 2.8em;
+  color: #f8f3ff !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+}
+
+.matjark-pos-product-price {
+  color: #ff75e8 !important;
+  font-size: clamp(14px, 1.05vw, 19px) !important;
+  font-weight: 850 !important;
+  text-shadow: none !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* No animated glow or blurred shadows on frequently repeated UI elements. */
+.matjark-topbar,
+.matjark-sidebar,
+.matjark-sidebar-link,
+.matjark-topbar-action,
+.matjark-pos-cart-panel,
+.matjark-pos-products-panel,
+.matjark-pos-product-card::part(card),
+.matjark-button::part(button),
+.matjark-icon-button::part(button) {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.matjark-topbar {
+  border: 1px solid #6542ed !important;
+  background: linear-gradient(105deg, #11103f 0%, #0b174e 56%, #1a0a48 100%) !important;
+}
+
+.matjark-sidebar {
+  border-left: 1px solid #6132c8 !important;
+  background: linear-gradient(180deg, #070624 0%, #06051e 100%) !important;
+}
+
+.matjark-sidebar::after {
+  box-shadow: none !important;
+}
+
+.matjark-sidebar-link.is-active {
+  box-shadow: none !important;
+  background: linear-gradient(105deg, #c400f5 0%, #7920ff 52%, #273fff 100%) !important;
+  border-color: #ed65f0 !important;
+}
+
+.matjark-topbar-action,
+.matjark-sidebar-link,
+.matjark-button::part(button),
+.matjark-icon-button::part(button) {
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease !important;
+}
+
+@media (max-width: 1440px) and (min-width: 1200px) {
+  .matjark-pos-product-grid {
+    gap: 10px !important;
+  }
+
+  .matjark-pos-product-media {
+    aspect-ratio: 1.36 / 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .matjark-topbar-action,
+  .matjark-sidebar-link,
+  .matjark-button::part(button),
+  .matjark-icon-button::part(button) {
+    transition: none !important;
+  }
+}
