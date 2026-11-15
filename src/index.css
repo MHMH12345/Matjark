@@ -4065,9 +4065,9 @@ html:not(.dark) .pos-snackbar-box {
 .matjark-settings-working::part(card) {
   border: 1px solid var(--md-sys-color-outline-variant) !important;
   border-radius: 18px !important;
-  background: var(--md-sys-color-inverse-surface) !important;
-  color: var(--md-sys-color-inverse-on-surface) !important;
-  box-shadow: var(--md-sys-elevation-level3, 0 6px 18px rgb(0 0 0 / 18%)) !important;
+  background: var(--md-sys-color-surface-container-high) !important;
+  color: var(--md-sys-color-on-surface) !important;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 18%) !important;
 }
 
 .matjark-settings-working::part(content) {
@@ -4075,7 +4075,7 @@ html:not(.dark) .pos-snackbar-box {
   align-items: center !important;
   gap: 11px !important;
   padding: 14px 18px !important;
-  color: var(--md-sys-color-inverse-on-surface) !important;
+  color: var(--md-sys-color-on-surface) !important;
   font-size: 13px;
   font-weight: 600;
 }
@@ -4288,12 +4288,38 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 .matjark-backup-cleanup-details .matjark-backup-confirm__details {
+  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
   padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
+}
+
+.matjark-backup-confirm__details > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 14px;
+  background: var(--md-sys-color-surface-container-low);
+}
+
+.matjark-backup-confirm__details span {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.matjark-backup-confirm__details strong {
+  overflow-wrap: anywhere;
+  color: var(--md-sys-color-on-surface);
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 600;
 }
 
 @media (max-width: 700px) {
