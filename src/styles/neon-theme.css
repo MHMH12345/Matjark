@@ -859,7 +859,7 @@ body {
   background: #493176;
 }
 
-.matjark-pos-cart-footer .text-\\[var\\(--md-sys-color-primary\\)\\] {
+.matjark-pos-grand-total {
   color: #25d8ff !important;
 }
 
@@ -1523,10 +1523,6 @@ body {
     gap: 0 !important;
   }
 
-  .matjark-pos-cart-panel {
-    display: none !important;
-  }
-
   .matjark-pos-products-panel {
     border-radius: 0 !important;
   }
@@ -1620,7 +1616,6 @@ body {
     padding-block: 7px !important;
   }
 
-  .matjark-pos-filter-chips,
   .matjark-filter-chips-viewport {
     padding-block: 6px !important;
   }
