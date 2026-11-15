@@ -51,7 +51,7 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal }) =
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo & Brand */}
           <div className="flex items-center gap-3 shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+            <div className="w-10 h-10 rounded-xl bg-[var(--md-sys-color-primary)] flex items-center justify-center text-[var(--md-sys-color-on-primary)] shadow-sm">
               <Zap className="w-6 h-6 fill-white" />
             </div>
             <div>
