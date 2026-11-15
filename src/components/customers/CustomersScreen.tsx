@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { PageScaffold } from '../layout/PageScaffold';
 import { MuiCard } from '../ui/MuiCard';
 import {
   Users,
@@ -200,7 +201,13 @@ export const CustomersScreen: React.FC = () => {
   );
 
   return (
-    <div className="space-y-4">
+    <PageScaffold
+      title="العملاء والموردون"
+      description="إدارة جهات التعامل وبيانات التواصل والأرصدة"
+      eyebrow="العلاقات"
+      icon={<Users className="w-5 h-5" />}
+    >
+      <div className="space-y-4">
       {/* Switcher Tab */}
       <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
         <MuiChipGroup
@@ -312,6 +319,7 @@ export const CustomersScreen: React.FC = () => {
           />
         </form>
       </MuiDialog>
-    </div>
+      </div>
+    </PageScaffold>
   );
 };
