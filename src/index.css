@@ -1701,6 +1701,160 @@ html:not(.dark) .pos-snackbar-box {
   gap: 12px;
 }
 
+/* Shared Material 3 KPI surface: content stays RTL, the visual icon stays on the left. */
+.matjark-metric-card {
+  min-width: 0;
+}
+
+.matjark-metric-card::part(card) {
+  border: 1px solid var(--md-sys-color-outline-variant) !important;
+  border-radius: 20px !important;
+  background: var(--md-sys-color-surface-container) !important;
+  box-shadow: none !important;
+}
+
+.matjark-metric-card::part(content) {
+  display: block !important;
+  min-width: 0 !important;
+  padding: 18px !important;
+  box-sizing: border-box !important;
+}
+
+.matjark-metric-card__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+  direction: rtl;
+  text-align: right;
+}
+
+.matjark-metric-card__copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  min-width: 0;
+}
+
+.matjark-metric-card__heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-width: 0;
+}
+
+.matjark-metric-card__label {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.matjark-metric-card__badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.matjark-metric-card__value {
+  display: block;
+  max-width: 100%;
+  color: var(--md-sys-color-on-surface);
+  font-size: clamp(18px, 1.7vw, 23px);
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.matjark-metric-card__value--primary { color: var(--md-sys-color-primary); }
+.matjark-metric-card__value--secondary { color: var(--md-sys-color-secondary); }
+.matjark-metric-card__value--tertiary { color: var(--md-sys-color-tertiary); }
+.matjark-metric-card__value--success { color: var(--md-sys-color-success); }
+.matjark-metric-card__value--warning { color: var(--md-sys-color-warning); }
+.matjark-metric-card__value--error { color: var(--md-sys-color-error); }
+
+.matjark-metric-card__supporting {
+  display: block;
+  max-width: 100%;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.matjark-metric-card__icon {
+  display: grid;
+  flex: 0 0 44px;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 15px;
+}
+
+.matjark-metric-card__icon > * {
+  width: 21px;
+  height: 21px;
+}
+
+.matjark-metric-card--primary .matjark-metric-card__icon {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+.matjark-metric-card--secondary .matjark-metric-card__icon {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+.matjark-metric-card--tertiary .matjark-metric-card__icon {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+.matjark-metric-card--success .matjark-metric-card__icon {
+  background: var(--md-sys-color-success-container);
+  color: var(--md-sys-color-on-success-container);
+}
+.matjark-metric-card--warning .matjark-metric-card__icon {
+  background: var(--md-sys-color-warning-container);
+  color: var(--md-sys-color-on-warning-container);
+}
+.matjark-metric-card--error .matjark-metric-card__icon {
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+
+@media (max-width: 700px) {
+  .matjark-metric-card::part(content) {
+    padding: 14px !important;
+  }
+
+  .matjark-metric-card__content {
+    gap: 10px;
+  }
+
+  .matjark-metric-card__icon {
+    flex-basis: 38px;
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+  }
+
+  .matjark-metric-card__value {
+    font-size: 18px;
+  }
+}
+
 .matjark-data-grid-shell::part(card) {
   border: 1px solid var(--md-sys-color-outline-variant) !important;
   border-radius: 20px !important;
