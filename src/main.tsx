@@ -15,5 +15,6 @@ import 'material/styles/navigation-rail';
 import 'material/styles/navigation-bar';
 import App from './App.tsx';
 import './index.css';
+import './styles/neon-theme.css';
 
 createRoot(document.getElementById('root')!).render(<App />);
