@@ -3,6 +3,7 @@
  */
 
 import React, { useMemo } from 'react';
+import { PageScaffold } from '../layout/PageScaffold';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { MuiCard } from '../ui/MuiCard';
 import {
@@ -98,7 +99,13 @@ export const ReportsScreen: React.FC = () => {
   }, [invoices]);
 
   return (
-    <div className="space-y-4">
+    <PageScaffold
+      title="التقارير والتحليلات"
+      description="متابعة اتجاهات المبيعات وحركة المنتجات وأداء المتجر"
+      eyebrow="ذكاء الأعمال"
+      icon={<BarChart3 className="w-5 h-5" />}
+    >
+      <div className="space-y-4">
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
@@ -244,6 +251,7 @@ export const ReportsScreen: React.FC = () => {
           </div>
         </MuiCard>
       </div>
-    </div>
+      </div>
+    </PageScaffold>
   );
 };
