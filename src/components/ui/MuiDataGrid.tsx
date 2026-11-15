@@ -129,12 +129,17 @@ function MuiDataGridInner<T extends Record<string, any>>({
 
   // Optimized scroll handler using requestAnimationFrame
   const rafRef = useRef<number | null>(null);
+
+  useEffect(() => () => {
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+  }, []);
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const currentScrollTop = e.currentTarget.scrollTop;
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current);
     }
     rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
       setScrollTop(currentScrollTop);
     });
   }, []);
@@ -154,7 +159,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
     <MCard variant="outlined" fullWidth className="matjark-data-grid-shell flex flex-col w-full overflow-hidden">
       {/* Table Toolbar */}
       <div className="p-3 bg-[var(--md-sys-color-surface-container-low)] dark:bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] flex flex-wrap items-center justify-between gap-3">
-        <div className="relative flex-1 min-w-[240px] max-w-md">
+        <div className="relative flex-1 w-full min-w-0 sm:min-w-[240px] max-w-md">
           <MuiTextField
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -174,7 +179,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 max-w-full">
           {toolbarActions}
           <div className="text-[11px] font-medium text-[var(--md-sys-color-on-surface-variant)] bg-[var(--md-sys-color-surface)] px-2.5 py-1.5 rounded-md border border-[var(--md-sys-color-outline-variant)] dark:border-[var(--md-sys-color-outline-variant)]">
             <span>إجمالي: </span>
@@ -229,7 +234,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
         ref={containerRef}
         onScroll={handleScroll}
         style={{ height: viewportHeight, maxHeight: viewportHeight }}
-        className="relative overflow-y-auto overflow-x-hidden divide-y divide-slate-100 dark:divide-slate-800/50 matjark-data-grid-viewport"
+        className="relative overflow-y-auto overflow-x-hidden divide-y divide-[var(--md-sys-color-outline-variant)] matjark-data-grid-viewport"
       >
         {totalCount === 0 ? (
           <div className="flex flex-col items-center justify-center h-full py-12 text-[var(--md-sys-color-outline)]">
@@ -306,10 +311,10 @@ function MuiDataGridInner<T extends Record<string, any>>({
       {/* Footer Info */}
       <div className="px-4 py-2 bg-[var(--md-sys-color-surface-container-low)] dark:bg-[var(--md-sys-color-surface-container-low)] border-t border-[var(--md-sys-color-outline-variant)] text-[11px] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-between">
         <span>
-          نافذة العرض الافتراضية النشطة: من {startIndex + 1} إلى {Math.min(endIndex, totalCount)}
+          عرض {totalCount === 0 ? 0 : startIndex + 1}–{Math.min(endIndex, totalCount)} من {totalCount.toLocaleString('ar-EG')}
         </span>
-        <span className="text-[var(--md-sys-color-success)] font-medium">
-          Virtualization Active (DOM Nodes: ~{visibleRows.length * columns.length + columns.length})
+        <span className="text-[var(--md-sys-color-on-surface-variant)] font-medium">
+          عرض افتراضي محسّن
         </span>
       </div>
     </MCard>
