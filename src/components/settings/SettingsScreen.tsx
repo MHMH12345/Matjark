@@ -453,7 +453,7 @@ export const SettingsScreen: React.FC = () => {
       </MuiCard>
 
       <section className="matjark-settings-section">
-        <div className="matjark-settings-section__heading" role="heading" aria-level={2}>
+        <div className="matjark-settings-section__heading">
           <div className="matjark-settings-section__icon"><Store size={20} /></div>
           <div>
             <h2>بيانات المنشأة والمتجر</h2>
@@ -504,7 +504,7 @@ export const SettingsScreen: React.FC = () => {
       </section>
 
       <section className="matjark-settings-section">
-        <div className="matjark-settings-section__heading" role="heading" aria-level={2}>
+        <div className="matjark-settings-section__heading">
           <div className="matjark-settings-section__icon"><HardDrive size={20} /></div>
           <div>
             <h2>النسخ الاحتياطي المحلي على الكمبيوتر</h2>
@@ -563,7 +563,7 @@ export const SettingsScreen: React.FC = () => {
       </section>
 
       <section className="matjark-settings-section">
-        <div className="matjark-settings-section__heading" role="heading" aria-level={2}>
+        <div className="matjark-settings-section__heading">
           <div className="matjark-settings-section__icon"><Cloud size={20} /></div>
           <div>
             <h2>النسخ الاحتياطي على Google Drive</h2>
@@ -626,7 +626,7 @@ export const SettingsScreen: React.FC = () => {
       </section>
 
       <section className="matjark-settings-section">
-        <div className="matjark-settings-section__heading" role="heading" aria-level={2}>
+        <div className="matjark-settings-section__heading">
           <div className="matjark-settings-section__icon"><ShieldCheck size={20} /></div>
           <div><h2>النسخ والاستعادة اليدوية</h2><p>ملف مستقل يمكنك الاحتفاظ به خارج مجلد النسخ التلقائي.</p></div>
         </div>
