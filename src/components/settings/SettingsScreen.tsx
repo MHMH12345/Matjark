@@ -4,6 +4,7 @@ import {
   Archive,
   Cloud,
   CloudOff,
+  ChevronDown,
   Download,
   Folder,
   HardDrive,
@@ -143,6 +144,7 @@ export const SettingsScreen: React.FC = () => {
   const [loadingCloudList, setLoadingCloudList] = useState(false);
   const [working, setWorking] = useState(false);
   const [confirmation, setConfirmation] = useState<SettingsConfirmation | null>(null);
+  const [backupPanelExpanded, setBackupPanelExpanded] = useState(false);
   const [localIntervalInput, setLocalIntervalInput] = useState(String(settings.localBackupIntervalMinutes || 60));
   const [cloudIntervalInput, setCloudIntervalInput] = useState(String(settings.googleDriveSyncIntervalMinutes || 60));
   const backupInputRef = useRef<HTMLInputElement>(null);
@@ -245,6 +247,9 @@ export const SettingsScreen: React.FC = () => {
     window.history.replaceState({}, '', window.location.pathname + window.location.hash);
     void refreshDriveStatus();
   }, [refreshDriveStatus, showToast]);
+
+  const selectedLocalBackupRecord = localBackups.find((item) => item.relativePath === selectedLocalBackup);
+  const selectedCloudBackupRecord = cloudBackups.find((item) => item.id === selectedCloudBackup);
 
   const localSummary = useMemo(() => {
     const total = localBackups.reduce((sum, item) => sum + item.size, 0);
@@ -503,6 +508,45 @@ export const SettingsScreen: React.FC = () => {
         </form>
       </section>
 
+      <MuiCard className="matjark-settings-backup-accordion" variant="outlined">
+        <div className="matjark-settings-backup-accordion__header">
+          <div className="matjark-settings-backup-accordion__identity">
+            <div className="matjark-settings-backup-accordion__icon"><HardDrive size={23} /></div>
+            <div>
+              <p className="matjark-settings-eyebrow">BACKUP CENTER</p>
+              <h2>النسخ الاحتياطي والاستعادة</h2>
+              <p>إدارة النسخ المحلية والسحابية والنسخ اليدوية من مكان واحد.</p>
+            </div>
+          </div>
+          <div className="matjark-settings-backup-accordion__statuses">
+            <MuiChip
+              label={`محلي: ${status.local.text}`}
+              size="medium"
+              color={status.local.className === 'is-success' ? 'success' : status.local.className === 'is-warning' ? 'warning' : status.local.className === 'is-danger' ? 'error' : 'default'}
+            />
+            <MuiChip
+              label={driveStatus?.connected ? 'Google Drive متصل' : driveStatus?.configured ? 'Google Drive غير مربوط' : 'Google Drive يحتاج إعداد'}
+              size="medium"
+              color={driveStatus?.connected ? 'success' : driveStatus?.configured ? 'warning' : 'default'}
+            />
+          </div>
+        </div>
+        <MuiButton
+          type="button"
+          variant="outlined"
+          color="primary"
+          size="large"
+          fullWidth
+          className="matjark-settings-backup-toggle"
+          aria-expanded={backupPanelExpanded}
+          aria-controls="matjark-backup-settings-content"
+          onClick={() => setBackupPanelExpanded((expanded) => !expanded)}
+        >
+          <span>{backupPanelExpanded ? 'إخفاء إعدادات النسخ الاحتياطي' : 'عرض كل إعدادات النسخ الاحتياطي'}</span>
+          <ChevronDown className={backupPanelExpanded ? 'matjark-settings-backup-toggle__arrow is-expanded' : 'matjark-settings-backup-toggle__arrow'} size={20} />
+        </MuiButton>
+        {backupPanelExpanded && (
+          <div id="matjark-backup-settings-content" className="matjark-settings-backup-content">
       <section className="matjark-settings-section">
         <div className="matjark-settings-section__heading">
           <div className="matjark-settings-section__icon"><HardDrive size={20} /></div>
@@ -533,7 +577,25 @@ export const SettingsScreen: React.FC = () => {
           </MuiCard>
           <div className="matjark-settings-grid matjark-settings-grid--two">
             <div className={labelClass}><MuiTextField label="معدل إنشاء النسخ المحلية" type="number" min="1" max="1440" step="1" value={localIntervalInput} onChange={(event) => setLocalIntervalInput(event.target.value)} onBlur={() => updateSettings({ localBackupIntervalMinutes: Math.min(1440, Math.max(1, Number(localIntervalInput) || 60)) })} helperText="بالدقائق؛ 60 = ساعة، 180 = 3 ساعات، 300 = 5 ساعات." fullWidth /></div>
-            <MuiCard className="matjark-settings-info-field" variant="filled"><span>آخر نسخة محلية ناجحة</span><strong>{formatDateTime(backupStatus.lastLocalBackupAt)}</strong></MuiCard>
+            <div className={labelClass}>
+              <MuiSelect
+                label="اختيار نسخة محلية للاستعادة"
+                className="matjark-settings-select"
+                value={selectedLocalBackup}
+                onChange={(event) => setSelectedLocalBackup(event.target.value)}
+                disabled={!localBackups.length || loadingLocalList}
+                helperText={selectedLocalBackupRecord
+                  ? `${formatDateTime(selectedLocalBackupRecord.lastModified)} · ${selectedLocalBackupRecord.name}`
+                  : 'لا توجد نسخ محلية محفوظة حتى الآن.'}
+              >
+                {!localBackups.length && <option value="">لا توجد نسخ محلية محفوظة</option>}
+                {localBackups.map((item) => (
+                  <option key={item.relativePath} value={item.relativePath}>
+                    {item.dateKey} — {item.timeLabel} — {formatBackupBytes(item.size)}
+                  </option>
+                ))}
+              </MuiSelect>
+            </div>
           </div>
           <div className="matjark-settings-actions">
             <MuiButton type="button" variant="contained" color="primary" size="medium" startIcon={<Folder size={17} />} onClick={() => void handleLocalDirectory()} className="matjark-settings-button">اختيار مكان الحفظ</MuiButton>
@@ -549,16 +611,10 @@ export const SettingsScreen: React.FC = () => {
             <span>{localSummary.count.toLocaleString('ar-EG')} نسخة · {formatBackupBytes(localSummary.total)}</span>
             <MuiButton type="button" variant="text" color="primary" size="medium" startIcon={<RefreshCw size={15} />} onClick={() => void refreshLocalBackups()} disabled={loadingLocalList}>تحديث القائمة</MuiButton>
           </div>
-          <div className="matjark-settings-grid matjark-settings-grid--two">
-            <div className={labelClass}><MuiSelect label="اختر نسخة حسب التاريخ والوقت" className="matjark-settings-select" value={selectedLocalBackup} onChange={(event) => setSelectedLocalBackup(event.target.value)} disabled={!localBackups.length}>
-                {!localBackups.length && <option value="">لا توجد نسخ معروضة</option>}
-                {localBackups.map((item) => <option key={item.relativePath} value={item.relativePath}>{item.dateKey} — {item.timeLabel} — {formatBackupBytes(item.size)}</option>)}
-              </MuiSelect></div>
-            <MuiCard className="matjark-settings-info-field" variant="filled"><span>آخر ملف</span><strong>{backupStatus.lastLocalBackupName || 'لا يوجد'}</strong></MuiCard>
-          </div>
-          <div className="matjark-settings-actions">
+          <div className="matjark-settings-actions matjark-settings-restore-actions">
             <MuiButton type="button" variant="outlined" color="primary" size="medium" startIcon={<History size={17} />} onClick={handleRestoreLocal} disabled={!selectedLocalBackup || working} className="matjark-settings-button">استعادة النسخة المحددة</MuiButton>
           </div>
+
         </MuiCard>
       </section>
 
@@ -584,7 +640,25 @@ export const SettingsScreen: React.FC = () => {
           </MuiCard>
           <div className="matjark-settings-grid matjark-settings-grid--two">
             <div className={labelClass}><MuiTextField label="معدل تحديث نسخة اليوم على Google Drive" type="number" min="1" max="1440" step="1" value={cloudIntervalInput} onChange={(event) => setCloudIntervalInput(event.target.value)} onBlur={() => updateSettings({ googleDriveSyncIntervalMinutes: Math.min(1440, Math.max(1, Number(cloudIntervalInput) || 60)) })} helperText="بالدقائق؛ 60 = ساعة، 180 = 3 ساعات، 300 = 5 ساعات." fullWidth /></div>
-            <MuiCard className="matjark-settings-info-field" variant="filled"><span>آخر رفع ناجح</span><strong>{formatDateTime(backupStatus.lastCloudBackupAt || driveStatus?.lastUploadAt)}</strong></MuiCard>
+            <div className={labelClass}>
+              <MuiSelect
+                label="اختيار يوم من أرشيف Google Drive"
+                className="matjark-settings-select"
+                value={selectedCloudBackup}
+                onChange={(event) => setSelectedCloudBackup(event.target.value)}
+                disabled={!cloudBackups.length || !driveStatus?.connected || loadingCloudList}
+                helperText={selectedCloudBackupRecord
+                  ? `${selectedCloudBackupRecord.dateKey} · ${formatBackupBytes(selectedCloudBackupRecord.size)} · آخر رفع: ${formatDateTime(backupStatus.lastCloudBackupAt || driveStatus?.lastUploadAt)}`
+                  : `آخر رفع ناجح: ${formatDateTime(backupStatus.lastCloudBackupAt || driveStatus?.lastUploadAt)} · لا توجد نسخ معروضة.`}
+              >
+                {!cloudBackups.length && <option value="">لا توجد نسخ سحابية معروضة</option>}
+                {cloudBackups.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.dateKey} — {formatBackupBytes(item.size)}
+                  </option>
+                ))}
+              </MuiSelect>
+            </div>
           </div>
           <div className="matjark-settings-actions">
             <div className="matjark-settings-toggle"><MuiSwitch checked={cloudEnabled} onChange={(event) => updateSettings({ googleDriveAutoSyncEnabled: event.target.checked })} label="تفعيل المزامنة السحابية التلقائية" /></div>
@@ -612,15 +686,8 @@ export const SettingsScreen: React.FC = () => {
             <span>{cloudBackups.length.toLocaleString('ar-EG')} يوم محفوظ</span>
             <MuiButton type="button" variant="text" color="primary" size="medium" startIcon={<RefreshCw size={15} />} onClick={() => void refreshCloudBackups()} disabled={!driveStatus?.connected || loadingCloudList}>تحديث الأرشيف</MuiButton>
           </div>
-          <div className="matjark-settings-grid matjark-settings-grid--two">
-            <div className={labelClass}><MuiSelect label="اختر اليوم المراد استعادته" className="matjark-settings-select" value={selectedCloudBackup} onChange={(event) => setSelectedCloudBackup(event.target.value)} disabled={!cloudBackups.length}>
-                {!cloudBackups.length && <option value="">لا توجد نسخ سحابية معروضة</option>}
-                {cloudBackups.map((item) => <option key={item.id} value={item.id}>{item.dateKey} — {formatBackupBytes(item.size)}</option>)}
-              </MuiSelect></div>
-            <div className="matjark-settings-info-field"><span>الأرشيف</span><strong>السنة / الشهر / الأسبوع / اليوم</strong></div>
-          </div>
-          <div className="matjark-settings-actions">
-            <MuiButton type="button" variant="outlined" color="primary" size="medium" startIcon={<History size={17} />} onClick={handleRestoreCloud} disabled={!selectedCloudBackup || working || !driveStatus?.connected} className="matjark-settings-button">استعادة اليوم المحدد</MuiButton>
+          <div className="matjark-settings-actions matjark-settings-restore-actions">
+            <MuiButton type="button" variant="outlined" color="primary" size="medium" startIcon={<History size={17} />} onClick={handleRestoreCloud} disabled={!selectedCloudBackup || working || !driveStatus?.connected} className="matjark-settings-button">استعادة النسخة المحددة</MuiButton>
           </div>
         </MuiCard>
       </section>
@@ -645,7 +712,9 @@ export const SettingsScreen: React.FC = () => {
           </MuiCard>
         </MuiCard>
       </section>
-
+          </div>
+        )}
+      </MuiCard>
       <MuiDialog
         open={Boolean(confirmation)}
         onClose={() => setConfirmation(null)}
