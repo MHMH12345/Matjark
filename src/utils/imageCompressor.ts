@@ -90,58 +90,57 @@ export async function compressProductImage(file: File, maxDimension = 480, quali
  */
 export function getProductPlaceholderSvg(name: string, category: string): string {
   const initial = (name.trim()[0] || 'م').toUpperCase();
-  const palettes: Array<{ from: string; to: string; glow: string; accent: string }> = [
-    { from: '#073fc7', to: '#06236f', glow: '#00d9ff', accent: '#2778ff' },
-    { from: '#9c00e9', to: '#370078', glow: '#ff3dd7', accent: '#e65bff' },
-    { from: '#0064cf', to: '#071d75', glow: '#24e0ff', accent: '#426cff' },
-    { from: '#b000db', to: '#470078', glow: '#ff65ec', accent: '#a93bff' },
-    { from: '#b42b00', to: '#4d1047', glow: '#ffba32', accent: '#ff4e7a' },
-    { from: '#005eaa', to: '#111d78', glow: '#30dfff', accent: '#3a8aff' },
+  const palettes: Array<{ from: string; mid: string; to: string; light: string; ring: string }> = [
+    { from: '#0876ff', mid: '#064fd9', to: '#07185e', light: '#24dcff', ring: '#9af5ff' },
+    { from: '#ed00c8', mid: '#a000df', to: '#31045f', light: '#ff65df', ring: '#ffd2f5' },
+    { from: '#00a8e8', mid: '#0757cf', to: '#081b64', light: '#50edff', ring: '#d0fbff' },
+    { from: '#a500e8', mid: '#6414d8', to: '#210852', light: '#ff57e8', ring: '#ffd4ff' },
+    { from: '#ff5b13', mid: '#d72b4e', to: '#4a0b4b', light: '#ffd34c', ring: '#fff0bb' },
+    { from: '#1658ed', mid: '#0733a6', to: '#080c54', light: '#4ec3ff', ring: '#d8f4ff' },
+    { from: '#008fbc', mid: '#0756a5', to: '#07134f', light: '#45f0ef', ring: '#d1fffc' },
   ];
-  const normalizedCategory = category.trim();
-  const categoryIndex =
-    normalizedCategory.includes('حلويات') ? 1 :
-    normalizedCategory.includes('مشروبات') ? 0 :
-    normalizedCategory.includes('زيت') || normalizedCategory.includes('سمن') ? 2 :
-    normalizedCategory.includes('منظف') ? 3 :
-    normalizedCategory.includes('أدوات') ? 4 :
-    normalizedCategory.includes('ألبان') || normalizedCategory.includes('جبن') ? 5 :
-    Array.from(normalizedCategory).reduce((sum, char) => sum + char.charCodeAt(0), 0) % palettes.length;
-  const palette = palettes[categoryIndex];
+
+  const seed = `${name.trim()}|${category.trim()}`;
+  let hash = 0;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = ((hash << 5) - hash + seed.charCodeAt(index)) | 0;
+  }
+  const palette = palettes[Math.abs(hash) % palettes.length];
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="300" viewBox="0 0 420 300">
     <defs>
-      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <linearGradient id="background" x1="12" y1="8" x2="408" y2="294" gradientUnits="userSpaceOnUse">
         <stop offset="0" stop-color="${palette.from}"/>
+        <stop offset=".48" stop-color="${palette.mid}"/>
         <stop offset="1" stop-color="${palette.to}"/>
       </linearGradient>
-      <radialGradient id="halo">
-        <stop offset="0" stop-color="${palette.glow}" stop-opacity=".52"/>
-        <stop offset=".62" stop-color="${palette.accent}" stop-opacity=".2"/>
+      <radialGradient id="center-light" cx="210" cy="126" r="152" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="${palette.light}" stop-opacity=".5"/>
+        <stop offset=".58" stop-color="${palette.from}" stop-opacity=".2"/>
         <stop offset="1" stop-color="${palette.to}" stop-opacity="0"/>
       </radialGradient>
-      <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="${palette.glow}"/>
-        <stop offset=".52" stop-color="#ffffff"/>
-        <stop offset="1" stop-color="${palette.accent}"/>
+      <linearGradient id="ring" x1="106" y1="60" x2="306" y2="220" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="${palette.ring}"/>
+        <stop offset=".45" stop-color="#ffffff"/>
+        <stop offset="1" stop-color="${palette.light}"/>
       </linearGradient>
-      <filter id="blur"><feGaussianBlur stdDeviation="12"/></filter>
-      <filter id="glow">
-        <feGaussianBlur stdDeviation="4.5" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
+      <linearGradient id="wave" x1="0" y1="190" x2="420" y2="282" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="${palette.light}"/>
+        <stop offset=".48" stop-color="#ffffff"/>
+        <stop offset="1" stop-color="${palette.ring}"/>
+      </linearGradient>
     </defs>
-    <rect width="420" height="300" fill="url(#bg)"/>
-    <rect width="420" height="300" fill="url(#halo)"/>
-    <circle cx="210" cy="143" r="120" fill="${palette.glow}" opacity=".22" filter="url(#blur)"/>
-    <path d="M-25 226 C54 134 119 287 207 210 S349 132 447 201" fill="none" stroke="${palette.glow}" stroke-width="5" opacity=".86" filter="url(#glow)"/>
-    <path d="M-22 256 C55 174 131 306 222 236 S356 171 446 229" fill="none" stroke="#ffffff" stroke-width="2.2" opacity=".5"/>
-    <path d="M-20 279 C78 222 137 318 229 264 S365 211 443 263" fill="none" stroke="${palette.accent}" stroke-width="9" opacity=".74" filter="url(#blur)"/>
-    <circle cx="210" cy="139" r="75" fill="${palette.to}" opacity=".48"/>
-    <circle cx="210" cy="139" r="72" fill="none" stroke="url(#ring)" stroke-width="3.4" filter="url(#glow)"/>
-    <circle cx="210" cy="139" r="63" fill="${palette.from}" opacity=".42"/>
-    <path d="M62 74h13m-6.5-6.5v13M348 74h14m-7-7v14" stroke="#ffffff" stroke-width="2" opacity=".72"/>
-    <text x="210" y="164" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" stroke="${palette.accent}" stroke-width="1" paint-order="stroke" font-family="IBM Plex Sans Arabic, sans-serif" font-size="94" font-weight="800" filter="url(#glow)">${initial}</text>
+    <rect width="420" height="300" fill="url(#background)"/>
+    <rect width="420" height="300" fill="url(#center-light)"/>
+    <path d="M-20 225C45 161 92 246 160 224S267 174 326 203 390 240 443 195" fill="none" stroke="${palette.light}" stroke-width="7" opacity=".84"/>
+    <path d="M-20 246C42 188 91 265 159 245S269 196 329 224 391 257 443 218" fill="none" stroke="url(#wave)" stroke-width="3.5" opacity=".92"/>
+    <path d="M-20 269C55 218 101 286 171 269S276 227 338 250 394 278 443 246" fill="none" stroke="${palette.ring}" stroke-width="1.8" opacity=".62"/>
+    <circle cx="210" cy="133" r="112" fill="${palette.to}" opacity=".3"/>
+    <circle cx="210" cy="133" r="104" fill="none" stroke="url(#ring)" stroke-width="4"/>
+    <circle cx="210" cy="133" r="96" fill="${palette.mid}" opacity=".3"/>
+    <circle cx="210" cy="133" r="91" fill="none" stroke="${palette.ring}" stroke-width="1.2" opacity=".6"/>
+    <path d="M53 61h9m-4.5-4.5v9M355 62h9m-4.5-4.5v9" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".68"/>
+    <text x="210" y="153" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" stroke="${palette.to}" stroke-width="1.2" paint-order="stroke" font-family="IBM Plex Sans Arabic, sans-serif" font-size="112" font-weight="800">${initial}</text>
   </svg>`;
 
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
