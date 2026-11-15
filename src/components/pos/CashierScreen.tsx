@@ -162,7 +162,7 @@ const loadHeldSaleStorage = (): HeldSaleStorage => {
   }
 };
 
-const ProductCard = React.memo(({ product, availableStock, onAdd, onOutOfStockClick }: any) => {
+const ProductCard = React.memo(({ product, availableStock, onAdd, onOutOfStockClick, formatCurrency }: any) => {
   const isOutOfStock = availableStock <= 0;
   const lowStockLimit = Math.max(0, product.minStockAlert ?? 0);
   const stockColor = isOutOfStock || availableStock <= lowStockLimit
@@ -204,6 +204,7 @@ const ProductCard = React.memo(({ product, availableStock, onAdd, onOutOfStockCl
       <h4 className="matjark-pos-product-name">
         <span className="matjark-pos-product-name-text">{product.name}</span>
       </h4>
+      <div className="matjark-pos-product-price">{formatCurrency(product.salePrice)}</div>
     </div>
   );
 });
@@ -1429,6 +1430,7 @@ export const CashierScreen: React.FC = () => {
                   product={p}
                   availableStock={Math.max(0, p.stock - (cartQuantitiesByProduct.get(p.id) ?? 0))}
                   onAdd={handleSafeAdd}
+                  formatCurrency={formatCurrency}
                   onOutOfStockClick={(prod: any) =>
                     showSnackbar(`نفذت كمية "${prod.name}" من المخزن ولا يمكن إضافتها.`)
                   }
