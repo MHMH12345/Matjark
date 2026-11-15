@@ -20,12 +20,12 @@ const NAV_ITEMS: Array<{ id: ActiveTab; label: string; icon: React.ComponentType
   { id: 'inventory', label: 'المنتجات', icon: Package },
   { id: 'invoices', label: 'الفواتير', icon: FileText },
   { id: 'customers', label: 'العملاء', icon: Users },
-  { id: 'accounting', label: 'المصروفات', icon: Wallet },
+  { id: 'accounting', label: 'المحاسبة', icon: Wallet },
   { id: 'reports', label: 'التقارير', icon: BarChart3 },
   { id: 'settings', label: 'الإعدادات', icon: Settings },
 ];
 
-export const Sidebar: React.FC = () => {
+export const Sidebar: React.FC<{ onOpenPerformanceModal?: () => void }> = ({ onOpenPerformanceModal }) => {
   const { activeTab, setActiveTab, theme, toggleTheme, products, cartTotals } = useStore();
   const { currentUser } = useAuth();
   const [profileOpen, setProfileOpen] = useState(false);
@@ -103,6 +103,9 @@ export const Sidebar: React.FC = () => {
           <div className="matjark-sidebar-profile-menu" role="menu">
             <button type="button" role="menuitem" onClick={() => { setActiveTab('settings'); setProfileOpen(false); }}>
               <Settings size={16} /> إعدادات البرنامج
+            </button>
+            <button type="button" role="menuitem" onClick={() => { setProfileOpen(false); onOpenPerformanceModal?.(); }}>
+              <Activity size={16} /> مختبر الأداء
             </button>
           </div>
         )}
