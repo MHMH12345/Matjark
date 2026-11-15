@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { MetricCard } from '../ui/MetricCard';
 import { PageScaffold } from '../layout/PageScaffold';
 import { MuiCard } from '../ui/MuiCard';
 import {
@@ -199,67 +200,42 @@ export const AccountingScreen: React.FC = () => {
       icon={<Wallet className="w-5 h-5" />}
     >
       <div className="space-y-4">
-      {/* Financial Executive Cards */}
+      {/* Executive financial indicators use the shared Material 3 KPI system. */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <MuiCard variant="outlined" className="matjark-surface-card">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">المبيعات (قبل الضريبة)</span>
-            <ArrowUpRight className="w-4 h-4 text-[var(--md-sys-color-success)]" />
-          </div>
-          <span className="text-2xl font-bold font-mono text-[var(--md-sys-color-on-surface)]">
-            {formatCurrency(financialSummary.grossRevenue)}
-          </span>
-          <span className="block text-[11px] text-[var(--md-sys-color-outline)] mt-1">
-            تكلفة البضاعة: {formatCurrency(financialSummary.costOfGoodsSold)}
-          </span>
-        </MuiCard>
-
-        <MuiCard variant="outlined" className="matjark-surface-card">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">مجمل الربح (Gross Profit)</span>
-            <span className="text-xs font-mono font-bold text-[var(--md-sys-color-primary)]">
-              {financialSummary.grossRevenue > 0
-                ? `${Math.round((financialSummary.grossProfit / financialSummary.grossRevenue) * 100)}%`
-                : '0%'}
-            </span>
-          </div>
-          <span className="text-2xl font-bold font-mono text-[var(--md-sys-color-primary)]">
-            {formatCurrency(financialSummary.grossProfit)}
-          </span>
-          <span className="block text-[11px] text-[var(--md-sys-color-outline)] mt-1">قبل خصم المصروفات التشغيلية</span>
-        </MuiCard>
-
-        <MuiCard variant="outlined" className="matjark-surface-card">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">المصروفات التشغيلية</span>
-            <TrendingDown className="w-4 h-4 text-[var(--md-sys-color-error)]" />
-          </div>
-          <span className="text-2xl font-bold font-mono text-[var(--md-sys-color-error)]">
-            {formatCurrency(financialSummary.totalExpenses)}
-          </span>
-          <span className="block text-[11px] text-[var(--md-sys-color-outline)] mt-1">
-            {expenses.length} سند صرف مسجل
-          </span>
-        </MuiCard>
-
-        <MuiCard variant="outlined" className="matjark-surface-card">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)]">صافي الأرباح (Net Profit)</span>
-            <Wallet className="w-4 h-4 text-[var(--md-sys-color-success)]" />
-          </div>
-          <span
-            className={`text-2xl font-bold font-mono ${
-              financialSummary.netProfit >= 0
-                ? 'text-[var(--md-sys-color-success)]'
-                : 'text-[var(--md-sys-color-error)]'
-            }`}
-          >
-            {formatCurrency(financialSummary.netProfit)}
-          </span>
-          <span className="block text-[11px] text-[var(--md-sys-color-outline)] mt-1">
-            الربح الصافي بعد كامل التكاليف
-          </span>
-        </MuiCard>
+        <MetricCard
+          label="المبيعات (قبل الضريبة)"
+          value={formatCurrency(financialSummary.grossRevenue)}
+          icon={<ArrowUpRight />}
+          tone="success"
+          supportingText={`تكلفة البضاعة: ${formatCurrency(financialSummary.costOfGoodsSold)}`}
+        />
+        <MetricCard
+          label="مجمل الربح (Gross Profit)"
+          value={formatCurrency(financialSummary.grossProfit)}
+          icon={<Wallet />}
+          tone="primary"
+          valueTone="primary"
+          badge={financialSummary.grossRevenue > 0
+            ? `${Math.round((financialSummary.grossProfit / financialSummary.grossRevenue) * 100)}%`
+            : '0%'}
+          supportingText="قبل خصم المصروفات التشغيلية"
+        />
+        <MetricCard
+          label="المصروفات التشغيلية"
+          value={formatCurrency(financialSummary.totalExpenses)}
+          icon={<TrendingDown />}
+          tone="error"
+          valueTone="error"
+          supportingText={`${expenses.length.toLocaleString('ar-EG')} سند صرف مسجل`}
+        />
+        <MetricCard
+          label="صافي الأرباح (Net Profit)"
+          value={formatCurrency(financialSummary.netProfit)}
+          icon={<Wallet />}
+          tone={financialSummary.netProfit >= 0 ? 'success' : 'error'}
+          valueTone={financialSummary.netProfit >= 0 ? 'success' : 'error'}
+          supportingText="الربح الصافي بعد كامل التكاليف"
+        />
       </div>
 
       {/* VAT Settlement Banner */}
