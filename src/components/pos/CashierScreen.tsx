@@ -1191,7 +1191,7 @@ export const CashierScreen: React.FC = () => {
                 <circle cx="34.5" cy="39" r="2.7" />
               </svg>
             </span>
-            <span className="text-[13px] font-bold text-[var(--md-sys-color-on-surface)]">سلة البيع</span>
+            <span className="matjark-pos-cart-title text-[13px] font-bold text-[var(--md-sys-color-on-surface)]">سلة البيع</span>
             <MBadge label={String(cartTotals.unitsCount)} variant="large" color="primary" className="matjark-pos-cart-count-badge" />
           </div>
           <div className="matjark-pos-cart-header-actions flex items-center gap-1.5" dir="rtl">
