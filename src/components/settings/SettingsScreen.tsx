@@ -542,8 +542,10 @@ export const SettingsScreen: React.FC = () => {
           aria-controls="matjark-backup-settings-content"
           onClick={() => setBackupPanelExpanded((expanded) => !expanded)}
         >
-          <span>{backupPanelExpanded ? 'إخفاء إعدادات النسخ الاحتياطي' : 'عرض كل إعدادات النسخ الاحتياطي'}</span>
-          <ChevronDown className={backupPanelExpanded ? 'matjark-settings-backup-toggle__arrow is-expanded' : 'matjark-settings-backup-toggle__arrow'} size={20} />
+          <span className="matjark-settings-backup-toggle__content">
+            <span>{backupPanelExpanded ? 'إخفاء إعدادات النسخ الاحتياطي' : 'عرض كل إعدادات النسخ الاحتياطي'}</span>
+            <ChevronDown className={backupPanelExpanded ? 'matjark-settings-backup-toggle__arrow is-expanded' : 'matjark-settings-backup-toggle__arrow'} size={20} />
+          </span>
         </MuiButton>
         {backupPanelExpanded && (
           <div id="matjark-backup-settings-content" className="matjark-settings-backup-content">
