@@ -63,8 +63,8 @@ export const Sidebar: React.FC = () => {
               aria-current={active ? 'page' : undefined}
               onClick={() => setActiveTab(id)}
             >
-              <span className="matjark-sidebar-link__icon"><Icon size={21} strokeWidth={1.9} /></span>
               <span className="matjark-sidebar-link__label">{label}</span>
+              <span className="matjark-sidebar-link__icon"><Icon size={21} strokeWidth={1.9} /></span>
               {badge > 0 && <span className="matjark-sidebar-link__badge">{badge > 99 ? '99+' : badge}</span>}
             </button>
           );
