@@ -14,6 +14,11 @@ import 'material/styles/bottom-sheet';
 import 'material/styles/navigation-rail';
 import 'material/styles/navigation-bar';
 import App from './App.tsx';
+import { installDevErrorReporter } from './utils/devErrorReporter';
+
+if (import.meta.env.DEV) {
+  installDevErrorReporter();
+}
 import './index.css';
 import './styles/neon-theme.css';
 
