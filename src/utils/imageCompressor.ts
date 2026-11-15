@@ -90,21 +90,58 @@ export async function compressProductImage(file: File, maxDimension = 480, quali
  */
 export function getProductPlaceholderSvg(name: string, category: string): string {
   const initial = (name.trim()[0] || 'م').toUpperCase();
-  const colors: Record<string, string> = {
-    'مشروبات': '#0288d1',
-    'أطعمة': '#2e7d32',
-    'إلكترونيات': '#7b1fa2',
-    'عطور': '#c2185b',
-    'منظفات': '#00796b',
-    'أدوات': '#e65100',
-    'حلويات': '#f57c00',
-  };
-  const bg = colors[category] || '#1976d2';
+  const palettes: Array<{ from: string; to: string; glow: string; accent: string }> = [
+    { from: '#073fc7', to: '#06236f', glow: '#00d9ff', accent: '#2778ff' },
+    { from: '#9c00e9', to: '#370078', glow: '#ff3dd7', accent: '#e65bff' },
+    { from: '#0064cf', to: '#071d75', glow: '#24e0ff', accent: '#426cff' },
+    { from: '#b000db', to: '#470078', glow: '#ff65ec', accent: '#a93bff' },
+    { from: '#b42b00', to: '#4d1047', glow: '#ffba32', accent: '#ff4e7a' },
+    { from: '#005eaa', to: '#111d78', glow: '#30dfff', accent: '#3a8aff' },
+  ];
+  const normalizedCategory = category.trim();
+  const categoryIndex =
+    normalizedCategory.includes('حلويات') ? 1 :
+    normalizedCategory.includes('مشروبات') ? 0 :
+    normalizedCategory.includes('زيت') || normalizedCategory.includes('سمن') ? 2 :
+    normalizedCategory.includes('منظف') ? 3 :
+    normalizedCategory.includes('أدوات') ? 4 :
+    normalizedCategory.includes('ألبان') || normalizedCategory.includes('جبن') ? 5 :
+    Array.from(normalizedCategory).reduce((sum, char) => sum + char.charCodeAt(0), 0) % palettes.length;
+  const palette = palettes[categoryIndex];
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
-    <rect width="80" height="80" rx="12" fill="${bg}" opacity="0.12"/>
-    <circle cx="40" cy="40" r="26" fill="${bg}" opacity="0.2"/>
-    <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" fill="${bg}" font-family="Cairo, sans-serif" font-weight="700" font-size="28">${initial}</text>
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="300" viewBox="0 0 420 300">
+    <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="${palette.from}"/>
+        <stop offset="1" stop-color="${palette.to}"/>
+      </linearGradient>
+      <radialGradient id="halo">
+        <stop offset="0" stop-color="${palette.glow}" stop-opacity=".52"/>
+        <stop offset=".62" stop-color="${palette.accent}" stop-opacity=".2"/>
+        <stop offset="1" stop-color="${palette.to}" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="${palette.glow}"/>
+        <stop offset=".52" stop-color="#ffffff"/>
+        <stop offset="1" stop-color="${palette.accent}"/>
+      </linearGradient>
+      <filter id="blur"><feGaussianBlur stdDeviation="12"/></filter>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4.5" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <rect width="420" height="300" fill="url(#bg)"/>
+    <rect width="420" height="300" fill="url(#halo)"/>
+    <circle cx="210" cy="143" r="120" fill="${palette.glow}" opacity=".22" filter="url(#blur)"/>
+    <path d="M-25 226 C54 134 119 287 207 210 S349 132 447 201" fill="none" stroke="${palette.glow}" stroke-width="5" opacity=".86" filter="url(#glow)"/>
+    <path d="M-22 256 C55 174 131 306 222 236 S356 171 446 229" fill="none" stroke="#ffffff" stroke-width="2.2" opacity=".5"/>
+    <path d="M-20 279 C78 222 137 318 229 264 S365 211 443 263" fill="none" stroke="${palette.accent}" stroke-width="9" opacity=".74" filter="url(#blur)"/>
+    <circle cx="210" cy="139" r="75" fill="${palette.to}" opacity=".48"/>
+    <circle cx="210" cy="139" r="72" fill="none" stroke="url(#ring)" stroke-width="3.4" filter="url(#glow)"/>
+    <circle cx="210" cy="139" r="63" fill="${palette.from}" opacity=".42"/>
+    <path d="M62 74h13m-6.5-6.5v13M348 74h14m-7-7v14" stroke="#ffffff" stroke-width="2" opacity=".72"/>
+    <text x="210" y="164" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" stroke="${palette.accent}" stroke-width="1" paint-order="stroke" font-family="IBM Plex Sans Arabic, sans-serif" font-size="94" font-weight="800" filter="url(#glow)">${initial}</text>
   </svg>`;
 
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
