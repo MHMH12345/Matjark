@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useMemo, useCallback, useRef } from 'react';
+import { PageScaffold } from '../layout/PageScaffold';
 import { MuiCard } from '../ui/MuiCard';
 import {
   Package,
@@ -317,7 +318,13 @@ export const InventoryScreen: React.FC = () => {
   );
 
   return (
-    <div className="space-y-4">
+    <PageScaffold
+      title="المخزون والمنتجات"
+      description="إدارة الأصناف والكميات والأسعار وتنبيهات المخزون"
+      eyebrow="إدارة المخزون"
+      icon={<Package className="w-5 h-5" />}
+    >
+      <div className="space-y-4">
       {/* Top Inventory Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
@@ -559,6 +566,7 @@ export const InventoryScreen: React.FC = () => {
           </div>
         </form>
       </MuiDialog>
-    </div>
+      </div>
+    </PageScaffold>
   );
 };
