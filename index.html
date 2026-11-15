@@ -14,7 +14,7 @@
         try {
           const savedTheme = localStorage.getItem('matjark_theme');
           const systemPrefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
-          const isDark = savedTheme === 'dark' || (savedTheme !== 'light' && systemPrefersDark);
+          const isDark = savedTheme !== 'light';
           document.documentElement.classList.toggle('dark', isDark);
           document.documentElement.setAttribute('data-theme-mode', isDark ? 'dark' : 'light');
         } catch {
