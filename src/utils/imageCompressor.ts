@@ -135,12 +135,12 @@ export function getProductPlaceholderSvg(name: string, category: string): string
     <path d="M-20 225C45 161 92 246 160 224S267 174 326 203 390 240 443 195" fill="none" stroke="${palette.light}" stroke-width="7" opacity=".84"/>
     <path d="M-20 246C42 188 91 265 159 245S269 196 329 224 391 257 443 218" fill="none" stroke="url(#wave)" stroke-width="3.5" opacity=".92"/>
     <path d="M-20 269C55 218 101 286 171 269S276 227 338 250 394 278 443 246" fill="none" stroke="${palette.ring}" stroke-width="1.8" opacity=".62"/>
-    <circle cx="210" cy="133" r="112" fill="${palette.to}" opacity=".3"/>
-    <circle cx="210" cy="133" r="104" fill="none" stroke="url(#ring)" stroke-width="4"/>
-    <circle cx="210" cy="133" r="96" fill="${palette.mid}" opacity=".3"/>
-    <circle cx="210" cy="133" r="91" fill="none" stroke="${palette.ring}" stroke-width="1.2" opacity=".6"/>
+    <circle cx="210" cy="133" r="128" fill="${palette.to}" opacity=".3"/>
+    <circle cx="210" cy="133" r="120" fill="none" stroke="url(#ring)" stroke-width="4"/>
+    <circle cx="210" cy="133" r="112" fill="${palette.mid}" opacity=".34"/>
+    <circle cx="210" cy="133" r="106" fill="none" stroke="${palette.ring}" stroke-width="1.4" opacity=".68"/>
     <path d="M53 61h9m-4.5-4.5v9M355 62h9m-4.5-4.5v9" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".68"/>
-    <text x="210" y="153" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" stroke="${palette.to}" stroke-width="1.2" paint-order="stroke" font-family="IBM Plex Sans Arabic, sans-serif" font-size="112" font-weight="800">${initial}</text>
+    <text x="210" y="153" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" stroke="${palette.to}" stroke-width="1.2" paint-order="stroke" font-family="IBM Plex Sans Arabic, sans-serif" font-size="126" font-weight="800">${initial}</text>
   </svg>`;
 
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
