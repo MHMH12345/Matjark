@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { PageScaffold } from '../layout/PageScaffold';
 import {
   AlertCircle,
   Archive,
@@ -449,16 +450,13 @@ export const SettingsScreen: React.FC = () => {
 
   return (
     <div className="matjark-settings-page" dir="rtl">
-      <MuiCard className="matjark-settings-header" variant="filled">
-        <header className="matjark-settings-header__content">
-          <div className="matjark-settings-header__icon"><Settings size={25} /></div>
-          <div className="matjark-settings-header__copy">
-            <p className="matjark-settings-eyebrow">MATJARK / SETTINGS</p>
-            <h1>إعدادات البرنامج</h1>
-            <p>إدارة بيانات المتجر والنسخ الاحتياطي المحلي والسحابي.</p>
-          </div>
-        </header>
-      </MuiCard>
+      <PageScaffold
+        title="إعدادات البرنامج"
+        description="إدارة بيانات المتجر والنسخ الاحتياطي المحلي والسحابي."
+        eyebrow="MATJARK / SETTINGS"
+        icon={<Settings size={22} />}
+        maxWidth="100%"
+      >
 
       <section className="matjark-settings-section">
         <div className="matjark-settings-section__heading">
@@ -727,6 +725,7 @@ export const SettingsScreen: React.FC = () => {
         <p className="matjark-settings-dialog-message">{confirmation?.message}</p>
       </MuiDialog>
       {working && <MuiCard className="matjark-settings-working" variant="elevated" role="status"><LoaderCircle size={18} /> جارٍ تنفيذ العملية...</MuiCard>}
+      </PageScaffold>
     </div>
   );
 };
