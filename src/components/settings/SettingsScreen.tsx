@@ -511,7 +511,7 @@ export const SettingsScreen: React.FC = () => {
       <div className="matjark-settings-backup-accordion" dir="rtl">
         <MuiButton
           type="button"
-          variant="outlined"
+          variant="text"
           color="primary"
           size="large"
           fullWidth
