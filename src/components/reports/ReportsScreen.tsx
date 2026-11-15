@@ -3,6 +3,7 @@
  */
 
 import React, { useMemo } from 'react';
+import { MetricCard } from '../ui/MetricCard';
 import { PageScaffold } from '../layout/PageScaffold';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { MuiCard } from '../ui/MuiCard';
@@ -106,52 +107,32 @@ export const ReportsScreen: React.FC = () => {
       icon={<BarChart3 className="w-5 h-5" />}
     >
       <div className="space-y-4">
-      {/* Overview Cards */}
+      {/* Report overview uses the shared Material 3 KPI surface. */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
-          <div className="flex items-center gap-2 text-[var(--md-sys-color-on-surface-variant)] mb-2">
-            <TrendingUp className="w-4 h-4 text-[var(--md-sys-color-success)]" />
-            <h3 className="text-xs font-bold">معدل مبيعات آخر 7 أيام</h3>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold font-mono text-[var(--md-sys-color-on-surface)]">
-              {(
-                dailyTrends.days.reduce((acc, d) => acc + d.total, 0) / (dailyTrends.days.length || 1)
-              ).toFixed(0)}
-            </span>
-            <span className="text-xs text-[var(--md-sys-color-outline)]">{settings.currency} / اليوم</span>
-          </div>
-        </MuiCard>
-
-        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
-          <div className="flex items-center gap-2 text-[var(--md-sys-color-on-surface-variant)] mb-2">
-            <CreditCard className="w-4 h-4 text-[var(--md-sys-color-primary)]" />
-            <h3 className="text-xs font-bold">نسبة المدفوعات الإلكترونية (فيزا / ميزة)</h3>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold font-mono text-[var(--md-sys-color-primary)]">
-              {paymentBreakdown.card.pct}%
-            </span>
-            <span className="text-xs text-[var(--md-sys-color-outline)]">
-              ({formatCurrency(paymentBreakdown.card.total)})
-            </span>
-          </div>
-        </MuiCard>
-
-        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact">
-          <div className="flex items-center gap-2 text-[var(--md-sys-color-on-surface-variant)] mb-2">
-            <Award className="w-4 h-4 text-[var(--md-sys-color-warning)]" />
-            <h3 className="text-xs font-bold">المنتج الأكثر طلبًا</h3>
-          </div>
-          <div className="truncate">
-            <span className="text-base font-bold text-[var(--md-sys-color-on-surface)] truncate block">
-              {topSellingProducts[0]?.name || 'لا توجد بيانات كافية'}
-            </span>
-            <span className="text-xs text-[var(--md-sys-color-outline)]">
-              {topSellingProducts[0] ? `${topSellingProducts[0].quantity} قطعة مباعة` : ''}
-            </span>
-          </div>
-        </MuiCard>
+        <MetricCard
+          label="معدل مبيعات آخر 7 أيام"
+          value={(
+            dailyTrends.days.reduce((acc, d) => acc + d.total, 0) / (dailyTrends.days.length || 1)
+          ).toFixed(0)}
+          icon={<TrendingUp />}
+          tone="success"
+          supportingText={`${settings.currency} / اليوم`}
+        />
+        <MetricCard
+          label="نسبة المدفوعات الإلكترونية (فيزا / ميزة)"
+          value={`${paymentBreakdown.card.pct}%`}
+          icon={<CreditCard />}
+          tone="primary"
+          valueTone="primary"
+          supportingText={`(${formatCurrency(paymentBreakdown.card.total)})`}
+        />
+        <MetricCard
+          label="المنتج الأكثر طلبًا"
+          value={topSellingProducts[0]?.name || 'لا توجد بيانات كافية'}
+          icon={<Award />}
+          tone="warning"
+          supportingText={topSellingProducts[0] ? `${topSellingProducts[0].quantity} قطعة مباعة` : undefined}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
