@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { PageScaffold } from '../layout/PageScaffold';
 import { MuiCard } from '../ui/MuiCard';
 import {
   Wallet,
@@ -191,7 +192,13 @@ export const AccountingScreen: React.FC = () => {
   );
 
   return (
-    <div className="space-y-4">
+    <PageScaffold
+      title="المحاسبة والمصروفات"
+      description="متابعة الإيرادات والمصروفات والنتائج المالية"
+      eyebrow="الإدارة المالية"
+      icon={<Wallet className="w-5 h-5" />}
+    >
+      <div className="space-y-4">
       {/* Financial Executive Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <MuiCard variant="outlined" className="matjark-surface-card">
@@ -398,6 +405,7 @@ export const AccountingScreen: React.FC = () => {
           />
         </form>
       </MuiDialog>
-    </div>
+      </div>
+    </PageScaffold>
   );
 };
