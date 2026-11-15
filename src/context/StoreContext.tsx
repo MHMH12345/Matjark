@@ -176,9 +176,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('matjark_theme');
       if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
-    return 'light';
+    return 'dark';
   });
 
   const [isCartTaxEnabled, setIsCartTaxEnabled] = useState<boolean>(() => db.settings.enableTax ?? false);
