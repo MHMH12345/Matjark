@@ -158,7 +158,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
   return (
     <MCard variant="outlined" fullWidth className="matjark-data-grid-shell flex flex-col w-full overflow-hidden">
       {/* Table Toolbar */}
-      <div className="p-3 bg-[var(--md-sys-color-surface-container-low)] dark:bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] flex flex-wrap items-center justify-between gap-3">
+      <div className="matjark-data-grid-toolbar p-3 bg-[var(--md-sys-color-surface-container-low)] dark:bg-[var(--md-sys-color-surface-container-low)] border-b border-[var(--md-sys-color-outline-variant)] flex flex-wrap items-center justify-between gap-3">
         <div className="relative flex-1 w-full min-w-0 sm:min-w-[240px] max-w-md">
           <MuiTextField
             value={searchTerm}
@@ -191,7 +191,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
 
       {/* Header Row */}
       {!isMobile && (
-        <div className="flex items-center bg-[var(--md-sys-color-surface-container-high)] dark:bg-[var(--md-sys-color-surface-container-high)] border-b border-[var(--md-sys-color-outline-variant)] text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] dark:text-[var(--md-sys-color-on-surface-variant)] select-none pe-2">
+        <div className="matjark-data-grid-header-row flex items-center bg-[var(--md-sys-color-surface-container-high)] dark:bg-[var(--md-sys-color-surface-container-high)] border-b border-[var(--md-sys-color-outline-variant)] text-xs font-semibold text-[var(--md-sys-color-on-surface-variant)] dark:text-[var(--md-sys-color-on-surface-variant)] select-none pe-2">
         {columns.map((col, idx) => {
           const isSorted = sortField === col.field;
           const sortable = col.sortable !== false;
@@ -237,7 +237,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
         className="relative overflow-y-auto overflow-x-hidden divide-y divide-[var(--md-sys-color-outline-variant)] matjark-data-grid-viewport"
       >
         {totalCount === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full py-12 text-[var(--md-sys-color-outline)]">
+          <div className="matjark-data-grid-empty flex flex-col items-center justify-center h-full py-12 text-[var(--md-sys-color-outline)]">
             <p className="text-sm">{emptyMessage}</p>
           </div>
         ) : (
@@ -309,7 +309,7 @@ function MuiDataGridInner<T extends Record<string, any>>({
       </div>
 
       {/* Footer Info */}
-      <div className="px-4 py-2 bg-[var(--md-sys-color-surface-container-low)] dark:bg-[var(--md-sys-color-surface-container-low)] border-t border-[var(--md-sys-color-outline-variant)] text-[11px] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-between">
+      <div className="matjark-data-grid-footer px-4 py-2 bg-[var(--md-sys-color-surface-container-low)] dark:bg-[var(--md-sys-color-surface-container-low)] border-t border-[var(--md-sys-color-outline-variant)] text-[11px] text-[var(--md-sys-color-on-surface-variant)] flex items-center justify-between">
         <span>
           عرض {totalCount === 0 ? 0 : startIndex + 1}–{Math.min(endIndex, totalCount)} من {totalCount.toLocaleString('ar-EG')}
         </span>
