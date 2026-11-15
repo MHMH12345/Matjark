@@ -1183,9 +1183,14 @@ export const CashierScreen: React.FC = () => {
       >
         <div className="matjark-pos-cart-header px-3.5 py-2.5 border-b border-[var(--md-sys-color-outline-variant)]/70 flex items-center justify-between bg-[var(--md-sys-color-surface-container-low)] shrink-0">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] flex items-center justify-center">
-              <ShoppingCart className="w-3.5 h-3.5" />
-            </div>
+            <span className="matjark-cart-header-emblem" aria-hidden="true">
+              <svg viewBox="0 0 48 48" role="img" focusable="false">
+                <path d="M5.5 8h4.2l4.4 22.2a3.5 3.5 0 0 0 3.4 2.8h18.2a3.5 3.5 0 0 0 3.3-2.5L43 15H13.2" />
+                <path d="M17.5 23.5h20.2M19.5 29.5l-1.2-6M37.5 29.5l1.5-6" />
+                <circle cx="19.5" cy="39" r="2.7" />
+                <circle cx="34.5" cy="39" r="2.7" />
+              </svg>
+            </span>
             <span className="text-[13px] font-bold text-[var(--md-sys-color-on-surface)]">سلة البيع</span>
             <MBadge label={String(cartTotals.unitsCount)} variant="large" color="primary" className="matjark-pos-cart-count-badge" />
           </div>
@@ -1255,9 +1260,28 @@ export const CashierScreen: React.FC = () => {
             )}
           </div>
         ) : cart.length === 0 ? (
-          <div className="flex flex-col items-center justify-center flex-1 min-h-0 text-[var(--md-sys-color-outline)]">
-            <ShoppingCart className="w-9 h-9 mb-1.5 opacity-40" />
-            <p className="text-xs font-medium">السلة فارغة، اضغط على أي صنف للإضافة</p>
+          <div className="matjark-cart-empty flex flex-col items-center justify-center flex-1 min-h-0" dir="rtl">
+            <div className="matjark-cart-empty-art" aria-hidden="true">
+              <svg viewBox="0 0 136 112" role="img" focusable="false">
+                <defs>
+                  <linearGradient id="matjark-empty-cart-stroke" x1="20" y1="14" x2="116" y2="102" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stop-color="#ff72e7"/>
+                    <stop offset=".5" stop-color="#ffffff"/>
+                    <stop offset="1" stop-color="#42baff"/>
+                  </linearGradient>
+                  <linearGradient id="matjark-empty-cart-wheel" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#ff4bd4"/>
+                    <stop offset="1" stop-color="#4a7bff"/>
+                  </linearGradient>
+                </defs>
+                <path d="M13 15h11l10 53a8 8 0 0 0 8 6h48a8 8 0 0 0 7.7-5.8L108 39H29" fill="none" stroke="url(#matjark-empty-cart-stroke)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M37 48h62M42 62h50" fill="none" stroke="#b8d9ff" stroke-width="2.2" stroke-linecap="round" opacity=".72"/>
+                <circle cx="48" cy="91" r="8" fill="#11104b" stroke="url(#matjark-empty-cart-wheel)" stroke-width="4"/>
+                <circle cx="87" cy="91" r="8" fill="#11104b" stroke="url(#matjark-empty-cart-wheel)" stroke-width="4"/>
+                <path d="M110 18h8m-4-4v8M20 38h6m-3-3v6" stroke="#ff8be9" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <p className="matjark-cart-empty__text">السلة فارغة، اضغط على أي صنف للإضافة</p>
           </div>
         ) : (
           <div
