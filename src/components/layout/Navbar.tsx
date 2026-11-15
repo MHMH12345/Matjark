@@ -44,11 +44,11 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal, cas
   return (
     <header className={'matjark-topbar' + (cashierMode ? ' matjark-topbar--cashier' : '')} dir="rtl">
       <div className="matjark-topbar-title">
-        <span className="matjark-topbar-title__icon"><PageIcon size={22} strokeWidth={1.9} /></span>
         <span className="matjark-topbar-title__copy">
           <strong>{meta.title}</strong>
           <small>{dateLabel} · {meta.subtitle}</small>
         </span>
+        <span className="matjark-topbar-title__icon"><PageIcon size={22} strokeWidth={1.9} /></span>
       </div>
 
       <div className="matjark-topbar-actions">
