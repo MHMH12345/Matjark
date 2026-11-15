@@ -1214,7 +1214,11 @@ export const CashierScreen: React.FC = () => {
       >
         <div className="matjark-pos-cart-header px-3.5 py-2.5 border-b border-[var(--md-sys-color-outline-variant)]/70 flex items-center justify-between bg-[var(--md-sys-color-surface-container-low)] shrink-0">
           <div className="flex items-center gap-2">
-            <span className="matjark-cart-header-emblem" aria-hidden="true">
+            <span
+              className="matjark-cart-header-emblem"
+              style={{ width: 54, minWidth: 54, height: 54, flex: '0 0 54px' }}
+              aria-hidden="true"
+            >
               <svg viewBox="0 0 48 48" role="img" focusable="false">
                 <path d="M5.5 8h4.2l4.4 22.2a3.5 3.5 0 0 0 3.4 2.8h18.2a3.5 3.5 0 0 0 3.3-2.5L43 15H13.2" />
                 <path d="M17.5 23.5h20.2M19.5 29.5l-1.2-6M37.5 29.5l1.5-6" />
@@ -1342,7 +1346,7 @@ export const CashierScreen: React.FC = () => {
 
           <div className="flex justify-between items-center">
             <span className="text-xs lg:text-sm font-bold text-[var(--md-sys-color-on-surface)]">الإجمالي النهائي:</span>
-            <span className="text-sm lg:text-base font-extrabold text-[var(--md-sys-color-primary)] whitespace-nowrap">
+            <span className="matjark-pos-grand-total text-sm lg:text-base font-extrabold text-[var(--md-sys-color-primary)] whitespace-nowrap">
               {formatCurrency(cartTotals.grandTotal)}
             </span>
           </div>
