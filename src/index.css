@@ -5962,3 +5962,270 @@ body {
     transition: none !important;
   }
 }
+
+
+/* Neon Material 3 component variants: outlined/text remain transparent, filled actions glow. */
+.matjark-button--variant-contained.matjark-button--primary::part(button) {
+  border: 1px solid rgba(255, 111, 245, .85) !important;
+  background: linear-gradient(105deg, #c900f5, #8922ff 54%, #214eff) !important;
+  color: #fff !important;
+  box-shadow: 0 0 16px rgba(194, 37, 255, .42), 0 0 18px rgba(24, 80, 255, .18) !important;
+}
+
+.matjark-button--variant-contained.matjark-button--secondary::part(button) {
+  border: 1px solid rgba(255, 150, 234, .8) !important;
+  background: linear-gradient(105deg, #ff38c5, #b220ff) !important;
+  color: #fff !important;
+  box-shadow: 0 0 16px rgba(255, 44, 203, .36) !important;
+}
+
+.matjark-button--variant-contained.matjark-button--success::part(button) {
+  border: 1px solid rgba(73, 255, 170, .45) !important;
+  background: linear-gradient(105deg, #087a57, #0a9e9e) !important;
+  color: #fff !important;
+}
+
+.matjark-button--variant-contained.matjark-button--error::part(button) {
+  border: 1px solid rgba(255, 110, 160, .65) !important;
+  background: linear-gradient(105deg, #c41468, #7d164d) !important;
+  color: #fff !important;
+}
+
+.matjark-button--variant-contained.matjark-button--warning::part(button) {
+  border: 1px solid rgba(255, 191, 95, .65) !important;
+  background: linear-gradient(105deg, #bc6500, #8b3c10) !important;
+  color: #fff !important;
+}
+
+.matjark-button--variant-outlined::part(button) {
+  border: 1px solid rgba(151, 119, 255, .66) !important;
+  background: rgba(12, 12, 47, .35) !important;
+  color: #e0d9ff !important;
+  box-shadow: none !important;
+}
+
+.matjark-button--variant-outlined:hover::part(button) {
+  border-color: rgba(255, 66, 214, .9) !important;
+  background: rgba(99, 30, 154, .22) !important;
+  box-shadow: 0 0 13px rgba(174, 39, 255, .22) !important;
+}
+
+.matjark-button--variant-text::part(button) {
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: #c5baff !important;
+  box-shadow: none !important;
+}
+
+.matjark-button--variant-text:hover::part(button) {
+  border-color: rgba(151, 119, 255, .28) !important;
+  background: rgba(111, 50, 214, .16) !important;
+  color: #fff !important;
+}
+
+.matjark-button--variant-tonal::part(button) {
+  border: 1px solid rgba(163, 104, 255, .52) !important;
+  background: linear-gradient(105deg, rgba(149, 35, 237, .37), rgba(34, 72, 205, .35)) !important;
+  color: #f2eaff !important;
+}
+
+/* Selection chips keep the luminous active state while idle options stay subdued. */
+.matjark-chip-host {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  color: #ddd8f8;
+}
+
+.matjark-chip-host .matjark-native-chip-set {
+  --mtrl-sys-color-primary: #d44aff;
+  --mtrl-sys-color-on-primary: #ffffff;
+  --mtrl-sys-color-secondary-container: rgba(86, 55, 158, .34);
+  --mtrl-sys-color-on-secondary-container: #e6e0ff;
+}
+
+.matjark-chip-host .matjark-native-chip-set::part(container) {
+  gap: 6px;
+}
+
+.matjark-chip-host .matjark-native-chip-set [aria-selected="true"] {
+  filter: drop-shadow(0 0 8px rgba(192, 55, 255, .24));
+}
+
+.matjark-chip-group {
+  width: 100%;
+  min-width: 0;
+  --mtrl-sys-color-primary: #dc38ff;
+  --mtrl-sys-color-on-primary: #ffffff;
+  --mtrl-sys-color-secondary-container: rgba(47, 50, 133, .58);
+  --mtrl-sys-color-on-secondary-container: #e5e9ff;
+}
+
+.matjark-switch {
+  --mtrl-sys-color-primary: #d338ff;
+  --mtrl-sys-color-on-primary: #fff;
+  --mtrl-sys-color-surface-container-highest: #27215d;
+  --mtrl-sys-color-outline: #8275c6;
+  color: #f0eaff !important;
+  font-family: inherit !important;
+}
+
+.matjark-dialog::part(dialog),
+.matjark-pos-payment-sheet::part(dialog),
+.matjark-pos-cart-sheet::part(dialog),
+.matjark-pos-scanner-sheet::part(dialog) {
+  border: 1px solid rgba(166, 77, 255, .68) !important;
+  border-radius: 20px !important;
+  background: linear-gradient(150deg, #151047, #080b2c) !important;
+  color: #f4efff !important;
+  box-shadow: 0 18px 65px rgba(0, 0, 0, .55), 0 0 28px rgba(162, 38, 255, .22) !important;
+}
+
+.matjark-dialog::part(headline),
+.matjark-pos-payment-sheet::part(headline),
+.matjark-pos-cart-sheet::part(headline),
+.matjark-pos-scanner-sheet::part(headline) {
+  color: #fff !important;
+  font-family: inherit !important;
+  font-weight: 800 !important;
+}
+
+.matjark-snackbar::part(surface),
+.matjark-pos-snackbar::part(surface) {
+  border: 1px solid rgba(166, 77, 255, .58) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(110deg, #27105c, #101446) !important;
+  color: #fff !important;
+  box-shadow: 0 0 22px rgba(169, 40, 255, .28) !important;
+}
+
+.matjark-snackbar--success::part(surface) {
+  border-color: rgba(60, 224, 157, .64) !important;
+}
+
+.matjark-snackbar--error::part(surface) {
+  border-color: rgba(255, 74, 135, .72) !important;
+}
+
+.matjark-snackbar--warning::part(surface) {
+  border-color: rgba(255, 186, 83, .72) !important;
+}
+
+/* Settings content inherits the same deep glass surfaces and neon section accents. */
+.matjark-settings-page {
+  direction: rtl;
+  color: #f5f0ff;
+}
+
+.matjark-settings-section__heading {
+  direction: rtl;
+}
+
+.matjark-settings-section__heading h2 {
+  color: #f8f5ff !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+}
+
+.matjark-settings-section__heading p {
+  color: #b7b2e3 !important;
+}
+
+.matjark-settings-section__icon {
+  border: 1px solid rgba(174, 66, 255, .58);
+  background: linear-gradient(145deg, rgba(142, 36, 255, .34), rgba(12, 72, 196, .38));
+  color: #eecaff;
+  box-shadow: 0 0 16px rgba(166, 54, 255, .2);
+}
+
+.matjark-settings-card::part(card),
+.matjark-settings-subcard::part(card),
+.matjark-settings-danger-zone::part(card),
+.matjark-settings-callout::part(card),
+.matjark-settings-info-field::part(card) {
+  border-color: rgba(114, 92, 204, .56) !important;
+  background: linear-gradient(145deg, rgba(19, 16, 64, .96), rgba(9, 15, 49, .96)) !important;
+  color: #f5f0ff !important;
+}
+
+.matjark-settings-note,
+.matjark-settings-info-field span,
+.matjark-settings-info-field strong,
+.matjark-settings-label {
+  color: #c6c0e9 !important;
+}
+
+.matjark-settings-backup-list {
+  border-color: rgba(193, 54, 255, .72) !important;
+  background: linear-gradient(120deg, rgba(24, 9, 63, .96), rgba(7, 20, 68, .96)) !important;
+  box-shadow: 0 0 19px rgba(169, 45, 255, .2);
+}
+
+.matjark-settings-backup-content {
+  border-color: rgba(140, 84, 230, .4) !important;
+}
+
+.matjark-settings-backup-toggle__icon {
+  border: 1px solid rgba(255, 71, 219, .64);
+  background: linear-gradient(135deg, #a515ee, #1744d9) !important;
+  color: #fff !important;
+  box-shadow: 0 0 18px rgba(196, 31, 255, .38);
+}
+
+.matjark-settings-backup-toggle__copy strong {
+  color: #fff !important;
+}
+
+.matjark-settings-backup-toggle__description,
+.matjark-settings-backup-toggle__status {
+  color: #c6c2ea !important;
+}
+
+.matjark-settings-backup-toggle__arrow {
+  color: #e4d5ff !important;
+}
+
+/* Bottom navigation and POS mobile app bar use the same neon brand. */
+.matjark-mobile-cashier-appbar {
+  border-bottom: 1px solid rgba(148, 91, 255, .46) !important;
+  background: linear-gradient(105deg, #130b42, #071345) !important;
+  color: #fff !important;
+}
+
+.matjark-mobile-menu-trigger {
+  border-color: rgba(173, 82, 255, .5) !important;
+  background: linear-gradient(135deg, #9b1eff, #2546e8) !important;
+  color: #fff !important;
+}
+
+.matjark-pos-payment-sheet::part(content),
+.matjark-pos-scanner-sheet::part(content) {
+  color: #f4efff !important;
+}
+
+.matjark-pos-payment-sheet .bg-\[var\(--md-sys-color-surface\)\] {
+  background: rgba(15, 16, 63, .9) !important;
+  border-color: rgba(144, 96, 238, .45) !important;
+}
+
+.matjark-settings-theme .matjark-switch {
+  color: #f4efff;
+}
+
+@media (max-width: 767px) {
+  .matjark-topbar-actions {
+    gap: 6px;
+  }
+
+  .matjark-sidebar-theme {
+    direction: ltr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .matjark-button::part(button),
+  .matjark-sidebar-link,
+  .matjark-topbar-action {
+    transition: none !important;
+  }
+}
