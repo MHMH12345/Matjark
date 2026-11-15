@@ -1300,20 +1300,20 @@ export const CashierScreen: React.FC = () => {
               <svg viewBox="0 0 136 112" role="img" focusable="false">
                 <defs>
                   <linearGradient id="matjark-empty-cart-stroke" x1="20" y1="14" x2="116" y2="102" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#ff72e7"/>
-                    <stop offset=".5" stop-color="#ffffff"/>
-                    <stop offset="1" stop-color="#42baff"/>
+                    <stop offset="0" stopColor="#ff72e7"/>
+                    <stop offset=".5" stopColor="#ffffff"/>
+                    <stop offset="1" stopColor="#42baff"/>
                   </linearGradient>
                   <linearGradient id="matjark-empty-cart-wheel" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stop-color="#ff4bd4"/>
-                    <stop offset="1" stop-color="#4a7bff"/>
+                    <stop offset="0" stopColor="#ff4bd4"/>
+                    <stop offset="1" stopColor="#4a7bff"/>
                   </linearGradient>
                 </defs>
-                <path d="M13 15h11l10 53a8 8 0 0 0 8 6h48a8 8 0 0 0 7.7-5.8L108 39H29" fill="none" stroke="url(#matjark-empty-cart-stroke)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M37 48h62M42 62h50" fill="none" stroke="#b8d9ff" stroke-width="2.2" stroke-linecap="round" opacity=".72"/>
-                <circle cx="48" cy="91" r="8" fill="#11104b" stroke="url(#matjark-empty-cart-wheel)" stroke-width="4"/>
-                <circle cx="87" cy="91" r="8" fill="#11104b" stroke="url(#matjark-empty-cart-wheel)" stroke-width="4"/>
-                <path d="M110 18h8m-4-4v8M20 38h6m-3-3v6" stroke="#ff8be9" stroke-width="2" stroke-linecap="round"/>
+                <path d="M13 15h11l10 53a8 8 0 0 0 8 6h48a8 8 0 0 0 7.7-5.8L108 39H29" fill="none" stroke="url(#matjark-empty-cart-stroke)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M37 48h62M42 62h50" fill="none" stroke="#b8d9ff" strokeWidth="2.2" strokeLinecap="round" opacity=".72"/>
+                <circle cx="48" cy="91" r="8" fill="#11104b" stroke="url(#matjark-empty-cart-wheel)" strokeWidth="4"/>
+                <circle cx="87" cy="91" r="8" fill="#11104b" stroke="url(#matjark-empty-cart-wheel)" strokeWidth="4"/>
+                <path d="M110 18h8m-4-4v8M20 38h6m-3-3v6" stroke="#ff8be9" strokeWidth="2" strokeLinecap="round"/>
               </svg>
             </div>
             <p className="matjark-cart-empty__text">السلة فارغة، اضغط على أي صنف للإضافة</p>
