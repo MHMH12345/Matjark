@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useMemo, useCallback, useRef } from 'react';
+import { MetricCard } from '../ui/MetricCard';
 import { PageScaffold } from '../layout/PageScaffold';
 import { MuiCard } from '../ui/MuiCard';
 import {
@@ -325,55 +326,34 @@ export const InventoryScreen: React.FC = () => {
       icon={<Package className="w-5 h-5" />}
     >
       <div className="space-y-4">
-      {/* Top Inventory Summary Cards */}
+      {/* Inventory KPI cards share one Material 3 pattern. */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
-          <div>
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">إجمالي المنتجات</span>
-            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-on-surface)]">
-              {inventoryStats.totalItems.toLocaleString('ar-EG')}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-primary)]">
-            <Package className="w-5 h-5" />
-          </div>
-        </MuiCard>
-
-        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
-          <div>
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">قيمة المخزون (سعر البيع)</span>
-            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-success)]">
-              {formatCurrency(inventoryStats.totalSaleValuation)}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)]">
-            <TrendingUp className="w-5 h-5" />
-          </div>
-        </MuiCard>
-
-        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
-          <div>
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">تكلفة رأس المال</span>
-            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-on-surface-variant)]">
-              {formatCurrency(inventoryStats.totalCostValuation)}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-tertiary)]">
-            <DollarSign className="w-5 h-5" />
-          </div>
-        </MuiCard>
-
-        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
-          <div>
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">نواقص تحتاج إعادة طلب</span>
-            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-warning)]">
-              {inventoryStats.lowStockCount}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-warning-container)] text-[var(--md-sys-color-warning)]">
-            <AlertTriangle className="w-5 h-5" />
-          </div>
-        </MuiCard>
+        <MetricCard
+          label="إجمالي المنتجات"
+          value={inventoryStats.totalItems.toLocaleString('ar-EG')}
+          icon={<Package />}
+          tone="primary"
+        />
+        <MetricCard
+          label="قيمة المخزون (سعر البيع)"
+          value={formatCurrency(inventoryStats.totalSaleValuation)}
+          icon={<TrendingUp />}
+          tone="success"
+          valueTone="success"
+        />
+        <MetricCard
+          label="تكلفة رأس المال"
+          value={formatCurrency(inventoryStats.totalCostValuation)}
+          icon={<DollarSign />}
+          tone="tertiary"
+        />
+        <MetricCard
+          label="نواقص تحتاج إعادة طلب"
+          value={inventoryStats.lowStockCount.toLocaleString('ar-EG')}
+          icon={<AlertTriangle />}
+          tone="warning"
+          valueTone="warning"
+        />
       </div>
 
       {/* Main Virtualized Grid */}
