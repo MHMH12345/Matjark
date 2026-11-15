@@ -1629,3 +1629,224 @@ body {
 .matjark-sidebar-theme__icon {
   flex: 0 0 24px;
 }
+
+
+/* Visual correction pass: proportions and content hierarchy aligned with the approved POS reference. */
+.matjark-topbar {
+  flex-basis: 96px;
+  min-height: 96px;
+  margin: 10px 18px 12px;
+  padding-inline: 22px;
+}
+
+.matjark-topbar-title {
+  flex: 1 1 auto;
+  justify-content: flex-start;
+  direction: rtl;
+}
+
+.matjark-topbar-title__copy strong {
+  font-size: clamp(27px, 2.55vw, 40px);
+  line-height: 1.25;
+}
+
+.matjark-topbar-title__copy small {
+  font-size: 13px;
+}
+
+.matjark-topbar-actions {
+  gap: 13px;
+}
+
+.matjark-topbar-action {
+  min-width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(5, 12, 56, .5);
+}
+
+.matjark-topbar-user__avatar {
+  width: 48px;
+  height: 48px;
+  flex-basis: 48px;
+  font-size: 16px;
+}
+
+.matjark-topbar-user__copy strong {
+  font-size: 17px;
+}
+
+.matjark-topbar-user__copy small {
+  font-size: 12px;
+}
+
+/* Right-side navigation: stronger brand and readable page labels. */
+.matjark-sidebar {
+  flex-basis: 176px;
+  width: 176px;
+  min-width: 176px;
+  padding: 17px 10px 13px;
+}
+
+.matjark-sidebar-brand {
+  padding: 7px 5px 15px;
+}
+
+.matjark-sidebar-brand__mark {
+  width: 55px;
+  height: 55px;
+}
+
+.matjark-sidebar-brand__mark svg {
+  width: 43px;
+  height: 43px;
+}
+
+.matjark-sidebar-brand__name {
+  font-size: 25px;
+}
+
+.matjark-sidebar-brand__latin {
+  font-size: 13px;
+  letter-spacing: .1em;
+}
+
+.matjark-sidebar-link {
+  min-height: 58px;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 14px;
+}
+
+.matjark-sidebar-link__icon {
+  flex-basis: 39px;
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+}
+
+.matjark-sidebar-link__icon svg {
+  width: 25px;
+  height: 25px;
+}
+
+.matjark-sidebar-link__label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.matjark-sidebar-theme__label {
+  font-size: 12px;
+}
+
+/* Four product columns, as in the reference, even at a 1360px desktop viewport. */
+@media (min-width: 1200px) {
+  .matjark-pos-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+  }
+}
+
+.matjark-pos-product-card {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.matjark-pos-product-media {
+  width: 100%;
+  height: auto !important;
+  aspect-ratio: 1.36 / 1;
+  border-bottom: 1px solid rgba(255, 83, 231, .48);
+}
+
+.matjark-pos-product-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.matjark-pos-product-card::part(card) {
+  border-radius: 17px !important;
+  border-color: rgba(119, 72, 255, .94) !important;
+  background: linear-gradient(155deg, rgba(18, 16, 83, .98), rgba(9, 12, 48, .99)) !important;
+  box-shadow: 0 0 0 1px rgba(38, 126, 255, .12) inset, 0 0 14px rgba(70, 71, 255, .2) !important;
+}
+
+.matjark-pos-product-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 5px !important;
+  min-width: 0;
+}
+
+.matjark-pos-product-name {
+  min-height: 2.8em;
+  max-height: 2.8em;
+  padding-inline: 4px;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.matjark-pos-product-price {
+  margin-top: 0;
+  color: #ff77e9;
+  font-size: clamp(14px, 1.1vw, 19px);
+  font-weight: 850;
+  line-height: 1.3;
+  text-align: center;
+  text-shadow: 0 0 12px rgba(255, 55, 219, .48);
+  font-variant-numeric: tabular-nums;
+}
+
+.matjark-pos-products-scroll {
+  scrollbar-width: none !important;
+}
+
+.matjark-pos-products-scroll::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Match the cart panel's relative width on wider displays. */
+@media (min-width: 1101px) {
+  .matjark-pos-cart-panel {
+    flex-basis: clamp(350px, 29vw, 480px) !important;
+    width: clamp(350px, 29vw, 480px) !important;
+    min-width: 320px !important;
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1440px) {
+  .matjark-pos-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .matjark-pos-product-name {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 1101px) and (max-height: 720px) {
+  .matjark-topbar {
+    flex-basis: 82px;
+    min-height: 82px;
+    margin-block: 7px 9px;
+  }
+
+  .matjark-pos-product-grid {
+    gap: 9px !important;
+  }
+
+  .matjark-pos-product-name {
+    min-height: 2.5em;
+    max-height: 2.5em;
+  }
+
+  .matjark-sidebar-link {
+    min-height: 49px;
+  }
+}
