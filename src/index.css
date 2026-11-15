@@ -4329,184 +4329,55 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 
-/* Settings page RTL is scoped here so it cannot alter other screens. */
+/* Settings direction comes from the root dir="rtl"; do not force direction on Material hosts. */
 .matjark-settings-page {
-  direction: rtl !important;
-  text-align: right !important;
-  unicode-bidi: isolate;
+  direction: rtl;
+  text-align: start;
 }
 
-.matjark-settings-page :is(
-  .matjark-button,
-  .matjark-text-field,
-  .matjark-select,
-  .matjark-switch,
-  .matjark-surface-card,
-  .matjark-chip-host
-) {
-  direction: rtl !important;
-  text-align: right !important;
-}
-
-.matjark-settings-page :is(
-  .matjark-settings-header__content,
-  .matjark-settings-section__heading,
-  .matjark-settings-grid,
-  .matjark-settings-actions,
-  .matjark-settings-status-row,
-  .matjark-settings-list-toolbar,
-  .matjark-settings-folder,
-  .matjark-settings-callout,
-  .matjark-settings-cloud-summary,
-  .matjark-settings-danger-zone
-) {
-  direction: rtl !important;
-  text-align: right !important;
-}
-
-/* One clickable Material 3 list row owns the backup icon, title, status and chevron. */
+/* The Material 3 List is the interactive accordion header. */
 .matjark-settings-backup-accordion {
   display: block;
   width: 100%;
   min-width: 0;
-  overflow: hidden;
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 22px;
-  background: var(--md-sys-color-surface-container);
-  direction: rtl !important;
-  text-align: right !important;
-  animation: matjark-settings-enter 480ms var(--settings-enter-easing, cubic-bezier(0.2, 0, 0, 1)) both;
+  direction: rtl;
 }
 
-.matjark-settings-backup-toggle {
+.matjark-settings-backup-list {
   display: block !important;
   width: 100% !important;
   min-width: 0 !important;
-  min-height: 0 !important;
-  margin: 0 !important;
+  overflow: hidden;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 20px;
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
   direction: rtl !important;
-  text-align: right !important;
-  font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+  text-align: start;
   --mtrl-sys-color-primary: var(--md-sys-color-primary);
   --mtrl-sys-color-on-surface: var(--md-sys-color-on-surface);
-}
-
-.matjark-settings-backup-toggle__content {
-  display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) 24px;
-  align-items: center;
-  gap: 15px;
-  width: 100%;
-  min-width: 0;
-  padding: 18px 20px;
-  direction: rtl !important;
-  text-align: right !important;
-  white-space: normal;
-  box-sizing: border-box;
-}
-
-.matjark-settings-backup-toggle__icon {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  color: var(--md-sys-color-on-primary-container);
-  background: var(--md-sys-color-primary-container);
-}
-
-.matjark-settings-backup-toggle__copy {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
-  min-width: 0;
-  text-align: right !important;
-  direction: rtl !important;
-}
-
-.matjark-settings-backup-toggle__eyebrow {
-  color: var(--md-sys-color-primary);
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1.5;
-  letter-spacing: .12em;
-}
-
-.matjark-settings-backup-toggle__copy strong {
-  color: var(--md-sys-color-on-surface);
-  font-family: inherit;
-  font-size: 17px;
-  font-weight: 650;
-  line-height: 1.5;
-}
-
-.matjark-settings-backup-toggle__description {
-  color: var(--md-sys-color-on-surface-variant);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.7;
-}
-
-.matjark-settings-backup-toggle__status {
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-top: 3px;
-  color: var(--md-sys-color-on-surface-variant);
-  font-size: 11px;
-  line-height: 1.6;
-  font-weight: 500;
-  direction: rtl !important;
-}
-
-.matjark-settings-backup-toggle__status > span {
-  color: var(--md-sys-color-outline);
-}
-
-.matjark-settings-backup-toggle__arrow {
-  display: block;
-  justify-self: center;
-  color: var(--md-sys-color-on-surface-variant);
-  transition: transform 240ms cubic-bezier(0.2, 0, 0, 1);
-}
-
-.matjark-settings-backup-toggle__arrow.is-expanded {
-  transform: rotate(180deg);
+  --mtrl-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --mtrl-sys-color-surface: var(--md-sys-color-surface-container);
 }
 
 .matjark-settings-backup-content {
   display: flex;
   flex-direction: column;
   gap: 26px;
+  width: 100%;
   min-width: 0;
-  padding: 22px;
-  border-top: 1px solid var(--md-sys-color-outline-variant);
-  direction: rtl !important;
-  text-align: right !important;
+  padding-top: 22px;
   animation: matjark-backup-content-enter 340ms cubic-bezier(0.2, 0, 0, 1) both;
 }
 
 .matjark-settings-backup-content > .matjark-settings-section {
-  min-width: 0;
   width: 100%;
-  direction: rtl !important;
+  min-width: 0;
 }
 
 .matjark-settings-restore-actions {
   justify-content: flex-start;
   padding-top: 2px;
-  direction: rtl !important;
-}
-
-.matjark-settings-backup-content .matjark-settings-select,
-.matjark-settings-backup-content .matjark-settings-label .matjark-select {
-  display: block !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  direction: rtl !important;
-  text-align: right !important;
 }
 
 @keyframes matjark-backup-content-enter {
@@ -4520,43 +4391,85 @@ html:not(.dark) .pos-snackbar-box {
   }
 }
 
+/* Monthly backup review remains a Material 3 Dialog with a compact details grid. */
+.matjark-backup-cleanup-content {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  direction: rtl;
+  text-align: start;
+}
+
+.matjark-backup-cleanup-content > p,
+.matjark-backup-cleanup-content > small {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.matjark-backup-cleanup-details {
+  width: 100%;
+  max-width: 100%;
+}
+
+.matjark-backup-cleanup-details::part(content) {
+  padding: 12px !important;
+}
+
+.matjark-backup-cleanup-details .matjark-backup-confirm__details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.matjark-backup-confirm__details > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 14px;
+  background: var(--md-sys-color-surface-container-low);
+}
+
+.matjark-backup-confirm__details span {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.matjark-backup-confirm__details strong {
+  overflow-wrap: anywhere;
+  color: var(--md-sys-color-on-surface);
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
 @media (max-width: 700px) {
-  .matjark-settings-backup-accordion {
-    border-radius: 19px;
-  }
-
-  .matjark-settings-backup-toggle__content {
-    grid-template-columns: 42px minmax(0, 1fr) 22px;
-    gap: 11px;
-    padding: 15px 13px;
-  }
-
-  .matjark-settings-backup-toggle__icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
-  }
-
-  .matjark-settings-backup-toggle__copy strong {
-    font-size: 15px;
-  }
-
-  .matjark-settings-backup-toggle__description {
-    font-size: 11px;
+  .matjark-settings-backup-list {
+    border-radius: 18px;
   }
 
   .matjark-settings-backup-content {
     gap: 22px;
-    padding: 15px;
+    padding-top: 16px;
+  }
+
+  .matjark-backup-cleanup-details .matjark-backup-confirm__details {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .matjark-settings-backup-accordion,
-  .matjark-settings-backup-content,
-  .matjark-settings-backup-toggle__arrow {
+  .matjark-settings-backup-content {
     animation: none !important;
-    transition: none !important;
     transform: none !important;
   }
 }
