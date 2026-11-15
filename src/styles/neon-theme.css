@@ -1933,7 +1933,7 @@ body,
   stroke-linejoin: round;
 }
 
-.matjark-pos-cart-header .text-\\[13px\\] {
+.matjark-pos-cart-header .matjark-pos-cart-title {
   color: #ffffff !important;
   font-size: 23px !important;
   font-weight: 800 !important;
