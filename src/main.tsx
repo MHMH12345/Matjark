@@ -1,4 +1,6 @@
 import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import { installDevErrorReporter } from './utils/devErrorReporter';
 import 'material/styles/base';
 import 'material/styles/typography';
 import 'material/styles/button';
@@ -13,13 +15,11 @@ import 'material/styles/dialog';
 import 'material/styles/bottom-sheet';
 import 'material/styles/navigation-rail';
 import 'material/styles/navigation-bar';
-import App from './App.tsx';
-import { installDevErrorReporter } from './utils/devErrorReporter';
+import './index.css';
+import './styles/neon-theme.css';
 
 if (import.meta.env.DEV) {
   installDevErrorReporter();
 }
-import './index.css';
-import './styles/neon-theme.css';
 
 createRoot(document.getElementById('root')!).render(<App />);
