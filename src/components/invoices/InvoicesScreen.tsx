@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { PageScaffold } from '../layout/PageScaffold';
 import { MuiCard } from '../ui/MuiCard';
 import {
   FileText,
@@ -202,7 +203,13 @@ export const InvoicesScreen: React.FC = () => {
   );
 
   return (
-    <div className="space-y-4">
+    <PageScaffold
+      title="سجل الفواتير"
+      description="مراجعة المبيعات والفواتير وحالات الاسترجاع"
+      eyebrow="المبيعات"
+      icon={<FileText className="w-5 h-5" />}
+    >
+      <div className="space-y-4">
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
@@ -291,6 +298,7 @@ export const InvoicesScreen: React.FC = () => {
           />
         </MuiDialog>
       )}
-    </div>
+      </div>
+    </PageScaffold>
   );
 };
