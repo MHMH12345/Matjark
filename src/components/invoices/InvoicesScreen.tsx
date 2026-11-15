@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { MetricCard } from '../ui/MetricCard';
 import { PageScaffold } from '../layout/PageScaffold';
 import { MuiCard } from '../ui/MuiCard';
 import {
@@ -210,55 +211,35 @@ export const InvoicesScreen: React.FC = () => {
       icon={<FileText className="w-5 h-5" />}
     >
       <div className="space-y-4">
-      {/* Metrics Row */}
+      {/* Invoice KPIs use the same shared Material 3 metric surface. */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
-          <div>
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">إجمالي المبيعات النشطة</span>
-            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-success)]">
-              {formatCurrency(invoiceMetrics.completedSum)}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-success-container)] text-[var(--md-sys-color-success)]">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
-        </MuiCard>
-
-        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
-          <div>
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">عدد الفواتير المصدرة</span>
-            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-on-surface)]">
-              {invoiceMetrics.completedCount} فاتورة
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-primary)]">
-            <FileText className="w-5 h-5" />
-          </div>
-        </MuiCard>
-
-        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
-          <div>
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">ضريبة القيمة المضافة المحصلة</span>
-            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-tertiary)]">
-              {formatCurrency(invoiceMetrics.taxTotal)}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-tertiary)]">
-            <span className="font-bold text-xs font-mono">VAT</span>
-          </div>
-        </MuiCard>
-
-        <MuiCard variant="outlined" className="matjark-surface-card matjark-surface-card--compact matjark-surface-card--horizontal">
-          <div>
-            <span className="text-xs text-[var(--md-sys-color-on-surface-variant)] block">المبالغ المسترجعة</span>
-            <span className="text-xl font-bold font-mono text-[var(--md-sys-color-error)]">
-              {formatCurrency(invoiceMetrics.refundedSum)}
-            </span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-error)]">
-            <RotateCcw className="w-5 h-5" />
-          </div>
-        </MuiCard>
+        <MetricCard
+          label="إجمالي المبيعات النشطة"
+          value={formatCurrency(invoiceMetrics.completedSum)}
+          icon={<CheckCircle2 />}
+          tone="success"
+          valueTone="success"
+        />
+        <MetricCard
+          label="عدد الفواتير المصدرة"
+          value={`${invoiceMetrics.completedCount.toLocaleString('ar-EG')} فاتورة`}
+          icon={<FileText />}
+          tone="primary"
+        />
+        <MetricCard
+          label="ضريبة القيمة المضافة المحصلة"
+          value={formatCurrency(invoiceMetrics.taxTotal)}
+          icon={<span className="font-bold text-xs font-mono">VAT</span>}
+          tone="tertiary"
+          valueTone="tertiary"
+        />
+        <MetricCard
+          label="المبالغ المسترجعة"
+          value={formatCurrency(invoiceMetrics.refundedSum)}
+          icon={<RotateCcw />}
+          tone="error"
+          valueTone="error"
+        />
       </div>
 
       {/* Virtualized Invoices Grid */}
