@@ -12,6 +12,33 @@ type ReporterWindow = Window & {
   __MATJARK_DEV_ERROR_REPORTER_INSTALLED__?: boolean;
 };
 
+const formatConsoleArgs = (args: unknown[]): string => {
+  if (args.length === 0) return '';
+
+  const [first, ...remaining] = args;
+  if (typeof first !== 'string') {
+    return args.map(formatValue).join(' ');
+  }
+
+  let argumentIndex = 0;
+  const message = first.replace(/%([sdifoOc%])/g, (match, token: string) => {
+    if (token === '%') return '%';
+    if (argumentIndex >= remaining.length) return match;
+
+    const value = remaining[argumentIndex++];
+    if (token === 'd' || token === 'i' || token === 'f') {
+      const numericValue = Number(value);
+      if (!Number.isFinite(numericValue)) return String(value);
+      return token === 'f' ? String(numericValue) : String(Math.trunc(numericValue));
+    }
+
+    return formatValue(value);
+  });
+
+  const extraArguments = remaining.slice(argumentIndex).map(formatValue);
+  return [message, ...extraArguments].join(' ');
+};
+
 const formatValue = (value: unknown): string => {
   if (value instanceof Error) return value.stack || `${value.name}: ${value.message}`;
   if (typeof value === 'string') return value;
@@ -97,11 +124,10 @@ export function installDevErrorReporter(): void {
 
     reporting = true;
     try {
-      const details = args.map(formatValue);
       const error = args.find((value): value is Error => value instanceof Error);
       send({
         type: 'console.error',
-        message: details.join(' ').slice(0, 8000) || 'console.error called without a message',
+        message: formatConsoleArgs(args).slice(0, 8000) || 'console.error called without a message',
         stack: error?.stack,
       });
     } finally {
