@@ -25,7 +25,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
-import { CartItem, PaymentMethod } from '../../types';
+import { CartItem, PaymentMethod, Product } from '../../types';
 import { getProductPlaceholderSvg } from '../../utils/imageCompressor';
 import { normalizeArabicText } from '../../utils/performance';
 import { ThermalReceipt } from './ThermalReceipt';
@@ -64,6 +64,20 @@ const materialHoldIcon = (name: 'pause' | 'play_arrow' | 'add') => {
     </svg>
   );
 };
+
+const materialDeleteIcon = () => (
+  <svg
+    className="matjark-hold-material-svg"
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM6 7h12l-1 14H7L6 7zm3 3v7h1v-7H9zm5 0v7h1v-7h-1z" fill="currentColor" />
+  </svg>
+);
 
 const materialCheckIcon = () => (
   <svg
@@ -162,7 +176,21 @@ const loadHeldSaleStorage = (): HeldSaleStorage => {
   }
 };
 
-const ProductCard = React.memo(({ product, availableStock, onAdd, onOutOfStockClick, formatCurrency }: any) => {
+interface ProductCardProps {
+  product: Product;
+  availableStock: number;
+  onAdd: (product: Product) => void;
+  onOutOfStockClick: (product: Product) => void;
+  formatCurrency: (amount: number) => string;
+}
+
+const ProductCard = React.memo(({
+  product,
+  availableStock,
+  onAdd,
+  onOutOfStockClick,
+  formatCurrency,
+}: ProductCardProps) => {
   const isOutOfStock = availableStock <= 0;
   const lowStockLimit = Math.max(0, product.minStockAlert ?? 0);
   const stockColor = isOutOfStock || availableStock <= lowStockLimit
@@ -171,7 +199,7 @@ const ProductCard = React.memo(({ product, availableStock, onAdd, onOutOfStockCl
       ? 'warning'
       : 'success';
   const hasRealImage = Boolean(product.imageUrl);
-  const fallbackSvg = getProductPlaceholderSvg(product.name, product.category);
+  const fallbackSvg = useMemo(() => getProductPlaceholderSvg(product.name, product.category), [product.name, product.category]);
 
   const handleCardClick = () => {
     if (isOutOfStock) onOutOfStockClick(product);
@@ -199,12 +227,15 @@ const ProductCard = React.memo(({ product, availableStock, onAdd, onOutOfStockCl
         media={media}
         onClick={handleCardClick}
         className="matjark-pos-product-card"
-        aria-label={`${product.name}، المتاح ${availableStock}`}
-      />
-      <h4 className="matjark-pos-product-name">
-        <span className="matjark-pos-product-name-text">{product.name}</span>
-      </h4>
-      <div className="matjark-pos-product-price">{formatCurrency(product.salePrice)}</div>
+        aria-label={`${product.name}، السعر ${formatCurrency(product.salePrice)}، المتاح ${availableStock}`}
+      >
+        <div className="matjark-pos-product-content">
+          <h4 className="matjark-pos-product-name">
+            <span className="matjark-pos-product-name-text">{product.name}</span>
+          </h4>
+          <div className="matjark-pos-product-price">{formatCurrency(product.salePrice)}</div>
+        </div>
+      </MCard>
     </div>
   );
 });
@@ -1196,7 +1227,7 @@ export const CashierScreen: React.FC = () => {
           </div>
           <div className="matjark-pos-cart-header-actions flex items-center gap-1.5" dir="rtl">
 {holdIndicator}            <MuiIconButton
-              icon={<Trash2 width={18} height={18} className="matjark-hold-icon" />}
+              icon={materialDeleteIcon()}
               ariaLabel="تفريغ أو حذف الفاتورة الحالية"
               variant="filled"
               size="small"
