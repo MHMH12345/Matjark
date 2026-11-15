@@ -172,7 +172,7 @@ export const ReportsScreen: React.FC = () => {
               scaleType: 'band',
               tickLabelStyle: {
                 fill: 'var(--md-sys-color-on-surface-variant)',
-                fontFamily: 'Cairo',
+                fontFamily: 'IBM Plex Sans Arabic',
                 fontSize: 12,
               },
             }]}
@@ -181,7 +181,7 @@ export const ReportsScreen: React.FC = () => {
               valueFormatter: (value: number) => formatCurrency(value),
               tickLabelStyle: {
                 fill: 'var(--md-sys-color-on-surface-variant)',
-                fontFamily: 'Cairo',
+                fontFamily: 'IBM Plex Sans Arabic',
                 fontSize: 11,
               },
             }]}
@@ -206,7 +206,7 @@ export const ReportsScreen: React.FC = () => {
               },
               '& .MuiChartsAxis-tickLabel': {
                 fill: 'var(--md-sys-color-on-surface-variant)',
-                fontFamily: 'Cairo',
+                fontFamily: 'IBM Plex Sans Arabic',
               },
             }}
           />
