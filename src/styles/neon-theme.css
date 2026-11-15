@@ -1527,6 +1527,27 @@ body {
     border-radius: 0 !important;
   }
 
+  .matjark-pos-cart-panel {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100%;
+    border-radius: 16px !important;
+  }
+
+  .matjark-pos-cart-sheet {
+    --mtrl-bottom-sheet-container-shape: 18px;
+  }
+
+  .matjark-pos-cart-sheet .matjark-pos-cart-panel {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+  }
+
   .matjark-pos-product-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 9px !important;
@@ -1690,5 +1711,31 @@ body {
   .matjark-theme-switch i,
   .matjark-button::part(button) {
     transition: none !important;
+  }
+}
+
+
+/* Thermal receipt printing uses the document flow, not the fixed app canvas. */
+@media print {
+  html,
+  body,
+  #root {
+    position: static !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  .matjark-app-shell,
+  .matjark-app-main {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
   }
 }
