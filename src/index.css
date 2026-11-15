@@ -1645,6 +1645,12 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .matjark-page-header {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .matjark-pos-hold-add--visible,
   .matjark-pos-hold-add--returning {
     animation-duration: 1ms !important;
@@ -2065,6 +2071,7 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 .matjark-page-header {
+  animation: matjark-page-enter 420ms cubic-bezier(0.2, 0, 0, 1) both;
   position: relative;
   display: flex;
   align-items: center;
@@ -3763,39 +3770,6 @@ html:not(.dark) .pos-snackbar-box {
   font-family: 'IBM Plex Sans Arabic', sans-serif;
 }
 
-.matjark-settings-header {
-  display: block !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  border-radius: 24px !important;
-  animation: matjark-settings-enter 520ms var(--settings-enter-easing) both;
-}
-
-.matjark-settings-header::part(card) {
-  border: 1px solid var(--md-sys-color-outline-variant) !important;
-  border-radius: 24px !important;
-  background: linear-gradient(
-    115deg,
-    var(--md-sys-color-primary-container),
-    var(--md-sys-color-surface-container-high)
-  ) !important;
-  color: var(--md-sys-color-on-surface) !important;
-  box-shadow: none !important;
-  overflow: hidden !important;
-}
-
-.matjark-settings-header::part(content) {
-  padding: 26px 30px !important;
-}
-
-.matjark-settings-header__content {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  min-width: 0;
-}
-
-.matjark-settings-header__icon,
 .matjark-settings-section__icon {
   display: grid;
   flex: 0 0 auto;
@@ -3806,36 +3780,6 @@ html:not(.dark) .pos-snackbar-box {
   border-radius: 16px;
   color: var(--md-sys-color-primary);
   background: var(--md-sys-color-surface-container);
-}
-
-.matjark-settings-header__copy {
-  min-width: 0;
-}
-
-.matjark-settings-header h1 {
-  margin: 3px 0 5px;
-  color: var(--md-sys-color-on-surface);
-  font-size: clamp(23px, 2.6vw, 30px);
-  line-height: 1.35;
-  font-weight: 700;
-  letter-spacing: 0;
-}
-
-.matjark-settings-header p {
-  margin: 0;
-  color: var(--md-sys-color-on-surface-variant);
-  font-size: 13px;
-  line-height: 1.8;
-  font-weight: 400;
-}
-
-.matjark-settings-header .matjark-settings-eyebrow {
-  color: var(--md-sys-color-primary);
-  font-family: inherit;
-  font-size: 10px;
-  line-height: 1.5;
-  font-weight: 700;
-  letter-spacing: .14em;
 }
 
 .matjark-settings-section {
@@ -4437,34 +4381,6 @@ html:not(.dark) .pos-snackbar-box {
     padding: 2px 0 32px;
   }
 
-  .matjark-settings-header,
-  .matjark-settings-header::part(card) {
-    border-radius: 20px !important;
-  }
-
-  .matjark-settings-header::part(content) {
-    padding: 19px !important;
-  }
-
-  .matjark-settings-header__content {
-    align-items: flex-start;
-    gap: 13px;
-  }
-
-  .matjark-settings-header__icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
-  }
-
-  .matjark-settings-header h1 {
-    font-size: 22px;
-  }
-
-  .matjark-settings-header p {
-    font-size: 12px;
-  }
-
   .matjark-settings-section__heading h2 {
     font-size: 16px;
   }
@@ -4543,7 +4459,6 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .matjark-settings-header,
   .matjark-settings-section,
   .matjark-settings-label {
     animation: none !important;
@@ -4671,6 +4586,11 @@ html:not(.dark) .pos-snackbar-box {
 .matjark-settings-restore-actions {
   justify-content: flex-start;
   padding-top: 2px;
+}
+
+@keyframes matjark-page-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes matjark-backup-content-enter {
