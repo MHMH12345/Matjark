@@ -1631,7 +1631,7 @@ export const CashierScreen: React.FC = () => {
               className="matjark-cashier-payment-field"
             />
             {paidAmount > cartTotals.grandTotal && (
-              <p className="text-xs font-bold text-emerald-500 mt-1.5 whitespace-nowrap">
+              <p className="text-xs font-bold text-[var(--md-sys-color-success)] mt-1.5 whitespace-nowrap">
                 المتبقي للعميل (الباقي): {formatCurrency(paidAmount - cartTotals.grandTotal)}
               </p>
             )}
