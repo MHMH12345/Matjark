@@ -62,7 +62,6 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal, cas
         <span className="matjark-topbar-separator" />
         <button type="button" className="matjark-topbar-action matjark-topbar-notifications" title="الإشعارات" aria-label="الإشعارات" onClick={() => showToast('لا توجد إشعارات جديدة حاليًا.', 'info')}>
           <Bell size={20} />
-          <i />
         </button>
         <button type="button" className="matjark-topbar-action" title="مختبر الأداء" aria-label="فتح مختبر الأداء" onClick={onOpenPerformanceModal}>
           <Activity size={20} />
