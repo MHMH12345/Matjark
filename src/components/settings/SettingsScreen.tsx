@@ -58,7 +58,8 @@ import {
 } from '../../utils/backupStorage';
 import { restoreAuditLog } from '../../utils/audit';
 import type { StoreSettings } from '../../types';
-import { Divider as MaterialDivider } from 'material/react';
+import { Divider as MaterialDivider, List as MaterialList, ListItem as MaterialListItem } from 'material/react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { MuiButton } from '../ui/MuiButton';
 import { MuiCard } from '../ui/MuiCard';
 import { MuiChip } from '../ui/MuiChip';
@@ -68,6 +69,8 @@ import { MuiSwitch } from '../ui/MuiSwitch';
 import { MuiTextField } from '../ui/MuiTextField';
 
 const MDivider = MaterialDivider as React.ComponentType<any>;
+const MList = MaterialList as React.ComponentType<any>;
+const MListItem = MaterialListItem as React.ComponentType<any>;
 const labelClass = 'matjark-settings-label';
 
 type SettingsConfirmation = {
@@ -509,47 +512,43 @@ export const SettingsScreen: React.FC = () => {
       </section>
 
       <div className="matjark-settings-backup-accordion" dir="rtl">
-        <MuiButton
-          type="button"
-          variant="text"
-          color="primary"
-          size="large"
-          fullWidth
-          className="matjark-settings-backup-toggle"
-          aria-expanded={backupPanelExpanded}
-          aria-controls="matjark-backup-settings-content"
-          onClick={() => setBackupPanelExpanded((expanded) => !expanded)}
+        <MList
+          ariaLabel="إعدادات النسخ الاحتياطي"
+          className="matjark-settings-backup-list"
           dir="rtl"
+          onSelect={(event: CustomEvent<{ preventDefault?: () => void }>) => {
+            event.detail?.preventDefault?.();
+            setBackupPanelExpanded((expanded) => !expanded);
+          }}
         >
-          <span className="matjark-settings-backup-toggle__content">
-            <span className="matjark-settings-backup-toggle__icon">
-              <HardDrive size={23} />
-            </span>
-            <span className="matjark-settings-backup-toggle__copy">
-              <span className="matjark-settings-backup-toggle__eyebrow">BACKUP CENTER</span>
-              <strong>النسخ الاحتياطي والاستعادة</strong>
-              <span className="matjark-settings-backup-toggle__description">
-                إدارة النسخ المحلية والسحابية والنسخ اليدوية من مكان واحد
-              </span>
-              <span className="matjark-settings-backup-toggle__status">
-                المحلي: {status.local.text}
-                <span aria-hidden="true">•</span>
-                {driveStatus?.connected ? 'Google Drive متصل' : driveStatus?.configured ? 'Google Drive غير مربوط' : 'Google Drive يحتاج إعداد'}
-              </span>
-            </span>
-            <ChevronDown
-              className={backupPanelExpanded ? 'matjark-settings-backup-toggle__arrow is-expanded' : 'matjark-settings-backup-toggle__arrow'}
-              size={22}
-            />
-          </span>
-        </MuiButton>
+          <MListItem
+            value="backup-center"
+            overline="BACKUP CENTER"
+            supportingText="النسخ المحلية · Google Drive · النسخ اليدوية"
+            leadingIcon={renderToStaticMarkup(<HardDrive size={24} />)}
+            trailingIcon={renderToStaticMarkup(
+              <ChevronDown
+                size={21}
+                style={{
+                  transform: backupPanelExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 220ms cubic-bezier(0.2, 0, 0, 1)',
+                }}
+              />
+            )}
+            aria-expanded={backupPanelExpanded}
+            aria-controls="matjark-backup-settings-content"
+          >
+            النسخ الاحتياطي والاستعادة
+          </MListItem>
+        </MList>
+
         {backupPanelExpanded && (
           <div id="matjark-backup-settings-content" className="matjark-settings-backup-content" dir="rtl">
       <section className="matjark-settings-section">
         <div className="matjark-settings-section__heading">
           <div className="matjark-settings-section__icon"><HardDrive size={20} /></div>
           <div>
-            <h2>النسخ الاحتياطي المحلي على الكمبيوتر</h2>
+            <h2>النسخ المحلي على الكمبيوتر</h2>
             <p>نسخة جديدة مستقلة كل فترة، حتى عند انقطاع الإنترنت، طالما البرنامج مفتوح.</p>
           </div>
         </div>
@@ -620,7 +619,7 @@ export const SettingsScreen: React.FC = () => {
         <div className="matjark-settings-section__heading">
           <div className="matjark-settings-section__icon"><Cloud size={20} /></div>
           <div>
-            <h2>النسخ الاحتياطي على Google Drive</h2>
+            <h2>Google Drive</h2>
             <p>ملف واحد لكل يوم، ويتم تحديث الملف نفسه عند كل موعد مزامنة.</p>
           </div>
         </div>
@@ -693,7 +692,7 @@ export const SettingsScreen: React.FC = () => {
       <section className="matjark-settings-section">
         <div className="matjark-settings-section__heading">
           <div className="matjark-settings-section__icon"><ShieldCheck size={20} /></div>
-          <div><h2>النسخ والاستعادة اليدوية</h2><p>ملف مستقل يمكنك الاحتفاظ به خارج مجلد النسخ التلقائي.</p></div>
+          <div><h2>النسخ اليدوي والاستعادة</h2><p>ملف مستقل يمكنك الاحتفاظ به خارج مجلد النسخ التلقائي.</p></div>
         </div>
         <MuiCard className="matjark-settings-card" variant="outlined">
           <div className="matjark-settings-actions">
