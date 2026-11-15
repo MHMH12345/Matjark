@@ -711,7 +711,6 @@ export const SettingsScreen: React.FC = () => {
         </MuiCard>
       </section>
           </div>
-          </div>
         )}
       </div>
       <MuiDialog
