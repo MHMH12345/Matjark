@@ -260,7 +260,7 @@ export const BackupRuntime: React.FC = () => {
             type="button"
             variant="tonal"
             color="error"
-            size="small"
+            size="medium"
             disabled={cleanupBusy || !cleanupPrompt}
             onClick={() => void handleCleanupDecision('delete')}
           >
@@ -270,7 +270,7 @@ export const BackupRuntime: React.FC = () => {
             type="button"
             variant="outlined"
             color="primary"
-            size="small"
+            size="medium"
             disabled={cleanupBusy || !cleanupPrompt}
             onClick={() => void handleCleanupDecision('keep')}
           >
