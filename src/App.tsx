@@ -65,9 +65,9 @@ function MainAppContent() {
 
   return (
     <div className={"matjark-app-shell h-screen w-screen flex flex-row bg-[var(--md-sys-color-background)] text-[var(--md-sys-color-on-background)] font-['IBM_Plex_Sans_Arabic',sans-serif] overflow-hidden" + (isCashier ? " matjark-app-shell--cashier" : "")} dir="rtl">
-      <Sidebar />
+      <Sidebar onOpenPerformanceModal={() => setPerfModalOpen(true)} />
       <main className={"matjark-app-main" + (isCashier ? " matjark-app-main--cashier" : "")}>
-        <Navbar onOpenPerformanceModal={() => setPerfModalOpen(true)} cashierMode={isCashier} />
+        <Navbar cashierMode={isCashier} />
         <div className={isCashier ? "matjark-app-content matjark-app-content--cashier" : "matjark-app-content"}>
           <div className={isCashier ? "matjark-screen-host matjark-screen-host--cashier" : "matjark-screen-host"}>
             {activeTab === 'pos' && <CashierScreen />}
