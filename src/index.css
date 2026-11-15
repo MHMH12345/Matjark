@@ -1349,8 +1349,8 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 .matjark-pos-hold-badge {
-  --mtrl-sys-color-error: #ef4444;
-  --mtrl-sys-color-on-error: #ffffff;
+  --mtrl-sys-color-error: var(--md-sys-color-error);
+  --mtrl-sys-color-on-error: var(--md-sys-color-on-error);
   position: absolute !important;
   top: -1px !important;
   right: -2px !important;
@@ -1363,8 +1363,8 @@ html:not(.dark) .pos-snackbar-box {
   min-height: 16px !important;
   padding: 0 !important;
   border-radius: 50% !important;
-  background: #ef4444 !important;
-  color: #ffffff !important;
+  background: var(--md-sys-color-error) !important;
+  color: var(--md-sys-color-on-error) !important;
   font-size: 11px !important;
   font-weight: 800 !important;
   line-height: 1 !important;
@@ -1414,13 +1414,13 @@ html:not(.dark) .pos-snackbar-box {
 
 /* The clear action keeps the same fixed Material IconButton footprint as Play. */
 .matjark-hold-button--clear {
-  --mtrl-sys-color-primary: #f59e0b;
-  --mtrl-sys-color-on-primary: #ffffff;
+  --mtrl-sys-color-primary: var(--md-sys-color-warning);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-warning);
 }
 
 .matjark-hold-button--clear::part(icon-button) {
-  background-color: #f59e0b !important;
-  color: #ffffff !important;
+  background-color: var(--md-sys-color-warning) !important;
+  color: var(--md-sys-color-on-warning) !important;
 }
 
 .matjark-hold-button--clear:disabled,
@@ -1431,8 +1431,8 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 .matjark-hold-button--complete {
-  --mtrl-sys-color-primary: #10b981;
-  --mtrl-sys-color-on-primary: #ffffff;
+  --mtrl-sys-color-primary: var(--md-sys-color-success);
+  --mtrl-sys-color-on-primary: var(--md-sys-color-on-success);
 }
 
 .matjark-hold-button--complete:disabled {
@@ -1441,8 +1441,8 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 .matjark-hold-button--complete[disabled]::part(icon-button) {
-  background-color: #10b981 !important;
-  color: #ffffff !important;
+  background-color: var(--md-sys-color-success) !important;
+  color: var(--md-sys-color-on-success) !important;
 }
 
 .matjark-hold-icon {
@@ -1556,8 +1556,8 @@ html:not(.dark) .pos-snackbar-box {
   flex: 0 0 auto;
   padding: 2px 7px;
   border-radius: 999px;
-  background: color-mix(in srgb, #10b981 16%, transparent);
-  color: #10b981;
+  background: color-mix(in srgb, var(--md-sys-color-success) 16%, transparent);
+  color: var(--md-sys-color-success);
   font-size: 10px;
   font-weight: 800;
 }
@@ -1848,7 +1848,6 @@ html:not(.dark) .pos-snackbar-box {
 
 /* Matjark Material 3 foundation tokens — shared roles, type, shape and motion. */
 :root {
-  --matjark-brand-name: "cyan";
   --matjark-success: var(--md-sys-color-success);
   --matjark-on-success: var(--md-sys-color-on-success);
   --matjark-success-container: var(--md-sys-color-success-container);
@@ -1880,7 +1879,6 @@ html:not(.dark) .pos-snackbar-box {
 }
 
 .dark {
-  --matjark-brand-name: "cyan";
 }
 
 .matjark-money,
