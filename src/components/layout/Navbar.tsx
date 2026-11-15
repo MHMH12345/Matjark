@@ -31,7 +31,7 @@ const PAGE_META: Record<ActiveTab, { title: string; subtitle: string; icon: Reac
 };
 
 export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal, cashierMode = false }) => {
-  const { activeTab, setActiveTab } = useStore();
+  const { activeTab, setActiveTab, showToast } = useStore();
   const { currentUser } = useAuth();
   const meta = PAGE_META[activeTab];
   const PageIcon = meta.icon;
@@ -52,15 +52,15 @@ export const Navbar: React.FC<NavbarProps> = memo(({ onOpenPerformanceModal, cas
       </div>
 
       <div className="matjark-topbar-actions">
-        <button type="button" className="matjark-topbar-action matjark-topbar-user" title={currentUser.displayName}>
+        <div className="matjark-topbar-user" title={currentUser.displayName}>
           <span className="matjark-topbar-user__avatar">{initials || 'م'}</span>
           <span className="matjark-topbar-user__copy">
             <strong>{currentUser.displayName}</strong>
             <small>{currentUser.roleKey === 'owner' ? 'مالك المتجر' : currentUser.roleKey}</small>
           </span>
-        </button>
+        </div>
         <span className="matjark-topbar-separator" />
-        <button type="button" className="matjark-topbar-action matjark-topbar-notifications" title="الإشعارات" aria-label="الإشعارات">
+        <button type="button" className="matjark-topbar-action matjark-topbar-notifications" title="الإشعارات" aria-label="الإشعارات" onClick={() => showToast('لا توجد إشعارات جديدة حاليًا.', 'info')}>
           <Bell size={20} />
           <i />
         </button>
