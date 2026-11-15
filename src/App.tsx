@@ -4,6 +4,7 @@
 
 import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
+import { Navbar } from './components/layout/Navbar';
 import { MobileNavigation } from './components/layout/MobileNavigation';
 import { CashierScreen } from './components/pos/CashierScreen';
 import { MuiSnackbar } from './components/ui/MuiSnackbar';
@@ -65,17 +66,20 @@ function MainAppContent() {
   return (
     <div className={"matjark-app-shell h-screen w-screen flex flex-row bg-[var(--md-sys-color-background)] text-[var(--md-sys-color-on-background)] font-['IBM_Plex_Sans_Arabic',sans-serif] overflow-hidden" + (isCashier ? " matjark-app-shell--cashier" : "")} dir="rtl">
       <Sidebar />
-      <main className={"matjark-app-main flex-1 h-full min-w-0 min-h-0 overflow-y-auto p-4 sm:p-6" + (isCashier ? " matjark-app-main--cashier" : "")}>
-        <div className={isCashier ? "matjark-screen-host matjark-screen-host--cashier" : "matjark-screen-host"}>
-          {activeTab === 'pos' && <CashierScreen />}
-          <Suspense fallback={<ScreenLoading />}>
-            {activeTab === 'inventory' && <InventoryScreen />}
-            {activeTab === 'invoices' && <InvoicesScreen />}
-            {activeTab === 'accounting' && <AccountingScreen />}
-            {activeTab === 'reports' && <ReportsScreen />}
-            {activeTab === 'customers' && <CustomersScreen />}
-            {activeTab === 'settings' && <SettingsScreen />}
-          </Suspense>
+      <main className={"matjark-app-main" + (isCashier ? " matjark-app-main--cashier" : "")}>
+        <Navbar onOpenPerformanceModal={() => setPerfModalOpen(true)} cashierMode={isCashier} />
+        <div className={isCashier ? "matjark-app-content matjark-app-content--cashier" : "matjark-app-content"}>
+          <div className={isCashier ? "matjark-screen-host matjark-screen-host--cashier" : "matjark-screen-host"}>
+            {activeTab === 'pos' && <CashierScreen />}
+            <Suspense fallback={<ScreenLoading />}>
+              {activeTab === 'inventory' && <InventoryScreen />}
+              {activeTab === 'invoices' && <InvoicesScreen />}
+              {activeTab === 'accounting' && <AccountingScreen />}
+              {activeTab === 'reports' && <ReportsScreen />}
+              {activeTab === 'customers' && <CustomersScreen />}
+              {activeTab === 'settings' && <SettingsScreen />}
+            </Suspense>
+          </div>
         </div>
       </main>
       {!isCashier && <MobileNavigation />}
