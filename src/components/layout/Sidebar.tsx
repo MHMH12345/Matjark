@@ -1,180 +1,112 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
-import { createNavigationRail } from 'material';
-import { Menu as MaterialMenu, MenuItem as MaterialMenuItem } from 'material/react';
-import { useStore, ActiveTab } from '../../context/StoreContext';
-import { renderToStaticMarkup } from 'react-dom/server';
+import React, { useMemo, useState } from 'react';
 import {
-  ShoppingCart,
-  Package,
+  Activity,
+  BarChart3,
   FileText,
+  Moon,
+  Package,
+  Settings,
+  ShoppingCart,
+  Store,
+  Sun,
   Users,
   Wallet,
-  BarChart3,
-  Settings,
-  Sun,
-  Moon,
-  UserRound,
 } from 'lucide-react';
+import { ActiveTab, useStore } from '../../context/StoreContext';
+import { useAuth } from '../../context/AuthContext';
 
-const toSvgString = (IconComponent: React.ElementType) =>
-  renderToStaticMarkup(<IconComponent width={24} height={24} />);
+const NAV_ITEMS: Array<{ id: ActiveTab; label: string; icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }> = [
+  { id: 'pos', label: 'نقطة البيع', icon: ShoppingCart },
+  { id: 'inventory', label: 'المنتجات', icon: Package },
+  { id: 'invoices', label: 'الفواتير', icon: FileText },
+  { id: 'customers', label: 'العملاء', icon: Users },
+  { id: 'accounting', label: 'المصروفات', icon: Wallet },
+  { id: 'reports', label: 'التقارير', icon: BarChart3 },
+  { id: 'settings', label: 'الإعدادات', icon: Settings },
+];
 
 export const Sidebar: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const railRef = useRef<any>(null);
-  const activeTabRef = useRef<ActiveTab>('pos');
-  const toggleThemeRef = useRef<() => void>(() => undefined);
-  const setActiveTabRef = useRef<(tab: ActiveTab) => void>(() => undefined);
-  const profileAnchorRef = useRef<HTMLElement | null>(null);
   const { activeTab, setActiveTab, theme, toggleTheme, products, cartTotals } = useStore();
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const { currentUser } = useAuth();
+  const [profileOpen, setProfileOpen] = useState(false);
 
-  activeTabRef.current = activeTab;
-  toggleThemeRef.current = toggleTheme;
-  setActiveTabRef.current = setActiveTab;
+  const lowStockCount = useMemo(
+    () => products.filter((product) => product.stock <= (product.minStockAlert ?? 5)).length,
+    [products]
+  );
 
-  // حساب عدد الأصناف منخفضة المخزون تلقائياً
-  const lowStockCount = useMemo(() => {
-    return products.filter((p) => p.stock <= (p.minStockAlert ?? 5)).length;
-  }, [products]);
-
-  const syncProfileAnchor = (rail: any) => {
-    const profileItem = rail.element.querySelector('[data-id="profile"]') as HTMLElement | null;
-    profileAnchorRef.current = profileItem;
-    if (profileItem) profileItem.id = 'matjark-profile-trigger';
-  };
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const rail = createNavigationRail({
-      ariaLabel: 'القائمة الرئيسية',
-      expanded: false,
-      showToggle: false,
-      items: [
-        {
-          id: 'pos',
-          label: 'نقطة البيع',
-          icon: toSvgString(ShoppingCart),
-          active: activeTabRef.current === 'pos',
-          badge: cartTotals.unitsCount > 0 ? String(cartTotals.unitsCount) : undefined,
-        },
-        {
-          id: 'inventory',
-          label: 'المخزن',
-          icon: toSvgString(Package),
-          active: activeTabRef.current === 'inventory',
-          badge: lowStockCount > 0 ? String(lowStockCount) : undefined,
-        },
-        { id: 'invoices', label: 'الفواتير', icon: toSvgString(FileText), active: activeTabRef.current === 'invoices' },
-        { id: 'customers', label: 'العملاء', icon: toSvgString(Users), active: activeTabRef.current === 'customers' },
-        { id: 'accounting', label: 'المحاسبة', icon: toSvgString(Wallet), active: activeTabRef.current === 'accounting' },
-        { id: 'reports', label: 'التقارير', icon: toSvgString(BarChart3), active: activeTabRef.current === 'reports' },
-        { id: 'settings', label: 'الإعدادات', icon: toSvgString(Settings), active: activeTabRef.current === 'settings' },
-        {
-          id: 'profile',
-          label: 'الملف الشخصي',
-          icon: toSvgString(UserRound),
-        },
-        {
-          id: 'theme',
-          label: theme === 'dark' ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الداكن',
-          icon: toSvgString(theme === 'dark' ? Sun : Moon),
-        },
-      ],
-    });
-
-    container.replaceChildren(rail.element);
-    railRef.current = rail;
-    syncProfileAnchor(rail);
-
-    const handleSelect = (event: { id: string }) => {
-      const selectedId = event?.id;
-      if (!selectedId) return;
-
-      if (selectedId === 'profile') {
-        rail.setActive(activeTabRef.current);
-        setProfileMenuOpen((open) => !open);
-        return;
-      }
-
-      if (selectedId === 'theme') {
-        rail.setActive(activeTabRef.current);
-        toggleThemeRef.current();
-        return;
-      }
-
-      setActiveTabRef.current(selectedId as ActiveTab);
-    };
-
-    rail.on('select', handleSelect);
-
-    return () => {
-      rail.off('select', handleSelect);
-      rail.destroy?.();
-      rail.element.remove();
-      railRef.current = null;
-      container.replaceChildren();
-    };
-  }, []);
-
-  useEffect(() => {
-    railRef.current?.setActive?.(activeTab);
-  }, [activeTab]);
-
-  useEffect(() => {
-    const rail = railRef.current;
-    if (!rail) return;
-    rail.setBadge('pos', cartTotals.unitsCount > 0 ? String(cartTotals.unitsCount) : undefined);
-    rail.setBadge('inventory', lowStockCount > 0 ? String(lowStockCount) : undefined);
-  }, [cartTotals.unitsCount, lowStockCount]);
-
-  useEffect(() => {
-    const rail = railRef.current;
-    if (!rail) return;
-
-    const items = rail.getItems().map((item: any) => {
-      if (item.id !== 'theme') return item;
-      return {
-        ...item,
-        label: theme === 'dark' ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الداكن',
-        icon: toSvgString(theme === 'dark' ? Sun : Moon),
-      };
-    });
-
-    rail.setItems(items);
-    rail.setActive(activeTab);
-    syncProfileAnchor(rail);
-  }, [theme]);
+  const initials = currentUser.displayName.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('');
 
   return (
-    <aside
-      className="matjark-sidebar relative h-full bg-[var(--md-sys-color-surface)] border-l border-[var(--md-sys-color-outline-variant)] shrink-0 flex flex-col items-center z-30 overflow-visible"
-      dir="rtl"
-    >
-      <div ref={containerRef} className="matjark-sidebar-rail-host flex-1 min-h-0 w-full" />
+    <aside className="matjark-sidebar" dir="rtl" aria-label="القائمة الرئيسية">
+      <button type="button" className="matjark-sidebar-brand" onClick={() => setActiveTab('pos')} aria-label="العودة إلى نقطة البيع">
+        <span className="matjark-sidebar-brand__mark"><Store size={27} strokeWidth={2.1} /></span>
+        <span className="matjark-sidebar-brand__name">متجرك</span>
+        <span className="matjark-sidebar-brand__latin">MATJARK</span>
+      </button>
 
-      <MaterialMenu
-        open={profileMenuOpen}
-        onOpen={() => setProfileMenuOpen(true)}
-        onClose={() => setProfileMenuOpen(false)}
-        anchor={profileAnchorRef.current as HTMLElement}
-        position="left-start"
-        className="matjark-sidebar-profile-menu"
-        onSelect={(event: CustomEvent<{ itemId?: string; value?: string }>) => {
-          const selected = event.detail?.itemId || event.detail?.value;
-          if (selected === 'settings') setActiveTab('settings');
-        }}
-      >
-        <MaterialMenuItem value="cashier" disabled icon={toSvgString(UserRound)} supportingText="حساب المستخدم">
-          الكاشير الرئيسي
-        </MaterialMenuItem>
-        <MaterialMenuItem gap />
-        <MaterialMenuItem value="settings" icon={toSvgString(Settings)}>
-          إعدادات البرنامج
-        </MaterialMenuItem>
-      </MaterialMenu>
+      <div className="matjark-sidebar-divider" />
+
+      <nav className="matjark-sidebar-nav" aria-label="التنقل الرئيسي">
+        {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
+          const active = activeTab === id;
+          const badge = id === 'pos'
+            ? cartTotals.unitsCount
+            : id === 'inventory'
+              ? lowStockCount
+              : 0;
+          return (
+            <button
+              key={id}
+              type="button"
+              className={active ? 'matjark-sidebar-link is-active' : 'matjark-sidebar-link'}
+              aria-current={active ? 'page' : undefined}
+              onClick={() => setActiveTab(id)}
+            >
+              <span className="matjark-sidebar-link__icon"><Icon size={21} strokeWidth={1.9} /></span>
+              <span className="matjark-sidebar-link__label">{label}</span>
+              {badge > 0 && <span className="matjark-sidebar-link__badge">{badge > 99 ? '99+' : badge}</span>}
+            </button>
+          );
+        })}
+      </nav>
+
+      <div className="matjark-sidebar-spacer" />
+
+      <div className="matjark-sidebar-bottom">
+        <button
+          type="button"
+          className="matjark-sidebar-theme"
+          onClick={toggleTheme}
+          title={theme === 'dark' ? 'تفعيل الوضع النهاري' : 'تفعيل الوضع الليلي'}
+          aria-label={theme === 'dark' ? 'تفعيل الوضع النهاري' : 'تفعيل الوضع الليلي'}
+        >
+          <span className="matjark-sidebar-theme__icon">{theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}</span>
+          <span className="matjark-sidebar-theme__label">{theme === 'dark' ? 'الوضع الليلي' : 'الوضع النهاري'}</span>
+          <span className={theme === 'dark' ? 'matjark-theme-switch is-on' : 'matjark-theme-switch'}><i /></span>
+        </button>
+
+        <button
+          type="button"
+          className="matjark-sidebar-profile"
+          onClick={() => setProfileOpen((open) => !open)}
+          aria-expanded={profileOpen}
+        >
+          <span className="matjark-sidebar-profile__avatar">{initials || 'م'}</span>
+          <span className="matjark-sidebar-profile__copy">
+            <strong>{currentUser.displayName}</strong>
+            <small>{currentUser.roleKey === 'owner' ? 'مالك المتجر' : currentUser.roleKey}</small>
+          </span>
+          <Activity size={16} className="matjark-sidebar-profile__status" />
+        </button>
+        {profileOpen && (
+          <div className="matjark-sidebar-profile-menu" role="menu">
+            <button type="button" role="menuitem" onClick={() => { setActiveTab('settings'); setProfileOpen(false); }}>
+              <Settings size={16} /> إعدادات البرنامج
+            </button>
+          </div>
+        )}
+      </div>
     </aside>
   );
 };
