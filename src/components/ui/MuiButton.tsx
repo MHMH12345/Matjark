@@ -43,7 +43,7 @@ export const MuiButton: React.FC<MuiButtonProps> = memo(({
     shape="round"
     icon={iconMarkup(startIcon || endIcon)}
     iconPosition={startIcon ? 'start' : endIcon ? 'end' : undefined}
-    className={`matjark-button matjark-button--${color} ${variant === 'tonal' ? 'matjark-button--tonal' : ''} ${fullWidth ? 'matjark-button--full' : ''} ${className}`}
+    className={`matjark-button matjark-button--${color} matjark-button--variant-${variant} ${variant === 'tonal' ? 'matjark-button--tonal' : ''} ${fullWidth ? 'matjark-button--full' : ''} ${className}`}
     style={{ ...(variant === 'tonal' ? (tonalPalette[color] || {}) : (palette[color] || {})), ...(style || {}), width: fullWidth ? '100%' : undefined }}
   >
     {children}
